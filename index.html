@@ -1,0 +1,1651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dhaba Express - Cloud Kitchen & KDS</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Tailwind Custom Configuration -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            dhaba: {
+              50: '#fff7ed',
+              100: '#ffedd5',
+              500: '#f97316',
+              600: '#ea580c',
+              700: '#c2410c',
+              800: '#9a3412',
+              900: '#7c2d12',
+            },
+            navybrand: '#0f172a'
+          },
+          boxShadow: {
+            card: '0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05)',
+            floating: '0 20px 30px -10px rgba(234, 88, 12, 0.3)'
+          }
+        }
+      }
+    }
+  </script>
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .tap-scale { transition: transform 0.1s ease; }
+    .tap-scale:active { transform: scale(0.97); }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #f1f1f1; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
+  </style>
+</head>
+<body class="bg-stone-50 text-stone-900 min-h-screen flex flex-col antialiased selection:bg-dhaba-500 selection:text-white">
+
+  <!-- ===================================================================== -->
+  <!-- SVG DEFINITIONS (Official Dhaba Express Logo Emblem)                  -->
+  <!-- ===================================================================== -->
+  <svg class="hidden">
+    <defs>
+      <g id="dhaba-express-emblem">
+        <circle cx="100" cy="100" r="96" fill="#0f172a" stroke="#f59e0b" stroke-width="4"/>
+        <!-- Inner ring -->
+        <circle cx="100" cy="100" r="84" fill="none" stroke="#fde047" stroke-width="1.5" stroke-dasharray="4 4"/>
+        <!-- Dhaba Hut Silhouette -->
+        <path d="M70,95 L130,95 L125,75 L75,75 Z" fill="#d97706"/>
+        <path d="M65,75 L135,75 L100,50 Z" fill="#b45309"/>
+        <rect x="90" y="80" width="20" height="15" fill="#fef08a"/>
+        <!-- Steaming Kadhai -->
+        <path d="M85,50 Q100,40 115,50 Q120,62 100,65 Q80,62 85,50 Z" fill="#ea580c"/>
+        <path d="M93,38 Q100,32 105,42" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
+        <path d="M100,35 Q106,28 111,38" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
+      </g>
+    </defs>
+  </svg>
+
+  <!-- ===================================================================== -->
+  <!-- GLOBAL TOP BANNER: MODE SWITCHER & BRAND HEADER                        -->
+  <!-- ===================================================================== -->
+  <header class="sticky top-0 z-40 bg-stone-900 text-white shadow-xl border-b border-stone-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
+      
+      <!-- Brand Logo & Name -->
+      <div class="flex items-center gap-3">
+        <div class="w-12 h-12 rounded-full shrink-0 shadow-md ring-2 ring-amber-400 overflow-hidden bg-stone-800 flex items-center justify-center">
+          <svg class="w-full h-full scale-125"><use href="#dhaba-express-emblem"/></svg>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="font-black text-base sm:text-lg tracking-tight text-white">Dhaba Express</h1>
+            <span class="bg-amber-400 text-stone-950 text-[10px] font-extrabold px-2 py-0.5 rounded-full uppercase tracking-wider hidden sm:inline-block">Cloud Kitchen</span>
+          </div>
+          <p class="text-[11px] text-stone-400">Authentic Punjabi Rasoi & Tawa Special</p>
+        </div>
+      </div>
+
+      <!-- Mode Switcher Tabs (Website | Android App View | Kitchen KDS) -->
+      <div class="hidden md:flex items-center bg-stone-800/80 p-1.5 rounded-2xl border border-stone-700/60 shadow-inner">
+        <button onclick="switchMode('website')" id="mode-btn-website"
+          class="px-4 py-2 rounded-xl text-xs font-black flex items-center gap-2 transition bg-dhaba-600 text-white shadow">
+          <i data-lucide="globe" class="w-3.5 h-3.5"></i>
+          <span>Website & Menu</span>
+        </button>
+        <button onclick="switchMode('android')" id="mode-btn-android"
+          class="px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition text-stone-300 hover:text-white">
+          <i data-lucide="smartphone" class="w-3.5 h-3.5"></i>
+          <span>Android App View</span>
+        </button>
+        <button onclick="switchMode('kds')" id="mode-btn-kds"
+          class="px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition text-amber-400 hover:bg-stone-700">
+          <i data-lucide="chef-hat" class="w-3.5 h-3.5"></i>
+          <span>Kitchen KDS & Admin</span>
+        </button>
+      </div>
+
+      <!-- Right Actions: Login & Cart -->
+      <div class="flex items-center gap-2">
+        <button id="nav-login-btn" onclick="openLoginModal()"
+          class="bg-stone-800 hover:bg-stone-700 text-stone-200 px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition border border-stone-700 shrink-0">
+          <i data-lucide="user" class="w-3.5 h-3.5 text-amber-400"></i>
+          <span id="nav-login-label">Login / OTP</span>
+        </button>
+
+        <button onclick="openCartDrawer()"
+          class="bg-dhaba-600 hover:bg-dhaba-700 text-white px-3 sm:px-4 py-2 rounded-xl text-xs font-extrabold flex items-center gap-1.5 shadow-floating tap-scale transition relative shrink-0">
+          <i data-lucide="shopping-bag" class="w-4 h-4"></i>
+          <span class="hidden md:inline">Cart</span>
+          <span id="nav-cart-badge" class="hidden absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-amber-400 text-stone-950 text-[10px] font-black flex items-center justify-center shadow">0</span>
+        </button>
+      </div>
+
+    </div>
+
+    <!-- Mobile Mode Switcher Bar -->
+    <div class="md:hidden bg-stone-950 px-4 py-2.5 flex items-center justify-around border-t border-stone-800 text-xs font-bold">
+      <button onclick="switchMode('website')" class="text-dhaba-500 flex items-center gap-1 py-1">🌐 Website</button>
+      <button onclick="switchMode('android')" class="text-stone-300 flex items-center gap-1 py-1">📱 Android View</button>
+      <button onclick="switchMode('kds')" class="text-amber-400 flex items-center gap-1 py-1">👨‍🍳 KDS Admin</button>
+    </div>
+  </header>
+
+  <!-- ===================================================================== -->
+  <!-- KITCHEN CLOSED ALERT BANNER (If Kitchen is toggled Closed)            -->
+  <!-- ===================================================================== -->
+  <div id="master-closed-banner" class="kitchen-closed-banner hidden bg-rose-600 text-white px-4 py-3 text-center text-xs sm:text-sm font-black flex items-center justify-center gap-2 shadow-md">
+    <i data-lucide="alert-triangle" class="w-4 h-4 shrink-0 animate-pulse"></i>
+    <span>KITCHEN CURRENTLY CLOSED • <span id="banner-closure-reason">Orders are temporarily paused</span></span>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- MAIN CONTAINER MODES                                                  -->
+  <!-- ===================================================================== -->
+  <main class="flex-grow">
+
+    <!-- =================================================================== -->
+    <!-- MODE 1: WEBSITE & ORDERING APP                                      -->
+    <!-- =================================================================== -->
+    <div id="website-mode-view" class="space-y-12 pb-20">
+      
+      <!-- Hero Banner with Logo & Pincode Checker -->
+      <section class="relative bg-gradient-to-b from-stone-900 via-stone-900 to-stone-950 text-white py-14 px-4 sm:px-6 lg:px-8 overflow-hidden">
+        <div class="absolute inset-0 opacity-10 bg-[radial-gradient(#f97316_1px,transparent_1px)] [background-size:16px_16px]"></div>
+        <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 items-center relative z-10">
+          
+          <div class="lg:col-span-7 space-y-6 text-center lg:text-left">
+            <div class="inline-flex items-center gap-2 bg-dhaba-500/20 text-amber-400 border border-amber-400/30 px-3.5 py-1.5 rounded-full text-xs font-extrabold tracking-wide">
+              <span>🔥 Pure Desi Ghee & Tandoor Specialties</span>
+            </div>
+            
+            <h1 class="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-tight">
+              Authentic Punjabi <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-dhaba-500">Dhaba Flavors</span> Delivered Hot.
+            </h1>
+            
+            <p class="text-sm sm:text-base text-stone-300 max-w-xl mx-auto lg:mx-0 leading-relaxed">
+              Slow-cooked Dal Makhni, Royal Shahi Paneer, Crispy Tandoori Parathas & Hearty Combos prepared fresh with traditional spices.
+            </p>
+
+            <!-- Location & Pincode Bar -->
+            <div class="bg-white/10 backdrop-blur-md p-2 rounded-2xl border border-white/20 max-w-lg mx-auto lg:mx-0 flex flex-col sm:flex-row gap-2">
+              <div class="flex items-center gap-2 bg-stone-900/90 px-3 py-2.5 rounded-xl flex-grow">
+                <i data-lucide="map-pin" class="w-4 h-4 text-dhaba-500 shrink-0"></i>
+                <input type="text" value="Connaught Place, New Delhi" class="w-full bg-transparent text-xs text-white font-bold focus:outline-none" />
+              </div>
+              <div class="flex items-center gap-2 bg-stone-900/90 px-3 py-2.5 rounded-xl sm:w-36">
+                <i data-lucide="navigation" class="w-4 h-4 text-amber-400 shrink-0"></i>
+                <input type="text" maxlength="6" value="110001" class="w-full bg-transparent text-xs text-white font-bold focus:outline-none" placeholder="Pincode" />
+              </div>
+            </div>
+
+            <!-- Kitchen Status Badge -->
+            <div class="pt-2 flex items-center justify-center lg:justify-start gap-3">
+              <div id="kitchen-status-badge" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span class="kitchen-status-text">OPEN • ACCEPTING ORDERS</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Hero Right: Official Logo Showcase Card -->
+          <div class="lg:col-span-5 flex justify-center">
+            <div class="w-64 sm:w-80 h-64 sm:h-80 rounded-full bg-gradient-to-br from-amber-500/20 to-dhaba-600/30 p-3 shadow-2xl border border-amber-400/40 relative flex items-center justify-center">
+              <div class="w-full h-full rounded-full overflow-hidden shadow-inner bg-stone-900 flex items-center justify-center ring-4 ring-amber-400/50">
+                <svg class="w-full h-full"><use href="#dhaba-express-emblem"/></svg>
+              </div>
+              <div class="absolute -bottom-2 bg-amber-400 text-stone-950 text-xs font-black px-4 py-1.5 rounded-full shadow-lg border border-amber-200">
+                ⭐ 4.9 Rated Cloud Kitchen
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- Menu Section -->
+      <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+        
+        <!-- Category Filter & Search Bar -->
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <span class="text-xs font-black uppercase tracking-widest text-dhaba-600 block mb-1">Our Rasoi Menu</span>
+            <h2 class="text-2xl sm:text-3xl font-black text-stone-900">Explore Authentic Specialties</h2>
+          </div>
+
+          <div class="flex items-center gap-3">
+            <div class="relative w-full md:w-64">
+              <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400"></i>
+              <input id="menu-search-input" oninput="handleSearchInput(this.value)" type="text" placeholder="Search paneer, paratha..."
+                class="w-full bg-white text-xs font-semibold pl-9 pr-4 py-2.5 rounded-2xl border border-stone-200 shadow-sm focus:outline-none focus:border-dhaba-500" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Category Pills -->
+        <div id="category-pills-container" class="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none"></div>
+
+        <!-- Menu Grid -->
+        <div id="website-menu-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"></div>
+      </section>
+
+      <!-- LIVE ORDER TRACKING SECTION -->
+      <section id="tracking-section" class="bg-stone-100 border-t border-stone-200 py-12 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-4xl mx-auto space-y-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <span class="text-xs font-black uppercase tracking-widest text-dhaba-600 block mb-1">Customer Orders</span>
+              <h2 class="text-2xl sm:text-3xl font-black text-stone-900">Your Order Status & History</h2>
+            </div>
+            <div id="tracking-auth-indicator" class="text-xs font-bold bg-white px-4 py-2.5 rounded-2xl shadow-sm border border-stone-200 flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+              <span id="tracking-auth-text">Not Logged In</span>
+            </div>
+          </div>
+
+          <div id="website-orders-list" class="space-y-4"></div>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- =================================================================== -->
+    <!-- MODE 2: ANDROID APP EMULATOR VIEW                                   -->
+    <!-- =================================================================== -->
+    <div id="android-mode-view" class="hidden py-8 px-4 flex justify-center bg-stone-900">
+      <div class="w-full max-w-sm bg-white rounded-[40px] shadow-2xl border-[10px] border-stone-950 overflow-hidden flex flex-col h-[820px] relative">
+        
+        <!-- Android Status Bar -->
+        <div class="bg-stone-950 text-white px-6 py-2 flex items-center justify-between text-[11px] font-bold">
+          <span>09:41</span>
+          <div class="flex items-center gap-1.5">
+            <span>📶</span>
+            <span>🔋 100%</span>
+          </div>
+        </div>
+
+        <!-- Android App Top Bar with Official Circular Emblem -->
+        <div class="bg-gradient-to-r from-navybrand via-stone-900 to-navybrand text-white p-4 flex items-center justify-between border-b border-stone-800 shadow-md">
+          <div class="flex items-center gap-3.5 min-w-0">
+            <div class="w-12 h-12 rounded-full shrink-0 shadow-lg overflow-hidden bg-stone-800 ring-2 ring-amber-400 flex items-center justify-center">
+              <svg class="w-full h-full scale-125"><use href="#dhaba-express-emblem"/></svg>
+            </div>
+            <div class="min-w-0">
+              <h2 class="font-black text-sm tracking-tight text-white truncate">Dhaba Express</h2>
+              <span class="text-[10px] text-amber-300 font-semibold block truncate">Connaught Place, New Delhi</span>
+            </div>
+          </div>
+
+          <button onclick="openLoginModal()" id="android-login-pill" class="bg-white/10 hover:bg-white/20 text-white text-[10px] font-bold px-3 py-1.5 rounded-xl border border-white/20 shrink-0">
+            Login
+          </button>
+        </div>
+
+        <!-- Android Closed Banner -->
+        <div class="kitchen-closed-banner hidden bg-rose-600 text-white p-2 text-center text-[10px] font-black">
+          KITCHEN CLOSED
+        </div>
+
+        <!-- Android Sub-Tabs Header (Menu vs My Orders) -->
+        <div class="flex border-b border-stone-200 bg-stone-50">
+          <button onclick="switchAndroidTab('menu')" id="android-tab-menu"
+            class="flex-1 py-3 text-xs font-black flex items-center justify-center gap-1.5 border-b-2 border-dhaba-600 text-dhaba-600 bg-dhaba-50/50">
+            <i data-lucide="utensils" class="w-3.5 h-3.5"></i>
+            <span>App Menu</span>
+          </button>
+          <button onclick="switchAndroidTab('orders')" id="android-tab-orders"
+            class="flex-1 py-3 text-xs font-bold flex items-center justify-center gap-1.5 border-b-2 border-transparent text-stone-500 hover:text-stone-900">
+            <i data-lucide="clock" class="w-3.5 h-3.5"></i>
+            <span>My Orders</span>
+          </button>
+        </div>
+
+        <!-- Android Content Body -->
+        <div class="flex-grow overflow-y-auto p-4 space-y-4">
+          
+          <!-- Menu Section inside Android App -->
+          <div id="android-menu-section" class="space-y-4">
+            <div class="bg-dhaba-50 p-3 rounded-2xl border border-dhaba-100 flex items-center justify-between">
+              <div>
+                <span class="text-[10px] font-black text-dhaba-600 uppercase">Promo Code</span>
+                <div class="text-xs font-extrabold text-stone-800">Use <span class="text-dhaba-600">KITCHEN20</span> for 20% OFF</div>
+              </div>
+              <span class="text-xl">🎟️</span>
+            </div>
+
+            <div id="android-menu-grid" class="grid grid-cols-1 gap-3"></div>
+          </div>
+
+          <!-- Orders Section inside Android App -->
+          <div id="android-orders-section" class="hidden space-y-4">
+            <div class="text-xs font-black text-stone-800 mb-1">Your Live Android Orders</div>
+            <div id="android-orders-list" class="space-y-3"></div>
+          </div>
+
+        </div>
+
+        <!-- Android Floating Cart Bar -->
+        <div class="p-3 bg-stone-900 text-white flex items-center justify-between border-t border-stone-800">
+          <div>
+            <div class="text-[10px] text-stone-400">Cart Total</div>
+            <div class="text-xs font-black text-amber-400" id="android-cart-total-badge">Ready to order</div>
+          </div>
+          <button onclick="openCartDrawer()" class="bg-dhaba-600 hover:bg-dhaba-700 text-white px-4 py-2 rounded-xl text-xs font-black shadow flex items-center gap-1.5 tap-scale">
+            <span>View Cart</span>
+            <span id="android-cart-badge" class="hidden w-4 h-4 rounded-full bg-amber-400 text-stone-950 text-[10px] flex items-center justify-center font-black">0</span>
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- =================================================================== -->
+    <!-- MODE 3: KITCHEN DISPLAY SYSTEM (KDS) & ADMIN MANAGER                -->
+    <!-- =================================================================== -->
+    <div id="kds-mode-view" class="hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+      
+      <!-- KDS Header & Master Controls -->
+      <div class="bg-stone-900 text-white rounded-3xl p-6 sm:p-8 shadow-xl border border-stone-800 flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div>
+          <div class="inline-flex items-center gap-2 bg-amber-500/20 text-amber-400 px-3 py-1 rounded-full text-xs font-extrabold mb-2">
+            <span>👨‍🍳 Kitchen Display System (KDS) & Admin</span>
+          </div>
+          <h2 class="text-2xl sm:text-3xl font-black">Live Kitchen Operations Center</h2>
+          <p class="text-xs text-stone-400 mt-1">Manage live incoming orders, prepare tickets, toggle stock, and control kitchen availability.</p>
+        </div>
+
+        <!-- Master Kitchen Open/Closed Toggle -->
+        <div class="bg-stone-800 p-4 rounded-2xl border border-stone-700 flex flex-col gap-3 shrink-0">
+          <div class="flex items-center justify-between gap-4">
+            <div>
+              <div class="text-xs font-bold text-stone-300">Kitchen Status</div>
+              <div id="kds-status-text-label" class="text-sm font-black text-emerald-400">OPEN • ACCEPTING ORDERS</div>
+            </div>
+            <button onclick="toggleMasterKitchenStatus()" id="kds-toggle-status-btn"
+              class="px-4 py-2 rounded-xl text-xs font-black bg-rose-600 hover:bg-rose-500 text-white shadow tap-scale transition">
+              Close Kitchen
+            </button>
+          </div>
+
+          <!-- Closure Note Presets -->
+          <div class="space-y-1.5 pt-2 border-t border-stone-700">
+            <input id="kds-closure-note-input" oninput="updateKitchenClosureNote(this.value)" type="text" placeholder="Closure reason (e.g. 30m break)"
+              class="w-full bg-stone-900 text-xs px-3 py-1.5 rounded-xl border border-stone-700 text-white focus:outline-none" />
+            <div class="flex items-center gap-1.5 flex-wrap">
+              <button onclick="setClosurePreset('Reopens at 11:00 AM')" class="bg-stone-700 hover:bg-stone-600 text-[10px] font-bold px-2 py-1 rounded-lg">11 AM</button>
+              <button onclick="setClosurePreset('Sold Out Today')" class="bg-stone-700 hover:bg-stone-600 text-[10px] font-bold px-2 py-1 rounded-lg">Sold Out</button>
+              <button onclick="setClosurePreset('30 Mins Prep Break')" class="bg-stone-700 hover:bg-stone-600 text-[10px] font-bold px-2 py-1 rounded-lg">30m Break</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- KDS Stats Summary -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="bg-white rounded-2xl p-5 shadow-card border border-stone-200">
+          <div class="text-xs font-bold text-stone-500">Today's Revenue</div>
+          <div class="text-2xl font-black text-stone-900 mt-1" id="kds-stat-revenue">₹0</div>
+        </div>
+        <div class="bg-white rounded-2xl p-5 shadow-card border border-stone-200">
+          <div class="text-xs font-bold text-stone-500">Active Orders</div>
+          <div class="text-2xl font-black text-dhaba-600 mt-1" id="kds-stat-active">0</div>
+        </div>
+        <div class="bg-white rounded-2xl p-5 shadow-card border border-stone-200">
+          <div class="text-xs font-bold text-stone-500">Total Orders Today</div>
+          <div class="text-2xl font-black text-stone-900 mt-1" id="kds-stat-total">0</div>
+        </div>
+      </div>
+
+      <!-- KDS Tab Switcher (Live Orders vs Menu Stock Control) -->
+      <div class="flex items-center gap-2 border-b border-stone-200 pb-2">
+        <button onclick="switchKdsSubTab('orders')" id="kds-tab-orders-btn"
+          class="px-4 py-2 rounded-xl text-xs font-extrabold bg-dhaba-600 text-white shadow">
+          Live Orders Queue
+        </button>
+        <button onclick="switchKdsSubTab('stock')" id="kds-tab-stock-btn"
+          class="px-4 py-2 rounded-xl text-xs font-bold text-stone-600 hover:bg-stone-100">
+          Menu & Stock Manager (Out of Stock Toggles)
+        </button>
+      </div>
+
+      <!-- KDS Orders Sub-Tab -->
+      <div id="kds-orders-section" class="space-y-6">
+        <div class="flex items-center gap-2 flex-wrap">
+          <button onclick="setKdsFilter('all')" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-white border border-stone-200 hover:bg-stone-100">All Orders</button>
+          <button onclick="setKdsFilter('active')" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-dhaba-50 text-dhaba-700 border border-dhaba-200">Active Only</button>
+          <button onclick="setKdsFilter('delivered')" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">Completed</button>
+        </div>
+
+        <div id="kds-orders-container" class="space-y-4"></div>
+      </div>
+
+      <!-- KDS Menu Stock Manager Sub-Tab -->
+      <div id="kds-stock-section" class="hidden space-y-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <h3 class="text-base font-black text-stone-900">Manage Dish Availability</h3>
+            <p class="text-xs text-stone-500">Instantly mark any dish Out of Stock. Customers will see it greyed out immediately.</p>
+          </div>
+          <button onclick="markAllInStock()" class="bg-stone-900 hover:bg-stone-800 text-white px-4 py-2 rounded-xl text-xs font-bold shadow">
+            Mark All In Stock
+          </button>
+        </div>
+
+        <div id="kds-stock-container" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- ===================================================================== -->
+  <!-- MODALS & DRAWERS                                                      -->
+  <!-- ===================================================================== -->
+
+  <!-- 0. Mobile Number + OTP Login Modal -->
+  <div id="login-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+    <div class="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl space-y-5">
+      <div class="flex items-center justify-between pb-3 border-b border-stone-100">
+        <div>
+          <span class="text-[10px] font-black uppercase tracking-widest text-dhaba-600">Dhaba Express ID</span>
+          <h3 class="text-lg font-black text-stone-900">Customer Login</h3>
+        </div>
+        <button onclick="closeLoginModal()" class="p-2 rounded-full bg-stone-100 text-stone-600 hover:bg-stone-200">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <!-- Step 1: Enter Mobile Number -->
+      <div id="login-step-phone" class="space-y-4">
+        <div>
+          <label class="text-xs font-bold text-stone-700 block mb-1">10-Digit Mobile Number</label>
+          <div class="flex items-center bg-stone-100 rounded-xl border border-stone-200 px-3 py-2.5 focus-within:border-dhaba-600">
+            <span class="text-xs font-bold text-stone-500 mr-2">+91</span>
+            <input id="login-phone-input" type="tel" maxlength="10" placeholder="9811055210"
+              class="w-full bg-transparent text-sm font-bold text-stone-900 focus:outline-none" />
+          </div>
+          <p class="text-[11px] text-stone-400 mt-1">We will send a 4-digit verification OTP.</p>
+        </div>
+        <button onclick="handleSendOtp()"
+          class="w-full bg-dhaba-600 hover:bg-dhaba-700 text-white font-black text-xs py-3.5 rounded-2xl shadow tap-scale">
+          Send OTP
+        </button>
+      </div>
+
+      <!-- Step 2: Enter OTP -->
+      <div id="login-step-otp" class="hidden space-y-4">
+        <div>
+          <div class="flex items-center justify-between mb-1">
+            <label class="text-xs font-bold text-stone-700">Enter 4-Digit OTP</label>
+            <button onclick="backToPhoneStep()" class="text-[11px] text-dhaba-600 font-bold hover:underline">Change Number</button>
+          </div>
+          <input id="login-otp-input" type="text" maxlength="4" placeholder="1234"
+            class="w-full bg-stone-100 text-center tracking-widest text-lg font-black py-3 rounded-xl border border-stone-200 focus:border-dhaba-600 focus:outline-none" />
+          <p id="otp-hint-text" class="text-[11px] font-bold text-amber-600 mt-1.5 text-center">Hint: OTP is 1234</p>
+        </div>
+        <button onclick="handleVerifyOtp()"
+          class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs py-3.5 rounded-2xl shadow tap-scale">
+          Verify & Continue
+        </button>
+      </div>
+
+      <!-- Logged-in Profile View (if already logged in) -->
+      <div id="login-step-profile" class="hidden space-y-4 text-center py-2">
+        <div class="w-14 h-14 bg-dhaba-50 text-dhaba-600 rounded-full flex items-center justify-center mx-auto text-2xl font-black shadow-inner">
+          <i data-lucide="user-check" class="w-7 h-7"></i>
+        </div>
+        <div>
+          <div class="text-xs text-stone-400">Logged in as</div>
+          <div id="profile-phone-display" class="text-base font-black text-stone-900 mt-0.5">+91 9811055210</div>
+        </div>
+        <button onclick="handleLogout()"
+          class="w-full bg-rose-50 text-rose-700 border border-rose-200 hover:bg-rose-100 font-bold text-xs py-3 rounded-2xl transition">
+          Logout / Switch Account
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 1. Dish Customization Modal -->
+  <div id="customizer-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+    <div class="bg-white w-full max-w-md rounded-3xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]">
+      <div class="relative h-48 bg-stone-100 shrink-0">
+        <img id="modal-item-img" src="" alt="Dish" class="w-full h-full object-cover" />
+        <button onclick="closeCustomizer()" class="absolute top-4 right-4 bg-stone-900/80 text-white p-2 rounded-full hover:bg-stone-900">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <div class="p-6 overflow-y-auto space-y-5 flex-grow">
+        <div>
+          <div class="flex items-center justify-between">
+            <h3 id="modal-item-name" class="text-lg font-black text-stone-900">Dish Name</h3>
+            <span id="modal-item-price" class="text-base font-black text-dhaba-600">₹0</span>
+          </div>
+          <p id="modal-item-desc" class="text-xs text-stone-500 mt-1 leading-relaxed">Description</p>
+        </div>
+
+        <!-- Spice Level -->
+        <div class="space-y-2">
+          <label class="text-xs font-black uppercase tracking-wider text-stone-700 block">Spice Level</label>
+          <div class="grid grid-cols-3 gap-2">
+            <label class="flex items-center justify-center gap-1.5 p-2.5 rounded-xl border border-stone-200 hover:bg-stone-50 cursor-pointer text-xs font-bold text-stone-700">
+              <input type="radio" name="spice_level" value="Mild" onchange="updateCustomizerTotal()" class="text-dhaba-600 focus:ring-dhaba-500" /> Mild
+            </label>
+            <label class="flex items-center justify-center gap-1.5 p-2.5 rounded-xl border border-dhaba-500 bg-dhaba-50 cursor-pointer text-xs font-black text-dhaba-800">
+              <input type="radio" name="spice_level" value="Medium" checked onchange="updateCustomizerTotal()" class="text-dhaba-600 focus:ring-dhaba-500" /> Medium
+            </label>
+            <label class="flex items-center justify-center gap-1.5 p-2.5 rounded-xl border border-stone-200 hover:bg-stone-50 cursor-pointer text-xs font-bold text-stone-700">
+              <input type="radio" name="spice_level" value="Spicy" onchange="updateCustomizerTotal()" class="text-dhaba-600 focus:ring-dhaba-500" /> Spicy 🔥
+            </label>
+          </div>
+        </div>
+
+        <!-- Add-ons -->
+        <div class="space-y-2">
+          <label class="text-xs font-black uppercase tracking-wider text-stone-700 block">Add-ons & Accompaniments</label>
+          <div id="modal-addons-list" class="space-y-2"></div>
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="p-4 bg-stone-50 border-t border-stone-100 flex items-center justify-between gap-3 shrink-0">
+        <button onclick="closeCustomizer()" class="w-1/3 py-3 rounded-2xl text-xs font-bold text-stone-600 hover:bg-stone-200">Cancel</button>
+        <button id="modal-add-btn" onclick="addCustomizedItemToCart()" class="w-2/3 bg-dhaba-600 hover:bg-dhaba-700 text-white py-3 rounded-2xl text-xs font-black shadow tap-scale">
+          Add Item • ₹0
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. Cart & Checkout Drawer -->
+  <div id="cart-drawer" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex justify-end">
+    <div class="bg-white w-full max-w-md h-full shadow-2xl flex flex-col justify-between animate-in slide-in-from-right duration-200">
+      
+      <!-- Drawer Header -->
+      <div class="p-5 border-b border-stone-100 flex items-center justify-between bg-stone-900 text-white">
+        <div class="flex items-center gap-2">
+          <i data-lucide="shopping-bag" class="w-5 h-5 text-amber-400"></i>
+          <h3 class="text-base font-black">Your Dhaba Cart</h3>
+        </div>
+        <button onclick="closeCartDrawer()" class="p-2 rounded-full hover:bg-stone-800 text-stone-400 hover:text-white">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Drawer Body Items -->
+      <div class="p-5 overflow-y-auto flex-grow space-y-4">
+        <div id="cart-items-list" class="space-y-3"></div>
+
+        <!-- Promo Code Box -->
+        <div class="bg-stone-50 rounded-2xl p-4 border border-stone-200 space-y-2">
+          <label class="text-xs font-black text-stone-700 block">Have Promo Code?</label>
+          <div class="flex gap-2">
+            <input id="promo-input" type="text" placeholder="Try KITCHEN20" class="w-full text-xs uppercase font-bold bg-white px-3 py-2.5 rounded-xl border border-stone-200 focus:outline-none focus:border-dhaba-500" />
+            <button onclick="applyPromo()" class="bg-stone-900 hover:bg-stone-800 text-white text-xs font-bold px-4 py-2.5 rounded-xl shrink-0">Apply</button>
+          </div>
+          <p id="promo-feedback" class="hidden text-[11px] font-bold mt-1"></p>
+        </div>
+
+        <!-- Address -->
+        <div class="bg-stone-50 rounded-2xl p-4 border border-stone-200 space-y-2">
+          <label class="text-xs font-black text-stone-700 block">Delivery Address & Contact</label>
+          <input id="checkout-address" type="text" value="Flat 402, Regal Building, Connaught Place, New Delhi"
+            class="w-full text-xs font-semibold bg-white px-3 py-2.5 rounded-xl border border-stone-200 focus:outline-none focus:border-dhaba-500" />
+          <div class="flex items-center justify-between text-xs text-stone-500 pt-1">
+            <span>Verified Mobile:</span>
+            <span id="checkout-phone-display" class="font-bold text-dhaba-600">+91 9811055210</span>
+          </div>
+        </div>
+
+        <!-- Payment Method -->
+        <div class="bg-stone-50 rounded-2xl p-4 border border-stone-200 space-y-2">
+          <label class="text-xs font-black text-stone-700 block">Payment Method</label>
+          <div class="grid grid-cols-2 gap-2">
+            <label class="flex items-center gap-2 p-3 rounded-xl border border-dhaba-500 bg-dhaba-50 cursor-pointer text-xs font-bold text-stone-800">
+              <input type="radio" name="payment_method" value="UPI / QR" checked class="text-dhaba-600" /> UPI / QR Scan
+            </label>
+            <label class="flex items-center gap-2 p-3 rounded-xl border border-stone-200 bg-white cursor-pointer text-xs font-bold text-stone-800">
+              <input type="radio" name="payment_method" value="Cash on Delivery" class="text-dhaba-600" /> Cash on Delivery
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Drawer Footer / Bill Summary -->
+      <div id="cart-footer-section" class="p-5 bg-stone-100 border-t border-stone-200 space-y-3">
+        <div class="space-y-1.5 text-xs">
+          <div class="flex justify-between text-stone-600">
+            <span>Item Subtotal</span>
+            <span id="bill-subtotal" class="font-bold text-stone-900">₹0</span>
+          </div>
+          <div id="bill-discount-row" class="flex justify-between text-emerald-600">
+            <span>Promo Discount (KITCHEN20)</span>
+            <span id="bill-discount" class="font-bold">-₹0</span>
+          </div>
+          <div class="flex justify-between text-stone-600">
+            <span>Delivery & Packaging</span>
+            <span id="bill-delivery" class="font-bold text-stone-900">₹40</span>
+          </div>
+          <div class="flex justify-between text-stone-600">
+            <span>GST (5%)</span>
+            <span id="bill-gst" class="font-bold text-stone-900">₹0</span>
+          </div>
+          <div class="flex justify-between text-sm font-black text-stone-900 pt-2 border-t border-stone-200">
+            <span>Grand Total</span>
+            <span id="bill-grandtotal" class="text-dhaba-600">₹0</span>
+          </div>
+        </div>
+
+        <button onclick="placeOrder()" class="w-full bg-dhaba-600 hover:bg-dhaba-700 text-white font-black text-xs py-3.5 rounded-2xl shadow-floating tap-scale">
+          Place Order Now 🚀
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- APPLICATION JAVASCRIPT LOGIC                                          -->
+  <!-- ===================================================================== -->
+  <script>
+    const CATEGORIES = [
+      { id: 'all', name: 'All Specials (12)', emoji: '🥘' },
+      { id: 'Curries', name: 'Curries', emoji: '🍛' },
+      { id: 'Combos', name: 'Combos', emoji: '🍚' },
+      { id: 'Thalis', name: 'Thalis', emoji: '👑' },
+      { id: 'Parathas', name: 'Parathas', emoji: '🫓' }
+    ];
+
+    const BREAD_ADDONS = [
+      { id: 'makkhan', name: 'Extra White Butter (Makkhan)', price: 25 },
+      { id: 'tawa_roti', name: 'Extra Tawa Roti', price: 20 },
+      { id: 'raita', name: 'Boondi Raita', price: 45 },
+      { id: 'gulab_jamun', name: 'Hot Gulab Jamun (1 Pc)', price: 40 }
+    ];
+
+    const DEFAULT_MENU_ITEMS = [
+      { id: 'm1', category: 'Curries', name: 'Shahi Paneer', desc: 'Rich, creamy cottage cheese preparation simmered in royal tomato & cashew gravy with aromatic spices.', price: 300, rating: 4.9, isVeg: true, inStock: true, bestseller: true, emoji: '🥘', image: 'https://images.unsplash.com/photo-1631452180519-c014fe946bc7?auto=format&fit=crop&w=600&q=80' },
+      { id: 'm2', category: 'Curries', name: 'Dal Makhni', desc: 'Whole black lentils & kidney beans slow-cooked overnight over charcoal clay ovens with white butter & cream.', price: 280, rating: 4.8, isVeg: true, inStock: true, bestseller: true, emoji: '🍲', image: 'https://images.unsplash.com/photo-1546833999-b9f581a1996d?auto=format&fit=crop&w=600&q=80' },
+      { id: 'm3', category: 'Curries', name: 'Rajma', desc: 'Comforting red kidney beans cooked in a thick, onion-tomato masala flavored with whole Punjabi spices.', price: 180, rating: 4.6, isVeg: true, inStock: true, bestseller: false, emoji: '🍛', image: 'https://images.unsplash.com/photo-1585937421612-70a008356fbe?auto=format&fit=crop&w=600&q=80' },
+      { id: 'm4', category: 'Curries', name: 'Kadi Pakora', desc: 'Crispy gram flour fritters immersed in tangy, spiced yogurt curry tempered with mustard & curry leaves.', price: 200, rating: 4.7, isVeg: true, inStock: true, bestseller: false, emoji: '🥣', image: 'https://images.unsplash.com/photo-1601050690597-df0568f70950?auto=format&fit=crop&w=600&q=80' },
+      { id: 'm5', category: 'Combos', name: 'Kadi Chawal Combo', desc: 'Soul-satisfying tangy Kadi Pakora served alongside steaming hot, fragrant basmati jeera rice.', price: 200, rating: 4.8, isVeg: true, inStock: true, bestseller: true, emoji: '🍚', image: 'https://images.unsplash.com/photo-1596797038530-2c107229654b?auto=format&fit=crop&w=600&q=80' },
+      { id: 'm6', category: 'Combos', name: 'Rajma Rice Combo', desc: 'Classic Dhaba comfort combo of homestyle Punjabi Rajma masala served with long-grain steamed basmati rice.', price: 250, rating: 4.9, isVeg: true, inStock: true, bestseller: true, emoji: '🍛', image: 'https://images.unsplash.com/photo-1512058564366-18510be2db19?auto=format&fit=crop&w=600&q=80' },
+      { id: 'm7', category: 'Combos', name: 'Dal Makhni Combo', desc: 'Velvety Dal Makhni paired with 2 fluffy butter tawa rotis or jeera rice for a hearty meal.', price: 250, rating: 4.8, isVeg: true, inStock: true, bestseller: false, emoji: '🍽️', image: 'https://images.unsplash.com/photo-1626777552726-4a6b54c97e46?auto=format&fit=crop&w=600&q=80' },
+      { id: 'm8', category: 'Combos', name: 'Shahi Paneer Combo', desc: 'Royal Shahi Paneer served with 2 butter naan or fragrant basmati pulao and salad.', price: 300, rating: 4.9, isVeg: true, inStock: true, bestseller: true, emoji: '🥘', image: 'https://images.unsplash.com/photo-1603894584373-5ac82b2ae398?auto=format&fit=crop&w=600&q=80' },
+      { id: 'm9', category: 'Thalis', name: 'Deluxe Thali', desc: 'Ultimate feast featuring Shahi Paneer, Dal Makhni, Mix Veg, Jeera Rice, 2 Butter Naan, Raita, Salad & Gulab Jamun.', price: 350, rating: 5.0, isVeg: true, inStock: true, bestseller: true, emoji: '👑', image: 'https://images.unsplash.com/photo-1546833998-877b37c2e5c6?auto=format&fit=crop&w=600&q=80' },
+      { id: 'm10', category: 'Parathas', name: 'Aloo Paratha', desc: 'Stuffed whole wheat tandoori/tawa paratha with spiced mashed potatoes, served with white butter, curd & pickle.', price: 100, rating: 4.8, isVeg: true, inStock: true, bestseller: true, emoji: '🫓', image: 'https://images.unsplash.com/photo-1626132647523-66f5bf380027?auto=format&fit=crop&w=600&q=80' },
+      { id: 'm11', category: 'Parathas', name: 'Aloo Pyaz Paratha', desc: 'Crispy stuffed paratha with spiced potato & onion filling, served with makkhan, dahi & achaar.', price: 120, rating: 4.8, isVeg: true, inStock: true, bestseller: false, emoji: '🫓', image: 'https://images.unsplash.com/photo-1606491956689-2ea866880c84?auto=format&fit=crop&w=600&q=80' },
+      { id: 'm12', category: 'Parathas', name: 'Paneer Paratha', desc: 'Generously stuffed cottage cheese paratha roasted with desi ghee, served with curd, butter & pickle.', price: 150, rating: 4.9, isVeg: true, inStock: true, bestseller: true, emoji: '🫓', image: 'https://images.unsplash.com/photo-1565557623262-b51c2513a641?auto=format&fit=crop&w=600&q=80' }
+    ];
+
+    // Load & normalize persisted state
+    let menuItems = JSON.parse(localStorage.getItem('dhaba_menu_v4')) || [...DEFAULT_MENU_ITEMS];
+    DEFAULT_MENU_ITEMS.forEach(def => {
+      const existing = menuItems.find(m => m.id === def.id);
+      if (!existing) {
+        menuItems.push({ ...def });
+      } else {
+        existing.category = def.category;
+        existing.price = def.price;
+      }
+    });
+
+    let kitchenState = JSON.parse(localStorage.getItem('dhaba_kitchen_status_v2')) || {
+      isOpen: true,
+      closureReason: 'Kitchen Closed for Today / Reopens at 11:00 AM'
+    };
+
+    let cart = JSON.parse(localStorage.getItem('dhaba_cart_v4')) || [];
+    let orders = JSON.parse(localStorage.getItem('dhaba_orders_v5')) || [
+      {
+        id: 'DHB-4921',
+        customerName: 'Aarav Sharma',
+        phone: '9811055210',
+        address: 'Flat 402, Regal Building, Connaught Place',
+        status: 'preparing',
+        paymentMethod: 'UPI / QR',
+        createdAt: Date.now() - 5 * 60 * 1000,
+        total: 345,
+        items: [{ menuId: 'm1', name: 'Shahi Paneer', qty: 1, unitPrice: 300, spice: 'Medium', addons: [] }]
+      }
+    ];
+
+    // Customer Login state
+    let currentUserPhone = localStorage.getItem('dhaba_current_user_phone') || null;
+    let pendingLoginPhone = '';
+
+    let appMode = 'website';
+    let androidTab = 'menu';
+    let selectedCategory = 'all';
+    let searchQuery = '';
+    let promoApplied = false;
+    let customizingItem = null;
+    let kdsSubTab = 'orders';
+    let kdsFilter = 'all';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('kds-closure-note-input').value = kitchenState.closureReason;
+      renderAll();
+      setInterval(() => {
+        if (appMode === 'kds' && kdsSubTab === 'orders') renderKdsOrders();
+      }, 30000);
+    });
+
+    function saveState() {
+      localStorage.setItem('dhaba_menu_v4', JSON.stringify(menuItems));
+      localStorage.setItem('dhaba_kitchen_status_v2', JSON.stringify(kitchenState));
+      localStorage.setItem('dhaba_cart_v4', JSON.stringify(cart));
+      localStorage.setItem('dhaba_orders_v5', JSON.stringify(orders));
+      if (currentUserPhone) {
+        localStorage.setItem('dhaba_current_user_phone', currentUserPhone);
+      } else {
+        localStorage.removeItem('dhaba_current_user_phone');
+      }
+    }
+
+    function renderAll() {
+      syncKitchenStatusUI();
+      syncAuthUI();
+      renderCategoryPills();
+      renderMenuViews();
+      renderCartUI();
+      renderCustomerOrders();
+      renderKdsOrders();
+      renderKdsStockManager();
+      updateKdsStats();
+      saveState();
+      lucide.createIcons();
+    }
+
+    // =========================================================================
+    // MOBILE NUMBER + OTP LOGIN SYSTEM
+    // =========================================================================
+    function openLoginModal() {
+      const modal = document.getElementById('login-modal');
+      const stepPhone = document.getElementById('login-step-phone');
+      const stepOtp = document.getElementById('login-step-otp');
+      const stepProfile = document.getElementById('login-step-profile');
+
+      if (currentUserPhone) {
+        stepPhone.classList.add('hidden');
+        stepOtp.classList.add('hidden');
+        stepProfile.classList.remove('hidden');
+        document.getElementById('profile-phone-display').textContent = `+91 ${currentUserPhone}`;
+      } else {
+        stepPhone.classList.remove('hidden');
+        stepOtp.classList.add('hidden');
+        stepProfile.classList.add('hidden');
+        document.getElementById('login-phone-input').value = '';
+      }
+      modal.classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    function closeLoginModal() {
+      document.getElementById('login-modal').classList.add('hidden');
+    }
+
+    function handleSendOtp() {
+      const phone = document.getElementById('login-phone-input').value.trim();
+      if (!/^\d{10}$/.test(phone)) {
+        showToast('Please enter a valid 10-digit mobile number');
+        return;
+      }
+      pendingLoginPhone = phone;
+      document.getElementById('login-step-phone').classList.add('hidden');
+      document.getElementById('login-step-otp').classList.remove('hidden');
+      document.getElementById('login-otp-input').value = '';
+      showToast('OTP sent successfully! (Hint: 1234)');
+    }
+
+    function backToPhoneStep() {
+      document.getElementById('login-step-otp').classList.add('hidden');
+      document.getElementById('login-step-phone').classList.remove('hidden');
+    }
+
+    function handleVerifyOtp() {
+      const otp = document.getElementById('login-otp-input').value.trim();
+      if (otp !== '1234' && otp !== '0000') {
+        showToast('Invalid OTP. Use 1234 for testing.');
+        return;
+      }
+      currentUserPhone = pendingLoginPhone;
+      closeLoginModal();
+      renderAll();
+      showToast(`Successfully logged in as +91 ${currentUserPhone}`);
+    }
+
+    function handleLogout() {
+      currentUserPhone = null;
+      localStorage.removeItem('dhaba_current_user_phone');
+      closeLoginModal();
+      renderAll();
+      showToast('Logged out successfully');
+    }
+
+    function syncAuthUI() {
+      const navLabel = document.getElementById('nav-login-label');
+      const androidPill = document.getElementById('android-login-pill');
+      const trackingAuthText = document.getElementById('tracking-auth-text');
+      const trackingAuthIndicator = document.getElementById('tracking-auth-indicator');
+
+      if (currentUserPhone) {
+        const masked = `+91 ${currentUserPhone.slice(0, 5)}...`;
+        navLabel.textContent = masked;
+        androidPill.textContent = 'Account';
+        androidPill.className = 'bg-emerald-600 text-white text-[10px] font-bold px-3 py-1.5 rounded-xl shrink-0';
+        trackingAuthText.textContent = `Logged in as +91 ${currentUserPhone}`;
+        trackingAuthIndicator.className = 'text-xs font-bold bg-emerald-50 px-4 py-2.5 rounded-2xl shadow-sm border border-emerald-200 flex items-center gap-2 text-emerald-800';
+      } else {
+        navLabel.textContent = 'Login / OTP';
+        androidPill.textContent = 'Login';
+        androidPill.className = 'bg-white/10 hover:bg-white/20 text-white text-[10px] font-bold px-3 py-1.5 rounded-xl border border-white/20 shrink-0';
+        trackingAuthText.textContent = 'Not Logged In (Showing Login Prompt)';
+        trackingAuthIndicator.className = 'text-xs font-bold bg-amber-50 px-4 py-2.5 rounded-2xl shadow-sm border border-amber-200 flex items-center gap-2 text-amber-800';
+      }
+    }
+
+    // =========================================================================
+    // MASTER KITCHEN OPEN / CLOSED STATUS SYNC
+    // =========================================================================
+    function syncKitchenStatusUI() {
+      const banners = document.querySelectorAll('.kitchen-closed-banner');
+      const openTextEls = document.querySelectorAll('.kitchen-status-text');
+      const badgeEls = document.querySelectorAll('.kitchen-status-badge');
+      const bannerReason = document.getElementById('banner-closure-reason');
+
+      if (bannerReason) bannerReason.textContent = kitchenState.closureReason;
+
+      banners.forEach(b => {
+        if (kitchenState.isOpen) b.classList.add('hidden');
+        else b.classList.remove('hidden');
+      });
+
+      openTextEls.forEach(el => {
+        el.textContent = kitchenState.isOpen ? 'OPEN • ACCEPTING ORDERS' : 'CLOSED • ' + kitchenState.closureReason;
+      });
+
+      badgeEls.forEach(b => {
+        if (kitchenState.isOpen) {
+          b.className = 'inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold bg-emerald-50 text-emerald-700 border border-emerald-200';
+          b.innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Open Now';
+        } else {
+          b.className = 'inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold bg-rose-50 text-rose-700 border border-rose-200';
+          b.innerHTML = '<span class="w-2 h-2 rounded-full bg-rose-500"></span> Closed';
+        }
+      });
+
+      const kdsStatusLabel = document.getElementById('kds-status-text-label');
+      const kdsToggleBtn = document.getElementById('kds-toggle-status-btn');
+      if (kdsStatusLabel && kdsToggleBtn) {
+        if (kitchenState.isOpen) {
+          kdsStatusLabel.textContent = 'OPEN • ACCEPTING ORDERS';
+          kdsStatusLabel.className = 'text-sm font-black text-emerald-400';
+          kdsToggleBtn.textContent = 'Close Kitchen';
+          kdsToggleBtn.className = 'px-4 py-2 rounded-xl text-xs font-black bg-rose-600 hover:bg-rose-500 text-white shadow tap-scale transition';
+        } else {
+          kdsStatusLabel.textContent = 'CLOSED • ' + kitchenState.closureReason;
+          kdsStatusLabel.className = 'text-sm font-black text-rose-400';
+          kdsToggleBtn.textContent = 'Open Kitchen Now';
+          kdsToggleBtn.className = 'px-4 py-2 rounded-xl text-xs font-black bg-emerald-600 hover:bg-emerald-500 text-white shadow tap-scale transition';
+        }
+      }
+    }
+
+    function toggleMasterKitchenStatus() {
+      kitchenState.isOpen = !kitchenState.isOpen;
+      renderAll();
+      showToast(kitchenState.isOpen ? 'Kitchen is now OPEN for orders' : 'Kitchen is now CLOSED');
+    }
+
+    function updateKitchenClosureNote(val) {
+      kitchenState.closureReason = val;
+      saveState();
+    }
+
+    function setClosurePreset(text) {
+      kitchenState.isOpen = false;
+      kitchenState.closureReason = text;
+      document.getElementById('kds-closure-note-input').value = text;
+      renderAll();
+      showToast('Kitchen closed: ' + text);
+    }
+
+    // Switch App Modes
+    function switchMode(mode) {
+      appMode = mode;
+      const websiteView = document.getElementById('website-mode-view');
+      const androidView = document.getElementById('android-mode-view');
+      const kdsView = document.getElementById('kds-mode-view');
+
+      [websiteView, androidView, kdsView].forEach(v => v.classList.add('hidden'));
+
+      if (mode === 'website') websiteView.classList.remove('hidden');
+      else if (mode === 'android') androidView.classList.remove('hidden');
+      else if (mode === 'kds') kdsView.classList.remove('hidden');
+
+      renderAll();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function switchAndroidTab(tab) {
+      androidTab = tab;
+      const menuSec = document.getElementById('android-menu-section');
+      const ordersSec = document.getElementById('android-orders-section');
+      const btnMenu = document.getElementById('android-tab-menu');
+      const btnOrders = document.getElementById('android-tab-orders');
+
+      if (tab === 'menu') {
+        menuSec.classList.remove('hidden');
+        ordersSec.classList.add('hidden');
+        btnMenu.className = 'flex-1 py-3 text-xs font-black flex items-center justify-center gap-1.5 border-b-2 border-dhaba-600 text-dhaba-600 bg-dhaba-50/50';
+        btnOrders.className = 'flex-1 py-3 text-xs font-bold flex items-center justify-center gap-1.5 border-b-2 border-transparent text-stone-500 hover:text-stone-900';
+      } else {
+        menuSec.classList.add('hidden');
+        ordersSec.classList.remove('hidden');
+        btnOrders.className = 'flex-1 py-3 text-xs font-black flex items-center justify-center gap-1.5 border-b-2 border-dhaba-600 text-dhaba-600 bg-dhaba-50/50';
+        btnMenu.className = 'flex-1 py-3 text-xs font-bold flex items-center justify-center gap-1.5 border-b-2 border-transparent text-stone-500 hover:text-stone-900';
+        renderCustomerOrders();
+      }
+      lucide.createIcons();
+    }
+
+    // Render Categories & Menu
+    function renderCategoryPills() {
+      const container = document.getElementById('category-pills-container');
+      if (!container) return;
+      container.innerHTML = CATEGORIES.map(cat => {
+        const active = selectedCategory === cat.id;
+        return `
+          <button onclick="selectCategory('${cat.id}')"
+            class="px-4 py-2 rounded-2xl text-xs font-extrabold flex items-center gap-1.5 transition shrink-0 shadow-sm tap-scale ${active ? 'bg-dhaba-600 text-white shadow' : 'bg-white text-stone-700 hover:bg-stone-100 border border-stone-200'}">
+            <span>${cat.emoji}</span>
+            <span>${cat.name}</span>
+          </button>
+        `;
+      }).join('');
+    }
+
+    function selectCategory(catId) {
+      selectedCategory = catId;
+      renderMenuViews();
+      renderCategoryPills();
+    }
+
+    function handleSearchInput(val) {
+      searchQuery = val.toLowerCase().trim();
+      renderMenuViews();
+    }
+
+    function renderMenuViews() {
+      const filtered = menuItems.filter(item => {
+        const matchesCat = selectedCategory === 'all' || item.category === selectedCategory;
+        const matchesSearch = item.name.toLowerCase().includes(searchQuery) || item.desc.toLowerCase().includes(searchQuery);
+        return matchesCat && matchesSearch;
+      });
+
+      const cardsHtml = filtered.map(item => {
+        const oosClass = !item.inStock ? 'opacity-70 grayscale' : '';
+        const badge = !item.inStock ? 
+          '<span class="absolute top-3 left-3 bg-rose-600 text-white text-[10px] font-black px-2.5 py-1 rounded-xl shadow uppercase">Out of Stock</span>' :
+          (item.bestseller ? '<span class="absolute top-3 left-3 bg-amber-400 text-stone-950 text-[10px] font-black px-2.5 py-1 rounded-xl shadow uppercase">Bestseller</span>' : '');
+
+        return `
+          <div class="bg-white rounded-3xl p-4 shadow-card border border-stone-200 flex flex-col justify-between transition hover:shadow-lg ${oosClass}">
+            <div>
+              <div class="relative h-44 rounded-2xl overflow-hidden mb-3 bg-stone-100">
+                <img src="${item.image}" alt="${item.name}" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/600x400/ea580c/ffffff?text=${encodeURIComponent(item.name)}'" />
+                ${badge}
+                <div class="absolute bottom-2 right-2 bg-stone-900/80 backdrop-blur-md text-white px-2 py-1 rounded-xl text-[10px] font-bold flex items-center gap-1">
+                  <span>⭐ ${item.rating}</span>
+                </div>
+              </div>
+
+              <div class="flex items-start justify-between gap-2 mb-1">
+                <h3 class="text-sm font-black text-stone-900">${item.name}</h3>
+                <span class="text-sm font-black text-dhaba-600 shrink-0">₹${item.price}</span>
+              </div>
+              <p class="text-[11px] text-stone-500 line-clamp-2 leading-relaxed mb-4">${item.desc}</p>
+            </div>
+
+            <div>
+              ${item.inStock ? `
+                <button onclick="openCustomizer('${item.id}')"
+                  class="w-full bg-dhaba-50 hover:bg-dhaba-100 text-dhaba-700 border border-dhaba-200 py-2.5 rounded-xl text-xs font-black flex items-center justify-center gap-1.5 transition tap-scale">
+                  <span>+ Add to Cart</span>
+                </button>
+              ` : `
+                <div class="w-full bg-stone-100 text-stone-400 py-2.5 rounded-xl text-xs font-bold text-center cursor-not-allowed">
+                  Currently Unavailable
+                </div>
+              `}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      const websiteGrid = document.getElementById('website-menu-grid');
+      const androidGrid = document.getElementById('android-menu-grid');
+      if (websiteGrid) websiteGrid.innerHTML = cardsHtml || '<div class="col-span-full py-12 text-center text-stone-400">No dishes found matching your search.</div>';
+      if (androidGrid) androidGrid.innerHTML = cardsHtml || '<div class="col-span-full py-12 text-center text-stone-400">No dishes found matching your search.</div>';
+      lucide.createIcons();
+    }
+
+    // Dish Customizer Modal
+    function openCustomizer(itemId) {
+      const item = menuItems.find(m => m.id === itemId);
+      if (!item || !item.inStock) return;
+      customizingItem = { ...item, spice: 'Medium', selectedAddons: [] };
+
+      document.getElementById('modal-item-name').textContent = item.name;
+      document.getElementById('modal-item-price').textContent = '₹' + item.price;
+      document.getElementById('modal-item-desc').textContent = item.desc;
+      document.getElementById('modal-item-img').src = item.image;
+
+      const medRadio = document.querySelector('input[name="spice_level"][value="Medium"]');
+      if (medRadio) medRadio.checked = true;
+
+      const addonsContainer = document.getElementById('modal-addons-list');
+      addonsContainer.innerHTML = BREAD_ADDONS.map(addon => `
+        <label class="flex items-center justify-between p-3 rounded-xl border border-stone-200 hover:bg-stone-50 cursor-pointer">
+          <div class="flex items-center gap-2.5">
+            <input type="checkbox" value="${addon.id}" onchange="toggleAddon('${addon.id}')" class="w-4 h-4 text-dhaba-600 rounded border-stone-300 focus:ring-dhaba-500" />
+            <span class="text-xs font-bold text-stone-800">${addon.name}</span>
+          </div>
+          <span class="text-xs font-bold text-dhaba-600">+₹${addon.price}</span>
+        </label>
+      `).join('');
+
+      updateCustomizerTotal();
+      document.getElementById('customizer-modal').classList.remove('hidden');
+    }
+
+    function closeCustomizer() {
+      document.getElementById('customizer-modal').classList.add('hidden');
+      customizingItem = null;
+    }
+
+    function toggleAddon(addonId) {
+      if (!customizingItem) return;
+      const idx = customizingItem.selectedAddons.indexOf(addonId);
+      if (idx > -1) customizingItem.selectedAddons.splice(idx, 1);
+      else customizingItem.selectedAddons.push(addonId);
+      updateCustomizerTotal();
+    }
+
+    function updateCustomizerTotal() {
+      if (!customizingItem) return;
+      const spiceEl = document.querySelector('input[name="spice_level"]:checked');
+      if (spiceEl) customizingItem.spice = spiceEl.value;
+
+      let total = customizingItem.price;
+      customizingItem.selectedAddons.forEach(aid => {
+        const a = BREAD_ADDONS.find(x => x.id === aid);
+        if (a) total += a.price;
+      });
+      document.getElementById('modal-add-btn').textContent = 'Add Item • ₹' + total;
+    }
+
+    function addCustomizedItemToCart() {
+      if (!customizingItem || !kitchenState.isOpen) {
+        if (!kitchenState.isOpen) showToast('Kitchen is currently closed');
+        return;
+      }
+      const spiceEl = document.querySelector('input[name="spice_level"]:checked');
+      const spice = spiceEl ? spiceEl.value : 'Medium';
+
+      const cartKey = `${customizingItem.id}__${spice}__${customizingItem.selectedAddons.sort().join(',')}`;
+      const existing = cart.find(c => c.cartKey === cartKey);
+
+      if (existing) {
+        existing.qty += 1;
+      } else {
+        cart.push({
+          cartKey,
+          menuId: customizingItem.id,
+          name: customizingItem.name,
+          unitPrice: customizingItem.price,
+          qty: 1,
+          spice,
+          addons: [...customizingItem.selectedAddons]
+        });
+      }
+
+      closeCustomizer();
+      renderAll();
+      showToast('Added ' + customizingItem.name + ' to cart');
+      openCartDrawer();
+    }
+
+    // Cart & Checkout
+    function openCartDrawer() {
+      if (!currentUserPhone) {
+        showToast('Please login with your mobile number to checkout');
+        openLoginModal();
+        return;
+      }
+      document.getElementById('checkout-phone-display').textContent = `+91 ${currentUserPhone}`;
+      renderCartUI();
+      document.getElementById('cart-drawer').classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    function closeCartDrawer() {
+      document.getElementById('cart-drawer').classList.add('hidden');
+    }
+
+    function updateCartQty(cartKey, delta) {
+      const item = cart.find(c => c.cartKey === cartKey);
+      if (!item) return;
+      item.qty += delta;
+      if (item.qty <= 0) {
+        cart = cart.filter(c => c.cartKey !== cartKey);
+      }
+      renderCartUI();
+      renderAll();
+    }
+
+    function applyPromo() {
+      const input = document.getElementById('promo-input');
+      const feedback = document.getElementById('promo-feedback');
+      const code = input ? input.value.trim().toUpperCase() : '';
+
+      if (code === 'KITCHEN20') {
+        promoApplied = true;
+        feedback.textContent = '✓ KITCHEN20 applied! 20% discount unlocked.';
+        feedback.className = 'text-[11px] font-bold text-emerald-600 mt-1';
+        feedback.classList.remove('hidden');
+        renderCartUI();
+        showToast('Promo code applied successfully');
+      } else {
+        promoApplied = false;
+        feedback.textContent = '✗ Invalid code. Use KITCHEN20';
+        feedback.className = 'text-[11px] font-bold text-rose-600 mt-1';
+        feedback.classList.remove('hidden');
+        renderCartUI();
+      }
+    }
+
+    function calculateBill() {
+      let subtotal = 0;
+      cart.forEach(item => {
+        let itemTotal = item.unitPrice;
+        item.addons.forEach(aid => {
+          const a = BREAD_ADDONS.find(x => x.id === aid);
+          if (a) itemTotal += a.price;
+        });
+        subtotal += itemTotal * item.qty;
+      });
+
+      const discount = promoApplied ? Math.round(subtotal * 0.20) : 0;
+      const discountedSub = subtotal - discount;
+      const deliveryFee = subtotal > 0 ? 40 : 0;
+      const gst = Math.round(discountedSub * 0.05);
+      const grandTotal = discountedSub + deliveryFee + gst;
+
+      return { subtotal, discount, deliveryFee, gst, grandTotal };
+    }
+
+    function renderCartUI() {
+      const itemsContainer = document.getElementById('cart-items-list');
+      const footerContainer = document.getElementById('cart-footer-section');
+      const badgeNav = document.getElementById('nav-cart-badge');
+      const badgeAndroid = document.getElementById('android-cart-badge');
+      const androidTotalBadge = document.getElementById('android-cart-total-badge');
+
+      const totalQty = cart.reduce((acc, c) => acc + c.qty, 0);
+      if (badgeNav) {
+        if (totalQty > 0) {
+          badgeNav.textContent = totalQty;
+          badgeNav.classList.remove('hidden');
+        } else {
+          badgeNav.classList.add('hidden');
+        }
+      }
+      if (badgeAndroid) {
+        if (totalQty > 0) {
+          badgeAndroid.textContent = totalQty;
+          badgeAndroid.classList.remove('hidden');
+        } else {
+          badgeAndroid.classList.add('hidden');
+        }
+      }
+
+      if (!itemsContainer) return;
+
+      if (cart.length === 0) {
+        itemsContainer.innerHTML = `
+          <div class="text-center py-16 space-y-3">
+            <div class="text-5xl">🛒</div>
+            <h4 class="text-base font-black text-stone-800">Your cart is empty</h4>
+            <p class="text-xs text-stone-500">Add delicious curries, combos, and parathas to start your order!</p>
+          </div>
+        `;
+        if (androidTotalBadge) androidTotalBadge.textContent = 'Cart is empty';
+        if (footerContainer) footerContainer.classList.add('hidden');
+        return;
+      }
+
+      itemsContainer.innerHTML = cart.map(item => {
+        let addonNames = item.addons.map(aid => BREAD_ADDONS.find(x => x.id === aid)?.name).filter(Boolean).join(', ');
+        return `
+          <div class="bg-stone-50 rounded-2xl p-3 border border-stone-200 flex items-center justify-between gap-3">
+            <div class="min-w-0">
+              <h5 class="text-xs font-black text-stone-900 truncate">${item.name}</h5>
+              <p class="text-[10px] text-stone-500">Spice: ${item.spice} ${addonNames ? '• ' + addonNames : ''}</p>
+              <div class="text-xs font-extrabold text-dhaba-600 mt-1">₹${item.unitPrice * item.qty}</div>
+            </div>
+
+            <div class="flex items-center gap-2 bg-white rounded-xl border border-stone-200 p-1 shadow-sm shrink-0">
+              <button onclick="updateCartQty('${item.cartKey}', -1)" class="w-6 h-6 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold flex items-center justify-center">-</button>
+              <span class="text-xs font-black w-5 text-center">${item.qty}</span>
+              <button onclick="updateCartQty('${item.cartKey}', 1)" class="w-6 h-6 rounded-lg bg-dhaba-600 hover:bg-dhaba-700 text-white font-bold flex items-center justify-center">+</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      const { subtotal, discount, deliveryFee, gst, grandTotal } = calculateBill();
+      document.getElementById('bill-subtotal').textContent = '₹' + subtotal;
+      document.getElementById('bill-discount').textContent = '-₹' + discount;
+      document.getElementById('bill-delivery').textContent = '₹' + deliveryFee;
+      document.getElementById('bill-gst').textContent = '₹' + gst;
+      document.getElementById('bill-grandtotal').textContent = '₹' + grandTotal;
+
+      if (androidTotalBadge) androidTotalBadge.textContent = `${totalQty} items • ₹${grandTotal}`;
+      if (footerContainer) footerContainer.classList.remove('hidden');
+    }
+
+    function placeOrder() {
+      if (cart.length === 0 || !kitchenState.isOpen) return;
+      if (!currentUserPhone) {
+        showToast('Please login to place an order');
+        openLoginModal();
+        return;
+      }
+
+      const hasOos = cart.some(c => !(menuItems.find(m => m.id === c.menuId)?.inStock));
+      if (hasOos) {
+        showToast('Remove Out-of-Stock items before placing order');
+        return;
+      }
+
+      const { grandTotal } = calculateBill();
+      const address = document.getElementById('checkout-address').value.trim() || 'Connaught Place, New Delhi';
+      const paymentMethod = document.querySelector('input[name="payment_method"]:checked')?.value || 'UPI / QR';
+
+      const newId = 'DHB-' + Math.floor(4000 + Math.random() * 5999);
+      orders.unshift({
+        id: newId,
+        customerName: 'Customer (' + currentUserPhone.slice(-4) + ')',
+        phone: currentUserPhone,
+        address,
+        status: 'received',
+        paymentMethod,
+        createdAt: Date.now(),
+        total: grandTotal,
+        items: cart.map(c => ({
+          menuId: c.menuId,
+          name: c.name,
+          qty: c.qty,
+          unitPrice: c.unitPrice,
+          spice: c.spice,
+          addons: [...c.addons]
+        }))
+      });
+
+      cart = [];
+      promoApplied = false;
+      document.getElementById('promo-input').value = '';
+      document.getElementById('promo-feedback').classList.add('hidden');
+
+      closeCartDrawer();
+      renderAll();
+      showToast('Order ' + newId + ' placed successfully!');
+      if (appMode === 'android') switchAndroidTab('orders');
+      else if (appMode === 'website') document.getElementById('tracking-section').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // =========================================================================
+    // LIVE ORDER TRACKING (SPECIFIC TO LOGGED-IN CUSTOMER)
+    // =========================================================================
+    function renderCustomerOrders() {
+      const steps = [
+        { key: 'received', label: 'Order Received', desc: 'Sent to KDS' },
+        { key: 'preparing', label: 'Cooking', desc: 'Chef preparing' },
+        { key: 'out_for_delivery', label: 'Dispatched', desc: 'Rider on way' },
+        { key: 'delivered', label: 'Delivered', desc: 'Enjoy meal!' }
+      ];
+
+      const webList = document.getElementById('website-orders-list');
+      const androidList = document.getElementById('android-orders-list');
+
+      if (!currentUserPhone) {
+        const loginPromptHtml = `
+          <div class="bg-white rounded-3xl p-10 text-center shadow-card border border-stone-200 space-y-4">
+            <div class="w-12 h-12 bg-dhaba-50 text-dhaba-600 rounded-full flex items-center justify-center mx-auto text-xl">
+              <i data-lucide="lock" class="w-6 h-6"></i>
+            </div>
+            <div>
+              <h3 class="text-base font-black text-stone-900">Login to View Your Orders</h3>
+              <p class="text-xs text-stone-500 mt-1 max-w-sm mx-auto">Please verify your mobile number with OTP to track your live orders and order history.</p>
+            </div>
+            <button onclick="openLoginModal()" class="bg-dhaba-600 hover:bg-dhaba-700 text-white font-bold text-xs px-6 py-3 rounded-xl shadow tap-scale">
+              Login with Mobile Number
+            </button>
+          </div>
+        `;
+        if (webList) webList.innerHTML = loginPromptHtml;
+        if (androidList) androidList.innerHTML = loginPromptHtml;
+        return;
+      }
+
+      // Filter orders ONLY for the currently logged-in customer's phone number
+      const customerOrders = orders.filter(o => o.phone === currentUserPhone);
+
+      if (customerOrders.length === 0) {
+        const emptyHtml = `
+          <div class="bg-white rounded-3xl p-10 text-center shadow-card border border-stone-200">
+            <div class="text-4xl mb-2">🍽️</div>
+            <h3 class="text-base font-black text-stone-900">No Orders Found for +91 ${currentUserPhone}</h3>
+            <p class="text-xs text-stone-500 mt-1">Explore our signature menu and place your first Dhaba Express order!</p>
+          </div>
+        `;
+        if (webList) webList.innerHTML = emptyHtml;
+        if (androidList) androidList.innerHTML = emptyHtml;
+        return;
+      }
+
+      const html = customerOrders.map(order => {
+        const currentIdx = steps.findIndex(s => s.key === order.status);
+        const isDelivered = order.status === 'delivered';
+        return `
+          <div class="bg-white rounded-3xl p-5 shadow-card border border-stone-200 space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-2 border-b border-stone-100 pb-3">
+              <div>
+                <div class="flex items-center gap-2">
+                  <span class="text-sm font-black text-stone-900">${order.id}</span>
+                  <span class="text-[10px] font-black px-2.5 py-0.5 rounded-full ${isDelivered ? 'bg-emerald-100 text-emerald-800' : 'bg-dhaba-100 text-dhaba-700'}">
+                    ${steps[currentIdx]?.label || 'Processing'}
+                  </span>
+                </div>
+                <p class="text-[11px] text-stone-500 mt-0.5">${order.paymentMethod} • Total ₹${order.total}</p>
+              </div>
+              <button onclick="reorderItems('${order.id}')"
+                class="bg-dhaba-50 hover:bg-dhaba-100 text-dhaba-700 border border-dhaba-200 text-[11px] font-bold px-3 py-1.5 rounded-xl flex items-center gap-1 tap-scale">
+                <i data-lucide="rotate-ccw" class="w-3 h-3"></i>
+                <span>Reorder</span>
+              </button>
+            </div>
+
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              ${steps.map((step, idx) => {
+                const completed = idx <= currentIdx;
+                return `
+                  <div class="flex items-center gap-2 bg-stone-50 p-2.5 rounded-xl border border-stone-100">
+                    <div class="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-black shrink-0 ${completed ? 'bg-emerald-600 text-white' : 'bg-stone-200 text-stone-600'}">
+                      ${completed ? '✓' : idx + 1}
+                    </div>
+                    <div class="min-w-0">
+                      <div class="text-[11px] font-bold text-stone-900 truncate">${step.label}</div>
+                      <div class="text-[9px] text-stone-500 truncate">${step.desc}</div>
+                    </div>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+
+            <div class="bg-stone-50 rounded-xl p-2.5 text-xs space-y-1">
+              ${order.items.map(it => `
+                <div class="flex justify-between text-stone-700">
+                  <span><strong>${it.qty}×</strong> ${it.name} (${it.spice})</span>
+                  <span class="font-bold">₹${it.unitPrice * it.qty}</span>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      if (webList) webList.innerHTML = html;
+      if (androidList) androidList.innerHTML = html;
+      lucide.createIcons();
+    }
+
+    function reorderItems(orderId) {
+      if (!kitchenState.isOpen) {
+        showToast('Kitchen is currently closed');
+        return;
+      }
+      if (!currentUserPhone) {
+        openLoginModal();
+        return;
+      }
+      const order = orders.find(o => o.id === orderId);
+      if (!order) return;
+      let addedCount = 0;
+      order.items.forEach(it => {
+        const dish = menuItems.find(m => m.id === it.menuId);
+        if (dish && dish.inStock) {
+          const cartKey = `${it.menuId}__${it.spice}__${it.addons.sort().join(',')}`;
+          const existing = cart.find(c => c.cartKey === cartKey);
+          if (existing) existing.qty += it.qty;
+          else cart.push({ cartKey, menuId: it.menuId, name: it.name, unitPrice: it.unitPrice, qty: it.qty, spice: it.spice, addons: [...it.addons] });
+          addedCount++;
+        }
+      });
+      renderAll();
+      if (addedCount > 0) {
+        openCartDrawer();
+        showToast('Available items added to cart');
+      } else {
+        showToast('Items from this order are currently out of stock');
+      }
+    }
+
+    // =========================================================================
+    // KITCHEN DISPLAY SYSTEM (KDS) & MENU STOCK MANAGER
+    // =========================================================================
+    function switchKdsSubTab(tab) {
+      kdsSubTab = tab;
+      const ordersSec = document.getElementById('kds-orders-section');
+      const stockSec = document.getElementById('kds-stock-section');
+      const btnOrders = document.getElementById('kds-tab-orders-btn');
+      const btnStock = document.getElementById('kds-tab-stock-btn');
+
+      if (tab === 'orders') {
+        ordersSec.classList.remove('hidden');
+        stockSec.classList.add('hidden');
+        btnOrders.className = 'px-4 py-2 rounded-xl text-xs font-extrabold bg-dhaba-600 text-white shadow';
+        btnStock.className = 'px-4 py-2 rounded-xl text-xs font-bold text-stone-600 hover:bg-stone-100';
+      } else {
+        ordersSec.classList.add('hidden');
+        stockSec.classList.remove('hidden');
+        btnStock.className = 'px-4 py-2 rounded-xl text-xs font-extrabold bg-dhaba-600 text-white shadow';
+        btnOrders.className = 'px-4 py-2 rounded-xl text-xs font-bold text-stone-600 hover:bg-stone-100';
+        renderKdsStockManager();
+      }
+    }
+
+    function setKdsFilter(filter) {
+      kdsFilter = filter;
+      renderKdsOrders();
+    }
+
+    function renderKdsOrders() {
+      const container = document.getElementById('kds-orders-container');
+      if (!container) return;
+
+      const filtered = orders.filter(o => {
+        if (kdsFilter === 'all') return true;
+        if (kdsFilter === 'active') return o.status !== 'delivered';
+        if (kdsFilter === 'delivered') return o.status === 'delivered';
+        return true;
+      });
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="bg-white rounded-3xl p-12 text-center shadow-card border border-stone-200">
+            <div class="text-4xl mb-2">📋</div>
+            <h3 class="text-base font-black text-stone-900">No Orders in this view</h3>
+            <p class="text-xs text-stone-500 mt-1">Incoming customer orders will appear here automatically.</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = filtered.map(order => {
+        const timeAgo = Math.floor((Date.now() - order.createdAt) / 60000);
+        const statusColors = {
+          received: 'bg-amber-100 text-amber-800 border-amber-200',
+          preparing: 'bg-dhaba-100 text-dhaba-800 border-dhaba-200',
+          out_for_delivery: 'bg-blue-100 text-blue-800 border-blue-200',
+          delivered: 'bg-emerald-100 text-emerald-800 border-emerald-200'
+        };
+
+        return `
+          <div class="bg-white rounded-3xl p-6 shadow-card border border-stone-200 space-y-4">
+            <div class="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-stone-100">
+              <div class="flex items-center gap-3">
+                <span class="text-base font-black text-stone-900">${order.id}</span>
+                <span class="text-xs font-black px-3 py-1 rounded-full border ${statusColors[order.status] || 'bg-stone-100 text-stone-800'} uppercase tracking-wider">
+                  ${order.status.replace(/_/g, ' ')}
+                </span>
+              </div>
+              <div class="flex items-center gap-2 text-xs font-bold text-stone-500">
+                <i data-lucide="clock" class="w-3.5 h-3.5"></i>
+                <span>${timeAgo}m ago</span>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+              <div class="bg-stone-50 p-3 rounded-2xl border border-stone-100 space-y-1">
+                <div class="font-bold text-stone-900">${order.customerName} (+91 ${order.phone})</div>
+                <div class="text-stone-500">${order.address}</div>
+                <div class="text-[11px] font-semibold text-dhaba-600 mt-1">${order.paymentMethod}</div>
+              </div>
+
+              <div class="bg-stone-50 p-3 rounded-2xl border border-stone-100 space-y-1">
+                <div class="font-bold text-stone-900 mb-1">Items Ordered:</div>
+                ${order.items.map(it => `
+                  <div class="flex justify-between text-stone-700">
+                    <span><strong>${it.qty}×</strong> ${it.name} (${it.spice})</span>
+                    <span class="font-bold">₹${it.unitPrice * it.qty}</span>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+
+            <div class="flex flex-wrap items-center justify-between gap-3 pt-2">
+              <div class="text-sm font-black text-stone-900">Total: ₹${order.total}</div>
+              <div class="flex items-center gap-2">
+                ${order.status === 'received' ? `
+                  <button onclick="updateOrderStatus('${order.id}', 'preparing')" class="bg-dhaba-600 hover:bg-dhaba-700 text-white px-4 py-2 rounded-xl text-xs font-bold shadow tap-scale">
+                    Accept & Cook 👨‍🍳
+                  </button>
+                ` : ''}
+                ${order.status === 'preparing' ? `
+                  <button onclick="updateOrderStatus('${order.id}', 'out_for_delivery')" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-xs font-bold shadow tap-scale">
+                    Mark Ready & Dispatch 🛵
+                  </button>
+                ` : ''}
+                ${order.status === 'out_for_delivery' ? `
+                  <button onclick="updateOrderStatus('${order.id}', 'delivered')" class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-xl text-xs font-bold shadow tap-scale">
+                    Confirm Delivered ✓
+                  </button>
+                ` : ''}
+                ${order.status === 'delivered' ? `
+                  <span class="text-xs font-bold text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-xl">Completed Order</span>
+                ` : ''}
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+      lucide.createIcons();
+    }
+
+    function updateOrderStatus(orderId, newStatus) {
+      const order = orders.find(o => o.id === orderId);
+      if (order) {
+        order.status = newStatus;
+        renderAll();
+        showToast('Order ' + orderId + ' updated to ' + newStatus.replace(/_/g, ' '));
+      }
+    }
+
+    function renderKdsStockManager() {
+      const container = document.getElementById('kds-stock-container');
+      if (!container) return;
+
+      container.innerHTML = menuItems.map(item => `
+        <div class="bg-white rounded-2xl p-4 shadow-card border border-stone-200 flex items-center justify-between gap-4">
+          <div class="flex items-center gap-3.5 min-w-0">
+            <img src="${item.image}" alt="${item.name}" class="w-12 h-12 rounded-xl object-cover shrink-0" onerror="this.src='https://placehold.co/100x100/ea580c/ffffff?text=Dish'" />
+            <div class="min-w-0">
+              <h5 class="text-xs font-black text-stone-900 truncate">${item.name}</h5>
+              <p class="text-[10px] text-stone-500">${item.category} • ₹${item.price}</p>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-3 shrink-0">
+            <span class="text-[10px] font-black px-2.5 py-1 rounded-lg ${item.inStock ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">
+              ${item.inStock ? 'IN STOCK' : 'OUT OF STOCK'}
+            </span>
+            <button onclick="toggleItemStock('${item.id}')"
+              class="px-3 py-1.5 rounded-xl text-xs font-bold border transition tap-scale ${item.inStock ? 'bg-rose-50 text-rose-700 border-rose-200 hover:bg-rose-100' : 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100'}">
+              ${item.inStock ? 'Mark Out of Stock' : 'Mark In Stock'}
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function toggleItemStock(itemId) {
+      const item = menuItems.find(m => m.id === itemId);
+      if (item) {
+        item.inStock = !item.inStock;
+        renderAll();
+        showToast(item.name + ' is now ' + (item.inStock ? 'In Stock' : 'Out of Stock'));
+      }
+    }
+
+    function markAllInStock() {
+      menuItems.forEach(m => m.inStock = true);
+      renderAll();
+      showToast('All menu items marked In Stock');
+    }
+
+    function updateKdsStats() {
+      const todayOrders = orders.filter(o => (Date.now() - o.createdAt) < 86400000);
+      const rev = todayOrders.reduce((acc, o) => acc + o.total, 0);
+      const active = orders.filter(o => o.status !== 'delivered').length;
+
+      document.getElementById('kds-stat-revenue').textContent = '₹' + rev;
+      document.getElementById('kds-stat-active').textContent = active;
+      document.getElementById('kds-stat-total').textContent = todayOrders.length;
+    }
+
+    // Toast Notifications
+    function showToast(msg) {
+      const existing = document.getElementById('dhaba-toast-popup');
+      if (existing) existing.remove();
+
+      const toast = document.createElement('div');
+      toast.id = 'dhaba-toast-popup';
+      toast.className = 'fixed bottom-24 left-1/2 -translate-x-1/2 z-50 bg-stone-900 text-white px-5 py-3 rounded-2xl text-xs font-bold shadow-2xl flex items-center gap-2 border border-stone-800 animate-bounce';
+      toast.innerHTML = '<span>🔔</span><span>' + msg + '</span>';
+      document.body.appendChild(toast);
+
+      setTimeout(() => {
+        if (toast) toast.remove();
+      }, 3000);
+    }
+  </script>
+</body>
+</html>
+```eof
