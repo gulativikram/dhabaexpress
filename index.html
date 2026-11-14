@@ -45,6 +45,24 @@
     ::-webkit-scrollbar-track { background: #f1f1f1; }
     ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
   </style>
+  <!-- html2pdf.js for direct PDF download -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <style>
+    @media print {
+      body * { visibility: hidden !important; }
+      #order-receipt-printable, #order-receipt-printable * { visibility: visible !important; }
+      #order-receipt-printable {
+        position: fixed !important;
+        left: 0 !important;
+        top: 0 !important;
+        width: 100% !important;
+        box-shadow: none !important;
+        border: none !important;
+        background: white !important;
+      }
+      .no-print { display: none !important; }
+    }
+  </style>
 </head>
 <body class="bg-stone-50 text-stone-900 min-h-screen flex flex-col antialiased selection:bg-dhaba-500 selection:text-white">
 
@@ -93,8 +111,13 @@
         </div>
       </div>
 
-      <!-- Right Actions: Cart & Staff KDS -->
+      <!-- Right Actions: Last Order, Cart & Staff KDS -->
       <div class="flex items-center gap-2 sm:gap-3">
+        <button id="nav-last-order-btn" onclick="openLastOrderSummary()"
+          class="hidden bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/40 px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition shrink-0">
+          <i data-lucide="receipt" class="w-4 h-4 text-emerald-400"></i>
+          <span class="hidden sm:inline">Order Receipt</span>
+        </button>
         <button onclick="promptKitchenAccess()"
           class="bg-stone-800 hover:bg-stone-700 text-stone-200 px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition border border-stone-700 shrink-0">
           <i data-lucide="chef-hat" class="w-4 h-4 text-amber-400"></i>
@@ -303,6 +326,7 @@
           <button onclick="setKdsFilter('all')" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-white border border-stone-200 hover:bg-stone-100">All Orders</button>
           <button onclick="setKdsFilter('active')" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-dhaba-50 text-dhaba-700 border border-dhaba-200">Active Only</button>
           <button onclick="setKdsFilter('delivered')" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">Completed</button>
+          <button onclick="setKdsFilter('cancelled')" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-rose-50 text-rose-700 border border-rose-200">Cancelled / Refunded</button>
         </div>
 
         <div id="kds-orders-container" class="space-y-4"></div>
@@ -527,6 +551,252 @@
     </div>
   </div>
 
+  <!-- Customer Order Summary & PDF Receipt Modal -->
+  <div id="order-summary-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 overflow-y-auto">
+    <div class="bg-white w-full max-w-lg rounded-3xl overflow-hidden shadow-2xl border border-stone-200 my-auto flex flex-col max-h-[92vh]">
+      <!-- Modal Top Bar -->
+      <div class="bg-stone-900 text-white px-6 py-4 flex items-center justify-between shrink-0 no-print">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
+            <i data-lucide="check-circle-2" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <span class="text-[10px] font-black uppercase tracking-widest text-emerald-400">Order Confirmed</span>
+            <h3 class="text-sm font-black text-white">Order Summary & Tax Receipt</h3>
+          </div>
+        </div>
+        <button onclick="closeOrderSummaryModal()" class="p-2 rounded-full bg-stone-800 text-stone-400 hover:text-white">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <!-- Printable Receipt Area -->
+      <div id="order-receipt-printable" class="p-6 overflow-y-auto space-y-5 bg-white text-stone-900">
+        <!-- Brand Header in Receipt -->
+        <div class="flex items-start justify-between border-b border-dashed border-stone-300 pb-4">
+          <div class="flex items-center gap-3">
+            <div class="w-11 h-11 rounded-full bg-stone-900 flex items-center justify-center shrink-0 ring-2 ring-amber-400">
+              <svg viewBox="0 0 200 200" class="w-full h-full"><use href="#dhaba-express-emblem"/></svg>
+            </div>
+            <div>
+              <h4 class="text-base font-black text-stone-900">Dhaba Express</h4>
+              <p class="text-[11px] text-stone-500 font-medium">Authentic Punjabi Rasoi & Cloud Kitchen</p>
+              <p class="text-[10px] text-stone-400">Connaught Place, New Delhi • GSTIN: 07AABCD1234F1Z5</p>
+            </div>
+          </div>
+          <div class="text-right">
+            <span id="receipt-status-pill" class="inline-block bg-emerald-100 text-emerald-800 text-[10px] font-black px-2.5 py-1 rounded-full uppercase">Confirmed</span>
+            <div id="receipt-order-id" class="text-sm font-black text-stone-900 mt-1">#DHB-0000</div>
+            <div id="receipt-datetime" class="text-[10px] text-stone-500 font-medium">Date & Time</div>
+          </div>
+        </div>
+
+        <!-- Customer & Delivery Details -->
+        <div class="bg-stone-50 rounded-2xl p-4 border border-stone-200/80 grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+          <div>
+            <span class="text-[10px] font-black uppercase tracking-wider text-stone-400 block">Billed To</span>
+            <div id="receipt-customer-name" class="font-black text-stone-900 mt-0.5">Customer Name</div>
+            <div id="receipt-customer-phone" class="text-stone-600 font-semibold">+91 0000000000</div>
+          </div>
+          <div>
+            <span class="text-[10px] font-black uppercase tracking-wider text-stone-400 block">Payment & Mode</span>
+            <div id="receipt-payment-method" class="font-black text-stone-900 mt-0.5">UPI / QR</div>
+            <div id="receipt-gps-info" class="text-[11px] text-emerald-700 font-semibold">Home Delivery</div>
+          </div>
+          <div class="sm:col-span-2 pt-2 border-t border-stone-200/70">
+            <span class="text-[10px] font-black uppercase tracking-wider text-stone-400 block">Delivery Address</span>
+            <div id="receipt-address" class="text-stone-700 font-medium mt-0.5">Address</div>
+          </div>
+        </div>
+
+        <!-- Refund Banner in Customer Summary (shown if cancelled/refunded) -->
+        <div id="receipt-refund-box" class="hidden bg-rose-50 border border-rose-200 rounded-2xl p-3.5 text-xs space-y-1">
+          <div class="font-black text-rose-800 flex items-center gap-1.5">
+            <span>⚠️ Order Cancelled</span>
+            <span id="receipt-cancel-reason" class="font-semibold text-rose-700"></span>
+          </div>
+          <div id="receipt-refund-details" class="text-emerald-800 font-bold bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-xl mt-1"></div>
+        </div>
+
+        <!-- Itemized Order Table -->
+        <div>
+          <div class="text-[10px] font-black uppercase tracking-wider text-stone-400 mb-2">Order Items</div>
+          <div class="border border-stone-200 rounded-2xl overflow-hidden">
+            <table class="w-full text-left border-collapse text-xs">
+              <thead>
+                <tr class="bg-stone-100 text-stone-600 text-[10px] uppercase font-black border-b border-stone-200">
+                  <th class="py-2.5 px-3">Item & Customizations</th>
+                  <th class="py-2.5 px-2 text-center">Qty</th>
+                  <th class="py-2.5 px-3 text-right">Amount</th>
+                </tr>
+              </thead>
+              <tbody id="receipt-items-tbody" class="divide-y divide-stone-100"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Bill Breakdown -->
+        <div class="bg-stone-50 rounded-2xl p-4 border border-stone-200/80 space-y-1.5 text-xs">
+          <div class="flex justify-between text-stone-600">
+            <span>Item Subtotal</span>
+            <span id="receipt-subtotal" class="font-bold text-stone-900">₹0</span>
+          </div>
+          <div id="receipt-discount-row" class="hidden flex justify-between text-emerald-600">
+            <span>Promo Discount (KITCHEN20)</span>
+            <span id="receipt-discount" class="font-bold">-₹0</span>
+          </div>
+          <div class="flex justify-between text-stone-600">
+            <span>Delivery & Packaging Charges</span>
+            <span id="receipt-delivery" class="font-bold text-stone-900">₹40</span>
+          </div>
+          <div class="flex justify-between text-stone-600">
+            <span>GST (5%)</span>
+            <span id="receipt-gst" class="font-bold text-stone-900">₹0</span>
+          </div>
+          <div class="flex justify-between text-base font-black text-stone-900 pt-2.5 border-t border-stone-200">
+            <span>Total Paid</span>
+            <span id="receipt-grandtotal" class="text-dhaba-600">₹0</span>
+          </div>
+        </div>
+
+        <div class="text-center text-[10px] text-stone-400 pt-1">
+          Thank you for ordering from Dhaba Express! Prepared fresh upon order.
+        </div>
+      </div>
+
+      <!-- Modal Footer Actions -->
+      <div class="p-4 bg-stone-50 border-t border-stone-200 flex items-center justify-between gap-3 shrink-0 no-print">
+        <button onclick="closeOrderSummaryModal()" class="px-4 py-3 rounded-2xl text-xs font-bold text-stone-600 hover:bg-stone-200 transition">
+          Done
+        </button>
+        <button id="download-pdf-btn" onclick="downloadOrderPDF()"
+          class="flex-grow bg-stone-900 hover:bg-stone-800 text-white py-3 px-5 rounded-2xl text-xs font-black flex items-center justify-center gap-2 shadow-lg tap-scale transition">
+          <i data-lucide="download" class="w-4 h-4 text-amber-400"></i>
+          <span>Save Order as PDF</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- KDS Cancel Order Modal -->
+  <div id="kds-cancel-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+    <div class="bg-white w-full max-w-md rounded-3xl p-6 shadow-2xl border border-stone-200 space-y-5">
+      <div class="flex items-center justify-between pb-3 border-b border-stone-100">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center">
+            <i data-lucide="x-circle" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <span class="text-[10px] font-black uppercase tracking-widest text-rose-600">KDS Order Cancellation</span>
+            <h3 class="text-base font-black text-stone-900">Cancel Order <span id="cancel-modal-order-id">#DHB</span></h3>
+          </div>
+        </div>
+        <button onclick="closeCancelOrderModal()" class="p-2 rounded-full bg-stone-100 text-stone-500 hover:text-stone-900">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <div class="space-y-4">
+        <div>
+          <label class="text-xs font-bold text-stone-700 block mb-1.5">Cancellation Reason *</label>
+          <select id="cancel-reason-select" onchange="toggleCustomCancelReason(this.value)"
+            class="w-full bg-stone-50 text-xs font-bold px-3.5 py-2.5 rounded-xl border border-stone-200 text-stone-800 focus:outline-none focus:border-rose-500">
+            <option value="Item out of stock">Item out of stock</option>
+            <option value="Customer requested cancellation">Customer requested cancellation</option>
+            <option value="Delivery area out of range">Delivery area out of range</option>
+            <option value="Kitchen overloaded / equipment issue">Kitchen overloaded / equipment issue</option>
+            <option value="Other">Other (Specify below)</option>
+          </select>
+        </div>
+
+        <div id="cancel-custom-reason-wrap" class="hidden">
+          <label class="text-xs font-bold text-stone-700 block mb-1">Specify Reason *</label>
+          <input id="cancel-custom-reason-input" type="text" placeholder="Enter cancellation reason..."
+            class="w-full bg-stone-50 text-xs font-semibold px-3.5 py-2.5 rounded-xl border border-stone-200 focus:outline-none focus:border-rose-500" />
+        </div>
+
+        <div id="cancel-refund-prompt-box" class="bg-amber-50 border border-amber-200 rounded-2xl p-3.5 text-xs text-amber-900">
+          <span class="font-black">Note:</span> Paid orders can be refunded immediately after cancellation by recording the Refund Reference Number.
+        </div>
+
+        <div class="flex items-center gap-3 pt-1">
+          <button onclick="closeCancelOrderModal()" class="w-1/3 py-3 rounded-2xl text-xs font-bold text-stone-600 hover:bg-stone-100">
+            Keep Order
+          </button>
+          <button onclick="confirmCancelOrder()" class="w-2/3 bg-rose-600 hover:bg-rose-700 text-white py-3 rounded-2xl text-xs font-black shadow tap-scale transition">
+            Confirm Cancel Order
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- KDS Refund Payment Modal -->
+  <div id="kds-refund-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+    <div class="bg-white w-full max-w-md rounded-3xl p-6 shadow-2xl border border-stone-200 space-y-5">
+      <div class="flex items-center justify-between pb-3 border-b border-stone-100">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center">
+            <i data-lucide="rotate-ccw" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <span class="text-[10px] font-black uppercase tracking-widest text-indigo-600">Payment Refund</span>
+            <h3 class="text-base font-black text-stone-900">Refund Order <span id="refund-modal-order-id">#DHB</span></h3>
+          </div>
+        </div>
+        <button onclick="closeRefundModal()" class="p-2 rounded-full bg-stone-100 text-stone-500 hover:text-stone-900">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <div class="space-y-4">
+        <div class="bg-stone-50 rounded-2xl p-3.5 border border-stone-200 flex items-center justify-between text-xs">
+          <div>
+            <span class="text-stone-500 block">Customer & Payment Mode</span>
+            <span id="refund-modal-customer" class="font-black text-stone-900">Customer • UPI / QR</span>
+          </div>
+          <div class="text-right">
+            <span class="text-stone-500 block">Order Total</span>
+            <span id="refund-modal-total" class="font-black text-dhaba-600 text-sm">₹0</span>
+          </div>
+        </div>
+
+        <div>
+          <label class="text-xs font-bold text-stone-700 block mb-1">Refund Amount (₹) *</label>
+          <input id="refund-amount-input" type="number" min="1" step="1"
+            class="w-full bg-stone-50 text-sm font-black px-3.5 py-2.5 rounded-xl border border-stone-200 text-stone-900 focus:outline-none focus:border-indigo-500" />
+        </div>
+
+        <div>
+          <div class="flex items-center justify-between mb-1">
+            <label class="text-xs font-bold text-stone-700">Refund Reference Number (UTR / RRN / Txn ID) *</label>
+            <button type="button" onclick="generateSampleRefundRef()" class="text-[10px] font-black text-indigo-600 hover:underline">
+              Auto-Generate Ref
+            </button>
+          </div>
+          <input id="refund-ref-input" type="text" placeholder="e.g. RRN42918472910 or UPI-REF-8821"
+            class="w-full bg-stone-50 text-xs font-black uppercase tracking-wider px-3.5 py-2.5 rounded-xl border border-stone-200 text-stone-900 focus:outline-none focus:border-indigo-500" />
+          <p class="text-[10px] text-stone-400 mt-1">Mandatory: Enter the bank/UPI/gateway refund reference number for audit tracking.</p>
+        </div>
+
+        <div>
+          <label class="text-xs font-bold text-stone-700 block mb-1">Refund Remarks (Optional)</label>
+          <input id="refund-notes-input" type="text" placeholder="e.g. Refunded via GPay / Razorpay"
+            class="w-full bg-stone-50 text-xs font-semibold px-3.5 py-2.5 rounded-xl border border-stone-200 focus:outline-none focus:border-indigo-500" />
+        </div>
+
+        <div class="flex items-center gap-3 pt-1">
+          <button onclick="closeRefundModal()" class="w-1/3 py-3 rounded-2xl text-xs font-bold text-stone-600 hover:bg-stone-100">
+            Cancel
+          </button>
+          <button onclick="confirmRefundPayment()" class="w-2/3 bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-2xl text-xs font-black shadow tap-scale transition">
+            Record Refund ✓
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- ===================================================================== -->
   <!-- APPLICATION JAVASCRIPT LOGIC                                          -->
   <!-- ===================================================================== -->
@@ -620,6 +890,14 @@
     let customizingItem = null;
     let kdsSubTab = 'orders';
     let kdsFilter = 'all';
+    let lastPlacedOrderId = null;
+    let activeSummaryOrderId = null;
+    let pendingCancelOrderId = null;
+    let pendingRefundOrderId = null;
+
+    try {
+      lastPlacedOrderId = localStorage.getItem('dhaba_last_order_id') || null;
+    } catch (e) {}
 
     document.addEventListener('DOMContentLoaded', () => {
       const noteInput = document.getElementById('kds-closure-note-input');
@@ -651,8 +929,20 @@
       renderKdsStockManager();
       updateKdsStats();
       applyModeView();
+      updateLastOrderNavButton();
       saveState();
       if (window.lucide) lucide.createIcons();
+    }
+
+    function updateLastOrderNavButton() {
+      const btn = document.getElementById('nav-last-order-btn');
+      if (!btn) return;
+      const targetOrder = orders.find(o => o.id === lastPlacedOrderId) || orders[0];
+      if (targetOrder) {
+        btn.classList.remove('hidden');
+      } else {
+        btn.classList.add('hidden');
+      }
     }
 
     // =========================================================================
@@ -1138,13 +1428,13 @@
         return;
       }
 
-      const { grandTotal } = calculateBill();
+      const { subtotal, discount, deliveryFee, gst, grandTotal } = calculateBill();
       const paymentMethod = document.querySelector('input[name="payment_method"]:checked')?.value || 'UPI / QR';
 
       // Generate Unique Order Number & Exact Timestamp
       const newId = 'DHB-' + Date.now().toString().slice(-4) + Math.floor(10 + Math.random() * 89);
 
-      orders.unshift({
+      const newOrderObj = {
         id: newId,
         customerName,
         phone,
@@ -1153,16 +1443,41 @@
         status: 'received',
         paymentMethod,
         createdAt: Date.now(),
+        subtotal,
+        discount,
+        deliveryFee,
+        gst,
         total: grandTotal,
-        items: cart.map(c => ({
-          menuId: c.menuId,
-          name: c.name,
-          qty: c.qty,
-          unitPrice: c.unitPrice,
-          spice: c.spice,
-          addons: [...c.addons]
-        }))
-      });
+        refund: null,
+        cancelReason: null,
+        items: cart.map(c => {
+          let addonTotal = 0;
+          const addonNames = [];
+          c.addons.forEach(aid => {
+            const a = BREAD_ADDONS.find(x => x.id === aid);
+            if (a) {
+              addonTotal += a.price;
+              addonNames.push(a.name);
+            }
+          });
+          return {
+            menuId: c.menuId,
+            name: c.name,
+            qty: c.qty,
+            unitPrice: c.unitPrice + addonTotal,
+            basePrice: c.unitPrice,
+            spice: c.spice,
+            addons: [...c.addons],
+            addonNames
+          };
+        })
+      };
+
+      orders.unshift(newOrderObj);
+      lastPlacedOrderId = newId;
+      try {
+        localStorage.setItem('dhaba_last_order_id', newId);
+      } catch (e) {}
 
       cart = [];
       promoApplied = false;
@@ -1171,7 +1486,147 @@
 
       closeCartDrawer();
       renderAll();
-      showToast('Order ' + newId + ' placed & sent to Kitchen KDS!');
+      showToast('Order ' + newId + ' finalised & sent to Kitchen KDS!');
+      openOrderSummaryModal(newId);
+    }
+
+    // =========================================================================
+    // CUSTOMER ORDER SUMMARY & PDF DOWNLOAD
+    // =========================================================================
+    function openLastOrderSummary() {
+      const targetId = lastPlacedOrderId && orders.some(o => o.id === lastPlacedOrderId)
+        ? lastPlacedOrderId
+        : (orders[0] ? orders[0].id : null);
+      if (!targetId) {
+        showToast('No recent order found');
+        return;
+      }
+      openOrderSummaryModal(targetId);
+    }
+
+    function openOrderSummaryModal(orderId) {
+      const order = orders.find(o => o.id === orderId);
+      if (!order) return;
+      activeSummaryOrderId = order.id;
+
+      const orderDateObj = new Date(order.createdAt);
+      const formattedDate = orderDateObj.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+      const formattedTime = orderDateObj.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+
+      document.getElementById('receipt-order-id').textContent = '#' + order.id;
+      document.getElementById('receipt-datetime').textContent = formattedDate + ' • ' + formattedTime;
+      document.getElementById('receipt-customer-name').textContent = order.customerName;
+      document.getElementById('receipt-customer-phone').textContent = '+91 ' + order.phone;
+      document.getElementById('receipt-payment-method').textContent = order.paymentMethod;
+      document.getElementById('receipt-address').textContent = order.address;
+
+      const gpsInfoEl = document.getElementById('receipt-gps-info');
+      if (order.gps) {
+        gpsInfoEl.textContent = '📍 GPS Locked (' + order.gps.lat.toFixed(4) + ', ' + order.gps.lng.toFixed(4) + ')';
+      } else {
+        gpsInfoEl.textContent = 'Standard Address Delivery';
+      }
+
+      const statusPill = document.getElementById('receipt-status-pill');
+      const refundBox = document.getElementById('receipt-refund-box');
+      if (order.status === 'cancelled') {
+        statusPill.textContent = 'Cancelled';
+        statusPill.className = 'inline-block bg-rose-100 text-rose-800 text-[10px] font-black px-2.5 py-1 rounded-full uppercase';
+        refundBox.classList.remove('hidden');
+        document.getElementById('receipt-cancel-reason').textContent = order.cancelReason ? '— ' + order.cancelReason : '';
+        const refundDetails = document.getElementById('receipt-refund-details');
+        if (order.refund && order.refund.refNumber) {
+          refundDetails.textContent = '✓ Refunded ₹' + order.refund.amount + ' • Ref No: ' + order.refund.refNumber;
+          refundDetails.className = 'text-emerald-800 font-bold bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-xl mt-1';
+        } else {
+          refundDetails.textContent = order.paymentMethod === 'Cash on Delivery'
+            ? 'No online payment collected (Cash on Delivery).'
+            : 'Refund processing by kitchen team.';
+          refundDetails.className = 'text-amber-800 font-bold bg-amber-50 border border-amber-200 px-3 py-1.5 rounded-xl mt-1';
+        }
+      } else {
+        statusPill.textContent = order.status.replace(/_/g, ' ');
+        statusPill.className = 'inline-block bg-emerald-100 text-emerald-800 text-[10px] font-black px-2.5 py-1 rounded-full uppercase';
+        refundBox.classList.add('hidden');
+      }
+
+      // Populate items table
+      const tbody = document.getElementById('receipt-items-tbody');
+      let computedSub = 0;
+      tbody.innerHTML = order.items.map(it => {
+        const lineTotal = it.unitPrice * it.qty;
+        computedSub += lineTotal;
+        const addonsText = (it.addonNames && it.addonNames.length)
+          ? it.addonNames.join(', ')
+          : (it.addons && it.addons.length ? it.addons.map(aid => BREAD_ADDONS.find(x => x.id === aid)?.name).filter(Boolean).join(', ') : '');
+        return `
+          <tr>
+            <td class="py-2.5 px-3">
+              <div class="font-bold text-stone-900">${it.name}</div>
+              <div class="text-[10px] text-stone-500">Spice: ${it.spice}${addonsText ? ' • ' + addonsText : ''}</div>
+            </td>
+            <td class="py-2.5 px-2 text-center font-bold text-stone-700">${it.qty}</td>
+            <td class="py-2.5 px-3 text-right font-black text-stone-900">₹${lineTotal}</td>
+          </tr>
+        `;
+      }).join('');
+
+      const sub = typeof order.subtotal === 'number' ? order.subtotal : computedSub;
+      const disc = typeof order.discount === 'number' ? order.discount : 0;
+      const del = typeof order.deliveryFee === 'number' ? order.deliveryFee : 40;
+      const gst = typeof order.gst === 'number' ? order.gst : Math.max(0, order.total - (sub - disc + del));
+
+      document.getElementById('receipt-subtotal').textContent = '₹' + sub;
+      const discRow = document.getElementById('receipt-discount-row');
+      if (disc > 0) {
+        discRow.classList.remove('hidden');
+        document.getElementById('receipt-discount').textContent = '-₹' + disc;
+      } else {
+        discRow.classList.add('hidden');
+      }
+      document.getElementById('receipt-delivery').textContent = '₹' + del;
+      document.getElementById('receipt-gst').textContent = '₹' + gst;
+      document.getElementById('receipt-grandtotal').textContent = '₹' + order.total;
+
+      document.getElementById('order-summary-modal').classList.remove('hidden');
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function closeOrderSummaryModal() {
+      document.getElementById('order-summary-modal').classList.add('hidden');
+    }
+
+    function downloadOrderPDF() {
+      const element = document.getElementById('order-receipt-printable');
+      const orderId = activeSummaryOrderId || 'DHB-ORDER';
+      const btn = document.getElementById('download-pdf-btn');
+
+      if (typeof html2pdf !== 'undefined' && element) {
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<span>Generating PDF...</span>';
+        btn.disabled = true;
+
+        const opt = {
+          margin: [10, 10, 10, 10],
+          filename: 'Dhaba-Express-' + orderId + '.pdf',
+          image: { type: 'jpeg', quality: 0.98 },
+          html2canvas: { scale: 2, useCORS: true },
+          jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        };
+
+        html2pdf().set(opt).from(element).save().then(() => {
+          btn.innerHTML = originalText;
+          btn.disabled = false;
+          showToast('Order PDF saved: Dhaba-Express-' + orderId + '.pdf');
+          if (window.lucide) lucide.createIcons();
+        }).catch(() => {
+          btn.innerHTML = originalText;
+          btn.disabled = false;
+          window.print();
+        });
+      } else {
+        window.print();
+      }
     }
 
     // =========================================================================
@@ -1209,8 +1664,9 @@
 
       const filtered = orders.filter(o => {
         if (kdsFilter === 'all') return true;
-        if (kdsFilter === 'active') return o.status !== 'delivered';
+        if (kdsFilter === 'active') return o.status !== 'delivered' && o.status !== 'cancelled';
         if (kdsFilter === 'delivered') return o.status === 'delivered';
+        if (kdsFilter === 'cancelled') return o.status === 'cancelled' || Boolean(o.refund);
         return true;
       });
 
@@ -1234,17 +1690,28 @@
           received: 'bg-amber-100 text-amber-800 border-amber-200',
           preparing: 'bg-dhaba-100 text-dhaba-800 border-dhaba-200',
           out_for_delivery: 'bg-blue-100 text-blue-800 border-blue-200',
-          delivered: 'bg-emerald-100 text-emerald-800 border-emerald-200'
+          delivered: 'bg-emerald-100 text-emerald-800 border-emerald-200',
+          cancelled: 'bg-rose-100 text-rose-800 border-rose-200'
         };
 
+        const isRefunded = Boolean(order.refund && order.refund.refNumber);
+        const canCancel = order.status !== 'cancelled' && order.status !== 'delivered';
+        const canRefund = !isRefunded;
+
         return `
-          <div class="bg-white rounded-3xl p-6 shadow-card border border-stone-200 space-y-4">
+          <div class="bg-white rounded-3xl p-6 shadow-card border ${order.status === 'cancelled' ? 'border-rose-200 bg-rose-50/20' : 'border-stone-200'} space-y-4">
             <div class="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-stone-100">
-              <div class="flex items-center gap-3">
+              <div class="flex flex-wrap items-center gap-2.5">
                 <span class="text-base font-black text-stone-900">#${order.id}</span>
                 <span class="text-xs font-black px-3 py-1 rounded-full border ${statusColors[order.status] || 'bg-stone-100 text-stone-800'} uppercase tracking-wider">
                   ${order.status.replace(/_/g, ' ')}
                 </span>
+                ${isRefunded ? `
+                  <span class="text-xs font-black px-3 py-1 rounded-full bg-indigo-100 text-indigo-800 border border-indigo-200 flex items-center gap-1">
+                    <i data-lucide="rotate-ccw" class="w-3 h-3"></i>
+                    <span>REFUNDED ₹${order.refund.amount} • REF: ${order.refund.refNumber}</span>
+                  </span>
+                ` : ''}
               </div>
               <div class="flex items-center gap-2 text-xs font-bold text-stone-600 bg-stone-100 px-3 py-1.5 rounded-xl">
                 <i data-lucide="calendar" class="w-3.5 h-3.5 text-dhaba-600"></i>
@@ -1254,6 +1721,17 @@
                 <span>${formattedTime}</span>
               </div>
             </div>
+
+            ${order.status === 'cancelled' ? `
+              <div class="bg-rose-50 border border-rose-200 rounded-2xl px-4 py-2.5 text-xs flex flex-wrap items-center justify-between gap-2">
+                <span class="font-bold text-rose-800">Cancellation Reason: <span class="font-black">${order.cancelReason || 'Cancelled by KDS'}</span></span>
+                ${isRefunded ? `
+                  <span class="font-black text-indigo-700">Refund Ref #: ${order.refund.refNumber} (${new Date(order.refund.refundedAt).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })})</span>
+                ` : `
+                  <span class="font-bold text-amber-700">Refund Pending</span>
+                `}
+              </div>
+            ` : ''}
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
               <div class="bg-stone-50 p-3.5 rounded-2xl border border-stone-100 space-y-2">
@@ -1291,8 +1769,15 @@
             </div>
 
             <div class="flex flex-wrap items-center justify-between gap-3 pt-2">
-              <div class="text-sm font-black text-stone-900">Total: ₹${order.total}</div>
-              <div class="flex items-center gap-2">
+              <div class="flex items-center gap-3">
+                <div class="text-sm font-black text-stone-900">Total: ₹${order.total}</div>
+                <button onclick="openOrderSummaryModal('${order.id}')"
+                  class="text-[11px] font-bold text-stone-600 hover:text-stone-900 bg-stone-100 hover:bg-stone-200 px-2.5 py-1 rounded-lg inline-flex items-center gap-1 transition">
+                  <i data-lucide="file-text" class="w-3 h-3"></i>
+                  <span>Receipt / PDF</span>
+                </button>
+              </div>
+              <div class="flex flex-wrap items-center gap-2">
                 ${order.status === 'received' ? `
                   <button onclick="updateOrderStatus('${order.id}', 'preparing')" class="bg-dhaba-600 hover:bg-dhaba-700 text-white px-4 py-2 rounded-xl text-xs font-bold shadow tap-scale">
                     Accept & Cook 👨‍🍳
@@ -1311,6 +1796,24 @@
                 ${order.status === 'delivered' ? `
                   <span class="text-xs font-bold text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-xl">Completed Order</span>
                 ` : ''}
+                ${canCancel ? `
+                  <button onclick="openCancelOrderModal('${order.id}')"
+                    class="bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 px-3.5 py-2 rounded-xl text-xs font-bold inline-flex items-center gap-1.5 tap-scale transition">
+                    <i data-lucide="x-circle" class="w-3.5 h-3.5"></i>
+                    <span>Cancel Order</span>
+                  </button>
+                ` : ''}
+                ${canRefund ? `
+                  <button onclick="openRefundModal('${order.id}')"
+                    class="bg-indigo-600 hover:bg-indigo-700 text-white px-3.5 py-2 rounded-xl text-xs font-bold inline-flex items-center gap-1.5 shadow tap-scale transition">
+                    <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+                    <span>Refund Payment</span>
+                  </button>
+                ` : `
+                  <span class="text-xs font-bold text-indigo-700 bg-indigo-50 border border-indigo-200 px-3 py-1.5 rounded-xl">
+                    Refunded (Ref: ${order.refund.refNumber})
+                  </span>
+                `}
               </div>
             </div>
           </div>
@@ -1370,10 +1873,126 @@
       showToast('All menu items marked In Stock');
     }
 
+    // =========================================================================
+    // KDS CANCEL ORDER & REFUND PAYMENT HANDLERS
+    // =========================================================================
+    function openCancelOrderModal(orderId) {
+      const order = orders.find(o => o.id === orderId);
+      if (!order) return;
+      pendingCancelOrderId = orderId;
+      document.getElementById('cancel-modal-order-id').textContent = '#' + order.id;
+      document.getElementById('cancel-reason-select').value = 'Item out of stock';
+      document.getElementById('cancel-custom-reason-wrap').classList.add('hidden');
+      document.getElementById('cancel-custom-reason-input').value = '';
+      document.getElementById('kds-cancel-modal').classList.remove('hidden');
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function closeCancelOrderModal() {
+      document.getElementById('kds-cancel-modal').classList.add('hidden');
+      pendingCancelOrderId = null;
+    }
+
+    function toggleCustomCancelReason(val) {
+      const wrap = document.getElementById('cancel-custom-reason-wrap');
+      if (val === 'Other') wrap.classList.remove('hidden');
+      else wrap.classList.add('hidden');
+    }
+
+    function confirmCancelOrder() {
+      if (!pendingCancelOrderId) return;
+      const order = orders.find(o => o.id === pendingCancelOrderId);
+      if (!order) return;
+
+      const selectedReason = document.getElementById('cancel-reason-select').value;
+      const customReason = document.getElementById('cancel-custom-reason-input').value.trim();
+      if (selectedReason === 'Other' && !customReason) {
+        showToast('Please specify the cancellation reason');
+        return;
+      }
+
+      const finalReason = selectedReason === 'Other' ? customReason : selectedReason;
+      const cancelledOrderId = order.id;
+
+      order.status = 'cancelled';
+      order.cancelReason = finalReason;
+      order.cancelledAt = Date.now();
+
+      closeCancelOrderModal();
+      renderAll();
+      showToast('Order ' + cancelledOrderId + ' cancelled');
+
+      // Prompt refund immediately if not yet refunded
+      if (!order.refund) {
+        openRefundModal(cancelledOrderId);
+      }
+    }
+
+    function openRefundModal(orderId) {
+      const order = orders.find(o => o.id === orderId);
+      if (!order) return;
+      pendingRefundOrderId = orderId;
+
+      document.getElementById('refund-modal-order-id').textContent = '#' + order.id;
+      document.getElementById('refund-modal-customer').textContent = order.customerName + ' • ' + order.paymentMethod;
+      document.getElementById('refund-modal-total').textContent = '₹' + order.total;
+      document.getElementById('refund-amount-input').value = order.total;
+      document.getElementById('refund-ref-input').value = '';
+      document.getElementById('refund-notes-input').value = '';
+
+      document.getElementById('kds-refund-modal').classList.remove('hidden');
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function closeRefundModal() {
+      document.getElementById('kds-refund-modal').classList.add('hidden');
+      pendingRefundOrderId = null;
+    }
+
+    function generateSampleRefundRef() {
+      const randDigits = Math.floor(100000000000 + Math.random() * 900000000000);
+      document.getElementById('refund-ref-input').value = 'RRN' + randDigits;
+    }
+
+    function confirmRefundPayment() {
+      if (!pendingRefundOrderId) return;
+      const order = orders.find(o => o.id === pendingRefundOrderId);
+      if (!order) return;
+
+      const amount = Number(document.getElementById('refund-amount-input').value);
+      const refNumber = document.getElementById('refund-ref-input').value.trim().toUpperCase();
+      const notes = document.getElementById('refund-notes-input').value.trim();
+
+      if (!amount || amount <= 0 || amount > order.total) {
+        showToast('Enter a valid refund amount (up to ₹' + order.total + ')');
+        return;
+      }
+      if (!refNumber) {
+        showToast('Please enter the Refund Reference Number');
+        return;
+      }
+
+      order.refund = {
+        amount,
+        refNumber,
+        notes,
+        refundedAt: Date.now()
+      };
+
+      const refundedId = order.id;
+      closeRefundModal();
+      renderAll();
+      showToast('Refund of ₹' + amount + ' recorded for ' + refundedId + ' (Ref: ' + refNumber + ')');
+    }
+
     function updateKdsStats() {
       const todayOrders = orders.filter(o => (Date.now() - o.createdAt) < 86400000);
-      const rev = todayOrders.reduce((acc, o) => acc + o.total, 0);
-      const active = orders.filter(o => o.status !== 'delivered').length;
+      const rev = todayOrders.reduce((acc, o) => {
+        if (o.status === 'cancelled') return acc;
+        const refundedAmt = o.refund ? Number(o.refund.amount || 0) : 0;
+        return acc + Math.max(0, o.total - refundedAmt);
+      }, 0);
+      const active = orders.filter(o => o.status !== 'delivered' && o.status !== 'cancelled').length;
 
       document.getElementById('kds-stat-revenue').textContent = '₹' + rev;
       document.getElementById('kds-stat-active').textContent = active;
