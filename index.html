@@ -1596,32 +1596,192 @@
       document.getElementById('order-summary-modal').classList.add('hidden');
     }
 
+    function buildCleanReceiptHTML(order) {
+      const orderDateObj = new Date(order.createdAt);
+      const formattedDate = orderDateObj.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+      const formattedTime = orderDateObj.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+
+      let computedSub = 0;
+      const itemRows = order.items.map(it => {
+        const lineTotal = it.unitPrice * it.qty;
+        computedSub += lineTotal;
+        const addonsText = (it.addonNames && it.addonNames.length)
+          ? it.addonNames.join(', ')
+          : (it.addons && it.addons.length ? it.addons.map(aid => BREAD_ADDONS.find(x => x.id === aid)?.name).filter(Boolean).join(', ') : '');
+        return `
+          <tr style="border-bottom: 1px solid #e7e5e4;">
+            <td style="padding: 10px 12px;">
+              <div style="font-weight: 700; color: #1c1917; font-size: 13px;">${it.name}</div>
+              <div style="font-size: 11px; color: #78716c; margin-top: 2px;">Spice: ${it.spice}${addonsText ? ' &bull; ' + addonsText : ''}</div>
+            </td>
+            <td style="padding: 10px 8px; text-align: center; font-weight: 700; color: #44403c; font-size: 13px;">${it.qty}</td>
+            <td style="padding: 10px 12px; text-align: right; font-weight: 800; color: #1c1917; font-size: 13px;">&#8377;${lineTotal}</td>
+          </tr>
+        `;
+      }).join('');
+
+      const sub = typeof order.subtotal === 'number' ? order.subtotal : computedSub;
+      const disc = typeof order.discount === 'number' ? order.discount : 0;
+      const del = typeof order.deliveryFee === 'number' ? order.deliveryFee : 40;
+      const gst = typeof order.gst === 'number' ? order.gst : Math.max(0, order.total - (sub - disc + del));
+
+      const statusText = order.status === 'cancelled' ? 'CANCELLED' : order.status.replace(/_/g, ' ').toUpperCase();
+      const statusBg = order.status === 'cancelled' ? '#ffe4e6' : '#d1fae5';
+      const statusColor = order.status === 'cancelled' ? '#9f1239' : '#065f46';
+
+      const refundSection = order.status === 'cancelled' ? `
+        <div style="background: #fff1f2; border: 1px solid #fecdd3; border-radius: 12px; padding: 12px; margin-bottom: 16px; font-size: 12px;">
+          <div style="font-weight: 800; color: #9f1239;">Order Cancelled${order.cancelReason ? ' &mdash; ' + order.cancelReason : ''}</div>
+          <div style="margin-top: 6px; font-weight: 700; color: #065f46;">
+            ${order.refund && order.refund.refNumber
+              ? 'Refunded &#8377;' + order.refund.amount + ' &bull; Ref No: ' + order.refund.refNumber
+              : (order.paymentMethod === 'Cash on Delivery' ? 'No online payment collected (Cash on Delivery).' : 'Refund processing by kitchen team.')}
+          </div>
+        </div>
+      ` : '';
+
+      return `
+        <div style="font-family: Arial, Helvetica, sans-serif; color: #1c1917; background: #ffffff; padding: 24px; width: 680px; box-sizing: border-box;">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px dashed #d6d3d1; padding-bottom: 16px; margin-bottom: 16px;">
+            <div>
+              <div style="display: inline-block; background: #0f172a; color: #fbbf24; font-weight: 900; font-size: 11px; padding: 3px 10px; border-radius: 999px; letter-spacing: 0.5px; margin-bottom: 6px;">DHABA EXPRESS</div>
+              <div style="font-size: 20px; font-weight: 900; color: #1c1917;">Order Summary &amp; Tax Receipt</div>
+              <div style="font-size: 11px; color: #78716c; margin-top: 2px;">Authentic Punjabi Rasoi &amp; Cloud Kitchen &bull; Connaught Place, New Delhi</div>
+              <div style="font-size: 10px; color: #a8a29e; margin-top: 2px;">GSTIN: 07AABCD1234F1Z5</div>
+            </div>
+            <div style="text-align: right;">
+              <span style="display: inline-block; background: ${statusBg}; color: ${statusColor}; font-size: 10px; font-weight: 800; padding: 4px 10px; border-radius: 999px;">${statusText}</span>
+              <div style="font-size: 16px; font-weight: 900; color: #1c1917; margin-top: 6px;">#${order.id}</div>
+              <div style="font-size: 11px; color: #78716c; margin-top: 2px;">${formattedDate} &bull; ${formattedTime}</div>
+            </div>
+          </div>
+
+          <div style="background: #fafaf9; border: 1px solid #e7e5e4; border-radius: 12px; padding: 14px; margin-bottom: 16px; font-size: 12px;">
+            <table style="width: 100%; border-collapse: collapse;">
+              <tr>
+                <td style="width: 50%; vertical-align: top; padding-bottom: 8px;">
+                  <div style="font-size: 10px; font-weight: 800; color: #a8a29e; text-transform: uppercase;">Billed To</div>
+                  <div style="font-weight: 800; font-size: 13px; color: #1c1917; margin-top: 2px;">${order.customerName}</div>
+                  <div style="color: #57534e; font-weight: 600;">+91 ${order.phone}</div>
+                </td>
+                <td style="width: 50%; vertical-align: top; padding-bottom: 8px;">
+                  <div style="font-size: 10px; font-weight: 800; color: #a8a29e; text-transform: uppercase;">Payment &amp; Delivery Mode</div>
+                  <div style="font-weight: 800; font-size: 13px; color: #1c1917; margin-top: 2px;">${order.paymentMethod}</div>
+                  <div style="color: #047857; font-weight: 600;">${order.gps ? 'GPS Pin (' + order.gps.lat.toFixed(4) + ', ' + order.gps.lng.toFixed(4) + ')' : 'Standard Address Delivery'}</div>
+                </td>
+              </tr>
+              <tr>
+                <td colspan="2" style="border-top: 1px solid #e7e5e4; padding-top: 8px;">
+                  <div style="font-size: 10px; font-weight: 800; color: #a8a29e; text-transform: uppercase;">Delivery Address</div>
+                  <div style="color: #44403c; font-weight: 600; margin-top: 2px;">${order.address}</div>
+                </td>
+              </tr>
+            </table>
+          </div>
+
+          ${refundSection}
+
+          <div style="font-size: 10px; font-weight: 800; color: #a8a29e; text-transform: uppercase; margin-bottom: 6px;">Order Items</div>
+          <table style="width: 100%; border-collapse: collapse; border: 1px solid #e7e5e4; margin-bottom: 16px;">
+            <thead>
+              <tr style="background: #f5f5f4; border-bottom: 1px solid #e7e5e4; font-size: 10px; text-transform: uppercase; color: #57534e;">
+                <th style="padding: 8px 12px; text-align: left;">Item &amp; Customizations</th>
+                <th style="padding: 8px; text-align: center;">Qty</th>
+                <th style="padding: 8px 12px; text-align: right;">Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${itemRows}
+            </tbody>
+          </table>
+
+          <div style="background: #fafaf9; border: 1px solid #e7e5e4; border-radius: 12px; padding: 14px; font-size: 12px;">
+            <table style="width: 100%; border-collapse: collapse;">
+              <tr>
+                <td style="padding: 3px 0; color: #57534e;">Item Subtotal</td>
+                <td style="padding: 3px 0; text-align: right; font-weight: 700;">&#8377;${sub}</td>
+              </tr>
+              ${disc > 0 ? `
+              <tr>
+                <td style="padding: 3px 0; color: #059669;">Promo Discount (KITCHEN20)</td>
+                <td style="padding: 3px 0; text-align: right; font-weight: 700; color: #059669;">-&#8377;${disc}</td>
+              </tr>` : ''}
+              <tr>
+                <td style="padding: 3px 0; color: #57534e;">Delivery &amp; Packaging Charges</td>
+                <td style="padding: 3px 0; text-align: right; font-weight: 700;">&#8377;${del}</td>
+              </tr>
+              <tr>
+                <td style="padding: 3px 0; color: #57534e;">GST (5%)</td>
+                <td style="padding: 3px 0; text-align: right; font-weight: 700;">&#8377;${gst}</td>
+              </tr>
+              <tr>
+                <td style="padding-top: 10px; border-top: 1px solid #d6d3d1; font-size: 15px; font-weight: 900; color: #1c1917;">Total Paid</td>
+                <td style="padding-top: 10px; border-top: 1px solid #d6d3d1; text-align: right; font-size: 16px; font-weight: 900; color: #ea580c;">&#8377;${order.total}</td>
+              </tr>
+            </table>
+          </div>
+
+          <div style="text-align: center; font-size: 11px; color: #a8a29e; margin-top: 16px;">
+            Thank you for ordering from Dhaba Express! Prepared fresh upon order.
+          </div>
+        </div>
+      `;
+    }
+
     function downloadOrderPDF() {
-      const element = document.getElementById('order-receipt-printable');
-      const orderId = activeSummaryOrderId || 'DHB-ORDER';
+      const order = orders.find(o => o.id === activeSummaryOrderId) || orders[0];
+      if (!order) return;
+
+      const orderId = order.id;
       const btn = document.getElementById('download-pdf-btn');
+      const originalText = btn ? btn.innerHTML : '';
 
-      if (typeof html2pdf !== 'undefined' && element) {
-        const originalText = btn.innerHTML;
-        btn.innerHTML = '<span>Generating PDF...</span>';
-        btn.disabled = true;
+      if (typeof html2pdf !== 'undefined') {
+        if (btn) {
+          btn.innerHTML = '<span>Generating PDF...</span>';
+          btn.disabled = true;
+        }
 
+        // Render clean standalone markup at top-left (0,0) with opaque white background so html2canvas never captures a blank modal layer
+        const wrapper = document.createElement('div');
+        wrapper.style.position = 'fixed';
+        wrapper.style.left = '0';
+        wrapper.style.top = '0';
+        wrapper.style.zIndex = '-1';
+        wrapper.style.background = '#ffffff';
+        wrapper.innerHTML = buildCleanReceiptHTML(order);
+        document.body.appendChild(wrapper);
+
+        const targetNode = wrapper.firstElementChild;
         const opt = {
-          margin: [10, 10, 10, 10],
+          margin: 10,
           filename: 'Dhaba-Express-' + orderId + '.pdf',
           image: { type: 'jpeg', quality: 0.98 },
-          html2canvas: { scale: 2, useCORS: true },
+          html2canvas: {
+            scale: 2,
+            backgroundColor: '#ffffff',
+            scrollX: 0,
+            scrollY: 0,
+            windowWidth: 800
+          },
           jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
         };
 
-        html2pdf().set(opt).from(element).save().then(() => {
-          btn.innerHTML = originalText;
-          btn.disabled = false;
+        html2pdf().set(opt).from(targetNode).save().then(() => {
+          wrapper.remove();
+          if (btn) {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+            if (window.lucide) lucide.createIcons();
+          }
           showToast('Order PDF saved: Dhaba-Express-' + orderId + '.pdf');
-          if (window.lucide) lucide.createIcons();
         }).catch(() => {
-          btn.innerHTML = originalText;
-          btn.disabled = false;
+          wrapper.remove();
+          if (btn) {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+            if (window.lucide) lucide.createIcons();
+          }
           window.print();
         });
       } else {
