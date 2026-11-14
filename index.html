@@ -74,7 +74,7 @@
   </svg>
 
   <!-- ===================================================================== -->
-  <!-- GLOBAL TOP BANNER: CUSTOMER VIEW SWITCHER & BRAND HEADER              -->
+  <!-- GLOBAL TOP BANNER: BRAND HEADER                                       -->
   <!-- ===================================================================== -->
   <header class="sticky top-0 z-40 bg-stone-900 text-white shadow-xl border-b border-stone-800">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
@@ -93,42 +93,22 @@
         </div>
       </div>
 
-      <!-- Mode Switcher Tabs (Customer Only: Website | Android App View) -->
-      <div class="hidden md:flex items-center bg-stone-800/80 p-1.5 rounded-2xl border border-stone-700/60 shadow-inner">
-        <button onclick="switchMode('website')" id="mode-btn-website"
-          class="px-4 py-2 rounded-xl text-xs font-black flex items-center gap-2 transition bg-dhaba-600 text-white shadow">
-          <i data-lucide="globe" class="w-3.5 h-3.5"></i>
-          <span>Website & Menu</span>
-        </button>
-        <button onclick="switchMode('android')" id="mode-btn-android"
-          class="px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition text-stone-300 hover:text-white">
-          <i data-lucide="smartphone" class="w-3.5 h-3.5"></i>
-          <span>Android App View</span>
-        </button>
-      </div>
-
-      <!-- Right Actions: Login & Cart -->
-      <div class="flex items-center gap-2">
-        <button id="nav-login-btn" onclick="openLoginModal()"
+      <!-- Right Actions: Cart & Staff KDS -->
+      <div class="flex items-center gap-2 sm:gap-3">
+        <button onclick="promptKitchenAccess()"
           class="bg-stone-800 hover:bg-stone-700 text-stone-200 px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition border border-stone-700 shrink-0">
-          <i data-lucide="user" class="w-3.5 h-3.5 text-amber-400"></i>
-          <span id="nav-login-label">Login / OTP</span>
+          <i data-lucide="chef-hat" class="w-4 h-4 text-amber-400"></i>
+          <span class="hidden sm:inline">Staff KDS</span>
         </button>
 
         <button onclick="openCartDrawer()"
-          class="bg-dhaba-600 hover:bg-dhaba-700 text-white px-3 sm:px-4 py-2 rounded-xl text-xs font-extrabold flex items-center gap-1.5 shadow-floating tap-scale transition relative shrink-0">
+          class="bg-dhaba-600 hover:bg-dhaba-700 text-white px-3.5 sm:px-4 py-2 rounded-xl text-xs font-extrabold flex items-center gap-1.5 shadow-floating tap-scale transition relative shrink-0">
           <i data-lucide="shopping-bag" class="w-4 h-4"></i>
-          <span class="hidden md:inline">Cart</span>
+          <span>Cart</span>
           <span id="nav-cart-badge" class="hidden absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-amber-400 text-stone-950 text-[10px] font-black flex items-center justify-center shadow">0</span>
         </button>
       </div>
 
-    </div>
-
-    <!-- Mobile Mode Switcher Bar (Customer Only) -->
-    <div class="md:hidden bg-stone-950 px-4 py-2.5 flex items-center justify-around border-t border-stone-800 text-xs font-bold">
-      <button onclick="switchMode('website')" id="mob-btn-website" class="text-dhaba-500 flex items-center gap-1 py-1">🌐 Website</button>
-      <button onclick="switchMode('android')" id="mob-btn-android" class="text-stone-300 flex items-center gap-1 py-1">📱 Android View</button>
     </div>
   </header>
 
@@ -146,7 +126,7 @@
   <main class="flex-grow">
 
     <!-- =================================================================== -->
-    <!-- MODE 1: WEBSITE & ORDERING APP                                      -->
+    <!-- MODE 1: SINGLE RESPONSIVE WEBSITE & ORDERING VIEW                   -->
     <!-- =================================================================== -->
     <div id="website-mode-view" class="space-y-12">
       
@@ -187,6 +167,7 @@
                 <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
                 <span>Open Now</span>
               </div>
+              <span class="text-xs text-stone-400 font-semibold">• Instant Order (No Login Needed)</span>
             </div>
           </div>
 
@@ -231,29 +212,11 @@
         <div id="website-menu-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"></div>
       </section>
 
-      <!-- LIVE ORDER TRACKING SECTION -->
-      <section id="tracking-section" class="bg-stone-100 border-t border-stone-200 py-12 px-4 sm:px-6 lg:px-8">
-        <div class="max-w-4xl mx-auto space-y-6">
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div>
-              <span class="text-xs font-black uppercase tracking-widest text-dhaba-600 block mb-1">Customer Orders</span>
-              <h2 class="text-2xl sm:text-3xl font-black text-stone-900">Your Order Status & History</h2>
-            </div>
-            <div id="tracking-auth-indicator" class="text-xs font-bold bg-white px-4 py-2.5 rounded-2xl shadow-sm border border-stone-200 flex items-center gap-2">
-              <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
-              <span id="tracking-auth-text">Not Logged In</span>
-            </div>
-          </div>
-
-          <div id="website-orders-list" class="space-y-4"></div>
-        </div>
-      </section>
-
-      <!-- Footer with Hidden Staff Portal Link -->
+      <!-- Footer with Staff Portal Link -->
       <footer class="bg-stone-950 text-stone-500 py-8 px-4 text-center text-xs border-t border-stone-900">
         <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
           <p>© 2026 Dhaba Express Cloud Kitchen • Authentic North Indian Rasoi</p>
-          <a href="?staff=1" onclick="event.preventDefault(); promptKitchenAccess();" class="text-stone-700 hover:text-stone-400 transition text-[11px]">
+          <a href="?staff=1" onclick="event.preventDefault(); promptKitchenAccess();" class="text-stone-400 hover:text-white transition text-xs font-bold">
             Staff KDS Portal
           </a>
         </div>
@@ -262,100 +225,7 @@
     </div>
 
     <!-- =================================================================== -->
-    <!-- MODE 2: ANDROID APP EMULATOR VIEW                                   -->
-    <!-- =================================================================== -->
-    <div id="android-mode-view" class="hidden py-8 px-4 flex justify-center bg-stone-900 min-h-[calc(100vh-5rem)]">
-      <div class="w-full max-w-sm bg-white rounded-[40px] shadow-2xl border-[10px] border-stone-950 overflow-hidden flex flex-col h-[780px] relative">
-        
-        <!-- Android Status Bar -->
-        <div class="bg-stone-950 text-white px-6 py-2 flex items-center justify-between text-[11px] font-bold">
-          <span>09:41</span>
-          <div class="flex items-center gap-1.5">
-            <span>📶</span>
-            <span>🔋 100%</span>
-          </div>
-        </div>
-
-        <!-- Android App Top Bar with Official Circular Emblem -->
-        <div class="bg-gradient-to-r from-navybrand via-stone-900 to-navybrand text-white p-4 flex items-center justify-between border-b border-stone-800 shadow-md">
-          <div class="flex items-center gap-3 min-w-0">
-            <div class="w-11 h-11 rounded-full shrink-0 shadow-lg overflow-hidden bg-stone-800 ring-2 ring-amber-400 flex items-center justify-center">
-              <svg viewBox="0 0 200 200" class="w-full h-full"><use href="#dhaba-express-emblem"/></svg>
-            </div>
-            <div class="min-w-0">
-              <h2 class="font-black text-sm tracking-tight text-white truncate">Dhaba Express</h2>
-              <button onclick="detectCustomerGPS()" class="text-[10px] text-amber-300 font-semibold flex items-center gap-1 mt-0.5 truncate hover:underline">
-                <i data-lucide="crosshair" class="w-3 h-3 shrink-0"></i>
-                <span id="android-location-text" class="truncate">Tap to detect GPS</span>
-              </button>
-            </div>
-          </div>
-
-          <button onclick="openLoginModal()" id="android-login-pill" class="bg-white/10 hover:bg-white/20 text-white text-[10px] font-bold px-3 py-1.5 rounded-xl border border-white/20 shrink-0">
-            Login
-          </button>
-        </div>
-
-        <!-- Android Closed Banner -->
-        <div class="kitchen-closed-banner hidden bg-rose-600 text-white p-2 text-center text-[10px] font-black">
-          KITCHEN CLOSED
-        </div>
-
-        <!-- Android Sub-Tabs Header (Menu vs My Orders) -->
-        <div class="flex border-b border-stone-200 bg-stone-50">
-          <button onclick="switchAndroidTab('menu')" id="android-tab-menu"
-            class="flex-1 py-3 text-xs font-black flex items-center justify-center gap-1.5 border-b-2 border-dhaba-600 text-dhaba-600 bg-dhaba-50/50">
-            <i data-lucide="utensils" class="w-3.5 h-3.5"></i>
-            <span>App Menu</span>
-          </button>
-          <button onclick="switchAndroidTab('orders')" id="android-tab-orders"
-            class="flex-1 py-3 text-xs font-bold flex items-center justify-center gap-1.5 border-b-2 border-transparent text-stone-500 hover:text-stone-900">
-            <i data-lucide="clock" class="w-3.5 h-3.5"></i>
-            <span>My Orders</span>
-          </button>
-        </div>
-
-        <!-- Android Content Body -->
-        <div class="flex-grow overflow-y-auto p-4 space-y-4">
-          
-          <!-- Menu Section inside Android App -->
-          <div id="android-menu-section" class="space-y-4">
-            <div class="bg-dhaba-50 p-3 rounded-2xl border border-dhaba-100 flex items-center justify-between">
-              <div>
-                <span class="text-[10px] font-black text-dhaba-600 uppercase">Promo Code</span>
-                <div class="text-xs font-extrabold text-stone-800">Use <span class="text-dhaba-600">KITCHEN20</span> for 20% OFF</div>
-              </div>
-              <span class="text-xl">🎟️</span>
-            </div>
-
-            <div id="android-menu-grid" class="grid grid-cols-1 gap-3"></div>
-          </div>
-
-          <!-- Orders Section inside Android App -->
-          <div id="android-orders-section" class="hidden space-y-4">
-            <div class="text-xs font-black text-stone-800 mb-1">Your Live Android Orders</div>
-            <div id="android-orders-list" class="space-y-3"></div>
-          </div>
-
-        </div>
-
-        <!-- Android Floating Cart Bar -->
-        <div class="p-3 bg-stone-900 text-white flex items-center justify-between border-t border-stone-800">
-          <div>
-            <div class="text-[10px] text-stone-400">Cart Total</div>
-            <div class="text-xs font-black text-amber-400" id="android-cart-total-badge">Ready to order</div>
-          </div>
-          <button onclick="openCartDrawer()" class="bg-dhaba-600 hover:bg-dhaba-700 text-white px-4 py-2 rounded-xl text-xs font-black shadow flex items-center gap-1.5 tap-scale">
-            <span>View Cart</span>
-            <span id="android-cart-badge" class="hidden w-4 h-4 rounded-full bg-amber-400 text-stone-950 text-[10px] flex items-center justify-center font-black">0</span>
-          </button>
-        </div>
-
-      </div>
-    </div>
-
-    <!-- =================================================================== -->
-    <!-- MODE 3: KITCHEN DISPLAY SYSTEM (KDS) & ADMIN MANAGER (HIDDEN)       -->
+    <!-- MODE 2: KITCHEN DISPLAY SYSTEM (KDS) & ADMIN MANAGER                -->
     <!-- =================================================================== -->
     <div id="kds-mode-view" class="hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       
@@ -366,10 +236,10 @@
             <span>👨‍🍳 Kitchen Display System (KDS) & Admin</span>
           </div>
           <h2 class="text-2xl sm:text-3xl font-black">Live Kitchen Operations Center</h2>
-          <p class="text-xs text-stone-400 mt-1">Manage live incoming orders, navigate delivery drivers via customer GPS, and control stock.</p>
+          <p class="text-xs text-stone-400 mt-1">Tracks unique Order ID, Date & Time, Customer Name, Mobile Number, and GPS Location.</p>
           <button onclick="switchMode('website')" class="mt-3 bg-stone-800 hover:bg-stone-700 text-stone-200 text-xs font-bold px-3.5 py-1.5 rounded-xl border border-stone-700 inline-flex items-center gap-1.5">
             <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
-            <span>Exit KDS to Customer View</span>
+            <span>Exit KDS to Website View</span>
           </button>
         </div>
 
@@ -415,7 +285,7 @@
         </div>
       </div>
 
-      <!-- KDS Tab Switcher (Live Orders vs Menu Stock Control) -->
+      <!-- KDS Tab Switcher -->
       <div class="flex items-center gap-2 border-b border-stone-200 pb-2">
         <button onclick="switchKdsSubTab('orders')" id="kds-tab-orders-btn"
           class="px-4 py-2 rounded-xl text-xs font-extrabold bg-dhaba-600 text-white shadow">
@@ -461,7 +331,7 @@
   <!-- MODALS & DRAWERS                                                      -->
   <!-- ===================================================================== -->
 
-  <!-- -1. Kitchen Staff PIN Access Modal -->
+  <!-- Kitchen Staff PIN Access Modal -->
   <div id="kitchen-pin-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
     <div class="bg-stone-900 text-white w-full max-w-sm rounded-3xl p-6 shadow-2xl border border-stone-800 space-y-5">
       <div class="flex items-center justify-between pb-3 border-b border-stone-800">
@@ -481,7 +351,7 @@
 
       <div class="space-y-4">
         <div>
-          <label class="text-xs font-bold text-stone-300 block mb-1">Enter 4-Digit Staff PIN</label>
+          <label class="text-xs font-bold text-stone-300 block mb-1">Enter 4-Digit Staff PIN (3583)</label>
           <input id="kitchen-pin-input" type="password" maxlength="4" placeholder="••••"
             class="w-full bg-stone-950 text-center tracking-widest text-xl font-black py-3 rounded-xl border border-stone-700 text-white focus:border-amber-500 focus:outline-none" />
         </div>
@@ -493,71 +363,7 @@
     </div>
   </div>
 
-  <!-- 0. Mobile Number + OTP Login Modal -->
-  <div id="login-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-    <div class="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl space-y-5">
-      <div class="flex items-center justify-between pb-3 border-b border-stone-100">
-        <div>
-          <span class="text-[10px] font-black uppercase tracking-widest text-dhaba-600">Dhaba Express ID</span>
-          <h3 class="text-lg font-black text-stone-900">Customer Login</h3>
-        </div>
-        <button onclick="closeLoginModal()" class="p-2 rounded-full bg-stone-100 text-stone-600 hover:bg-stone-200">
-          <i data-lucide="x" class="w-4 h-4"></i>
-        </button>
-      </div>
-
-      <!-- Step 1: Enter Mobile Number -->
-      <div id="login-step-phone" class="space-y-4">
-        <div>
-          <label class="text-xs font-bold text-stone-700 block mb-1">10-Digit Mobile Number</label>
-          <div class="flex items-center bg-stone-100 rounded-xl border border-stone-200 px-3 py-2.5 focus-within:border-dhaba-600">
-            <span class="text-xs font-bold text-stone-500 mr-2">+91</span>
-            <input id="login-phone-input" type="tel" maxlength="10" placeholder="9811055210"
-              class="w-full bg-transparent text-sm font-bold text-stone-900 focus:outline-none" />
-          </div>
-          <p class="text-[11px] text-stone-400 mt-1">We will send a 4-digit verification OTP.</p>
-        </div>
-        <button onclick="handleSendOtp()"
-          class="w-full bg-dhaba-600 hover:bg-dhaba-700 text-white font-black text-xs py-3.5 rounded-2xl shadow tap-scale">
-          Send OTP
-        </button>
-      </div>
-
-      <!-- Step 2: Enter OTP -->
-      <div id="login-step-otp" class="hidden space-y-4">
-        <div>
-          <div class="flex items-center justify-between mb-1">
-            <label class="text-xs font-bold text-stone-700">Enter 4-Digit OTP</label>
-            <button onclick="backToPhoneStep()" class="text-[11px] text-dhaba-600 font-bold hover:underline">Change Number</button>
-          </div>
-          <input id="login-otp-input" type="text" maxlength="4" placeholder="1234"
-            class="w-full bg-stone-100 text-center tracking-widest text-lg font-black py-3 rounded-xl border border-stone-200 focus:border-dhaba-600 focus:outline-none" />
-          <p id="otp-hint-text" class="text-[11px] font-bold text-amber-600 mt-1.5 text-center">Hint: OTP is 1234</p>
-        </div>
-        <button onclick="handleVerifyOtp()"
-          class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs py-3.5 rounded-2xl shadow tap-scale">
-          Verify & Continue
-        </button>
-      </div>
-
-      <!-- Logged-in Profile View (if already logged in) -->
-      <div id="login-step-profile" class="hidden space-y-4 text-center py-2">
-        <div class="w-14 h-14 bg-dhaba-50 text-dhaba-600 rounded-full flex items-center justify-center mx-auto text-2xl font-black shadow-inner">
-          <i data-lucide="user-check" class="w-7 h-7"></i>
-        </div>
-        <div>
-          <div class="text-xs text-stone-400">Logged in as</div>
-          <div id="profile-phone-display" class="text-base font-black text-stone-900 mt-0.5">+91 9811055210</div>
-        </div>
-        <button onclick="handleLogout()"
-          class="w-full bg-rose-50 text-rose-700 border border-rose-200 hover:bg-rose-100 font-bold text-xs py-3 rounded-2xl transition">
-          Logout / Switch Account
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- 1. Dish Customization Modal -->
+  <!-- Dish Customization Modal -->
   <div id="customizer-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
     <div class="bg-white w-full max-w-md rounded-3xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]">
       <div class="relative h-48 bg-stone-100 shrink-0">
@@ -609,7 +415,7 @@
     </div>
   </div>
 
-  <!-- 2. Cart & Checkout Drawer -->
+  <!-- Cart & Guest Checkout Drawer (No Login Needed) -->
   <div id="cart-drawer" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex justify-end">
     <div class="bg-white w-full max-w-md h-full shadow-2xl flex flex-col justify-between">
       
@@ -638,25 +444,39 @@
           <p id="promo-feedback" class="hidden text-[11px] font-bold mt-1"></p>
         </div>
 
-        <!-- Address & Live GPS Location -->
-        <div class="bg-stone-50 rounded-2xl p-4 border border-stone-200 space-y-2.5">
-          <div class="flex items-center justify-between">
-            <label class="text-xs font-black text-stone-700">Delivery Address & Live GPS</label>
-            <button onclick="detectCustomerGPS()" type="button"
-              class="bg-emerald-600 hover:bg-emerald-500 text-white text-[10px] font-black px-2.5 py-1 rounded-lg flex items-center gap-1 tap-scale shadow-sm">
-              <i data-lucide="crosshair" class="w-3 h-3"></i>
-              <span>Use Current GPS</span>
-            </button>
+        <!-- Customer Name, Mobile Number, Address & Live GPS Location -->
+        <div class="bg-stone-50 rounded-2xl p-4 border border-stone-200 space-y-3">
+          <div class="text-xs font-black text-stone-800 uppercase tracking-wider">Customer Details (No Login Required)</div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            <div>
+              <label class="text-[11px] font-bold text-stone-700 block mb-1">Full Name *</label>
+              <input id="checkout-name" type="text" placeholder="Enter your name"
+                class="w-full text-xs font-semibold bg-white px-3 py-2.5 rounded-xl border border-stone-200 focus:outline-none focus:border-dhaba-500" />
+            </div>
+            <div>
+              <label class="text-[11px] font-bold text-stone-700 block mb-1">Mobile Number *</label>
+              <input id="checkout-phone" type="tel" maxlength="10" placeholder="10-digit mobile"
+                class="w-full text-xs font-semibold bg-white px-3 py-2.5 rounded-xl border border-stone-200 focus:outline-none focus:border-dhaba-500" />
+            </div>
           </div>
-          <input id="checkout-address" type="text" value="Flat 402, Regal Building, Connaught Place, New Delhi" oninput="syncAddressInputs(this.value)"
-            class="w-full text-xs font-semibold bg-white px-3 py-2.5 rounded-xl border border-stone-200 focus:outline-none focus:border-dhaba-500" />
+
+          <div class="space-y-1.5">
+            <div class="flex items-center justify-between">
+              <label class="text-[11px] font-bold text-stone-700">Delivery Address & GPS Location *</label>
+              <button onclick="detectCustomerGPS()" type="button"
+                class="bg-emerald-600 hover:bg-emerald-500 text-white text-[10px] font-black px-2.5 py-1 rounded-lg flex items-center gap-1 tap-scale shadow-sm">
+                <i data-lucide="crosshair" class="w-3 h-3"></i>
+                <span>Capture GPS</span>
+              </button>
+            </div>
+            <input id="checkout-address" type="text" value="Flat 402, Regal Building, Connaught Place, New Delhi" oninput="syncAddressInputs(this.value)"
+              class="w-full text-xs font-semibold bg-white px-3 py-2.5 rounded-xl border border-stone-200 focus:outline-none focus:border-dhaba-500" />
+          </div>
+
           <div id="gps-coords-badge" class="hidden text-[11px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-xl flex items-center justify-between">
             <span id="gps-coords-text">📍 GPS Pin Locked</span>
-            <span class="text-[10px] uppercase tracking-wider bg-emerald-600 text-white px-1.5 py-0.5 rounded">Shared to Driver</span>
-          </div>
-          <div class="flex items-center justify-between text-xs text-stone-500 pt-1">
-            <span>Verified Mobile:</span>
-            <span id="checkout-phone-display" class="font-bold text-dhaba-600">+91 9811055210</span>
+            <span class="text-[10px] uppercase tracking-wider bg-emerald-600 text-white px-1.5 py-0.5 rounded">Sent to KDS</span>
           </div>
         </div>
 
@@ -726,14 +546,15 @@
       { id: 'gulab_jamun', name: 'Hot Gulab Jamun (1 Pc)', price: 40 }
     ];
 
+    // Exact original dish picture mappings preserved
     const DEFAULT_MENU_ITEMS = [
       { id: 'm1', category: 'Curries', name: 'Shahi Paneer', desc: 'Rich, creamy cottage cheese preparation simmered in royal tomato & cashew gravy with aromatic spices.', price: 300, rating: 4.9, isVeg: true, inStock: true, bestseller: true, emoji: '🥘', image: 'shahi paneer.jfif' },
       { id: 'm2', category: 'Curries', name: 'Dal Makhni', desc: 'Whole black lentils & kidney beans slow-cooked overnight over charcoal clay ovens with white butter & cream.', price: 280, rating: 4.8, isVeg: true, inStock: true, bestseller: true, emoji: '🍲', image: 'Dal Makhni.jfif' },
       { id: 'm3', category: 'Curries', name: 'Rajma', desc: 'Comforting red kidney beans cooked in a thick, onion-tomato masala flavored with whole Punjabi spices.', price: 180, rating: 4.6, isVeg: true, inStock: true, bestseller: false, emoji: '🍛', image: 'rajma.jfif' },
       { id: 'm4', category: 'Curries', name: 'Kadi Pakora', desc: 'Crispy gram flour fritters immersed in tangy, spiced yogurt curry tempered with mustard & curry leaves.', price: 200, rating: 4.7, isVeg: true, inStock: true, bestseller: false, emoji: '🥣', image: 'Kadi Pakora.jfif' },
-      { id: 'm5', category: 'Combos', name: 'Kadi Chawal Combo', desc: 'Soul-satisfying tangy Kadi Pakora served alongside steaming hot, fragrant basmati jeera rice.', price: 200, rating: 4.8, isVeg: true, inStock: true, bestseller: true, emoji: '🍚', image: 'kadi pakora combo.jfif' },
+      { id: 'm5', category: 'Combos', name: 'Kadi Chawal Combo', desc: 'Soul-satisfying tangy Kadi Pakora served alongside steaming hot, fragrant basmati jeera rice.', price: 200, rating: 4.8, isVeg: true, inStock: true, bestseller: true, emoji: '🍚', image: 'Kadi Pakora.jfif' },
       { id: 'm6', category: 'Combos', name: 'Rajma Rice Combo', desc: 'Classic Dhaba comfort combo of homestyle Punjabi Rajma masala served with long-grain steamed basmati rice.', price: 250, rating: 4.9, isVeg: true, inStock: true, bestseller: true, emoji: '🍛', image: 'Rajma Combo.jfif' },
-      { id: 'm7', category: 'Combos', name: 'Dal Makhni Combo', desc: 'Velvety Dal Makhni paired with 2 fluffy butter tawa rotis or jeera rice for a hearty meal.', price: 250, rating: 4.8, isVeg: true, inStock: true, bestseller: false, emoji: '🍽️', image: 'dal makhni combo.jfif' },
+      { id: 'm7', category: 'Combos', name: 'Dal Makhni Combo', desc: 'Velvety Dal Makhni paired with 2 fluffy butter tawa rotis or jeera rice for a hearty meal.', price: 250, rating: 4.8, isVeg: true, inStock: true, bestseller: false, emoji: '🍽️', image: 'Dal Makhni.jfif' },
       { id: 'm8', category: 'Combos', name: 'Shahi Paneer Combo', desc: 'Royal Shahi Paneer served with 2 butter naan or fragrant basmati pulao and salad.', price: 300, rating: 4.9, isVeg: true, inStock: true, bestseller: true, emoji: '🥘', image: 'shahi paneer combo.jfif' },
       { id: 'm9', category: 'Thalis', name: 'Deluxe Thali', desc: 'Ultimate feast featuring Shahi Paneer, Dal Makhni, Mix Veg, Jeera Rice, 2 Butter Naan, Raita, Salad & Gulab Jamun.', price: 350, rating: 5.0, isVeg: true, inStock: true, bestseller: true, emoji: '👑', image: 'shahi paneer combo.jfif' },
       { id: 'm10', category: 'Parathas', name: 'Aloo Paratha', desc: 'Stuffed whole wheat tandoori/tawa paratha with spiced mashed potatoes, served with white butter, curd & pickle.', price: 100, rating: 4.8, isVeg: true, inStock: true, bestseller: true, emoji: '🫓', image: 'Aloo Paratha.jfif' },
@@ -787,19 +608,12 @@
       }
     ];
     try {
-      const savedOrders = JSON.parse(localStorage.getItem('dhaba_orders_v6'));
+      const savedOrders = JSON.parse(localStorage.getItem('dhaba_orders_v7'));
       if (savedOrders && Array.isArray(savedOrders)) orders = savedOrders;
     } catch (e) {}
 
-    // Customer GPS Location State
     let customerGps = null;
-
-    // Customer Login state
-    let currentUserPhone = localStorage.getItem('dhaba_current_user_phone') || null;
-    let pendingLoginPhone = '';
-
     let appMode = 'website';
-    let androidTab = 'menu';
     let selectedCategory = 'all';
     let searchQuery = '';
     let promoApplied = false;
@@ -810,17 +624,13 @@
     document.addEventListener('DOMContentLoaded', () => {
       const noteInput = document.getElementById('kds-closure-note-input');
       if (noteInput) noteInput.value = kitchenState.closureReason;
+
       renderAll();
 
-      // Method 2: Check for ?staff=1 URL parameter to open Staff PIN modal automatically
       const urlParams = new URLSearchParams(window.location.search);
       if (urlParams.get('staff') === '1') {
         promptKitchenAccess();
       }
-
-      setInterval(() => {
-        if (appMode === 'kds' && kdsSubTab === 'orders') renderKdsOrders();
-      }, 30000);
     });
 
     function saveState() {
@@ -828,25 +638,19 @@
         localStorage.setItem('dhaba_menu_v8', JSON.stringify(menuItems));
         localStorage.setItem('dhaba_kitchen_status_v2', JSON.stringify(kitchenState));
         localStorage.setItem('dhaba_cart_v4', JSON.stringify(cart));
-        localStorage.setItem('dhaba_orders_v6', JSON.stringify(orders));
-        if (currentUserPhone) {
-          localStorage.setItem('dhaba_current_user_phone', currentUserPhone);
-        } else {
-          localStorage.removeItem('dhaba_current_user_phone');
-        }
+        localStorage.setItem('dhaba_orders_v7', JSON.stringify(orders));
       } catch (e) {}
     }
 
     function renderAll() {
       syncKitchenStatusUI();
-      syncAuthUI();
       renderCategoryPills();
       renderMenuViews();
       renderCartUI();
-      renderCustomerOrders();
       renderKdsOrders();
       renderKdsStockManager();
       updateKdsStats();
+      applyModeView();
       saveState();
       if (window.lucide) lucide.createIcons();
     }
@@ -857,10 +661,8 @@
     function syncAddressInputs(val) {
       const heroInp = document.getElementById('hero-location-input');
       const checkoutInp = document.getElementById('checkout-address');
-      const androidTxt = document.getElementById('android-location-text');
       if (heroInp && heroInp.value !== val) heroInp.value = val;
       if (checkoutInp && checkoutInp.value !== val) checkoutInp.value = val;
-      if (androidTxt) androidTxt.textContent = val || 'Set Location';
     }
 
     function detectCustomerGPS() {
@@ -870,9 +672,7 @@
       }
 
       const heroBtn = document.getElementById('hero-gps-btn-text');
-      const androidTxt = document.getElementById('android-location-text');
       if (heroBtn) heroBtn.textContent = 'Locating...';
-      if (androidTxt) androidTxt.textContent = 'Detecting GPS...';
 
       navigator.geolocation.getCurrentPosition(
         async (position) => {
@@ -901,107 +701,14 @@
           }
 
           if (heroBtn) heroBtn.textContent = 'GPS Locked ✓';
-          showToast('Exact GPS location detected & ready for driver!');
+          showToast('Exact GPS location detected & ready for KDS!');
         },
         () => {
           if (heroBtn) heroBtn.textContent = 'Detect GPS';
-          if (androidTxt) androidTxt.textContent = 'Connaught Place (Manual)';
           showToast('Location permission denied. Please enter address manually.');
         },
         { enableHighAccuracy: true, timeout: 10000 }
       );
-    }
-
-    // =========================================================================
-    // MOBILE NUMBER + OTP LOGIN SYSTEM
-    // =========================================================================
-    function openLoginModal() {
-      const modal = document.getElementById('login-modal');
-      const stepPhone = document.getElementById('login-step-phone');
-      const stepOtp = document.getElementById('login-step-otp');
-      const stepProfile = document.getElementById('login-step-profile');
-
-      if (currentUserPhone) {
-        stepPhone.classList.add('hidden');
-        stepOtp.classList.add('hidden');
-        stepProfile.classList.remove('hidden');
-        document.getElementById('profile-phone-display').textContent = '+91 ' + currentUserPhone;
-      } else {
-        stepPhone.classList.remove('hidden');
-        stepOtp.classList.add('hidden');
-        stepProfile.classList.add('hidden');
-        document.getElementById('login-phone-input').value = '';
-      }
-      modal.classList.remove('hidden');
-      if (window.lucide) lucide.createIcons();
-    }
-
-    function closeLoginModal() {
-      document.getElementById('login-modal').classList.add('hidden');
-    }
-
-    function handleSendOtp() {
-      const phone = document.getElementById('login-phone-input').value.trim();
-      if (!/^\d{10}$/.test(phone)) {
-        showToast('Please enter a valid 10-digit mobile number');
-        return;
-      }
-      pendingLoginPhone = phone;
-      document.getElementById('login-step-phone').classList.add('hidden');
-      document.getElementById('login-step-otp').classList.remove('hidden');
-      document.getElementById('login-otp-input').value = '';
-      showToast('OTP sent successfully! (Hint: 1234)');
-    }
-
-    function backToPhoneStep() {
-      document.getElementById('login-step-otp').classList.add('hidden');
-      document.getElementById('login-step-phone').classList.remove('hidden');
-    }
-
-    function handleVerifyOtp() {
-      const otp = document.getElementById('login-otp-input').value.trim();
-      if (otp !== '1234' && otp !== '0000') {
-        showToast('Invalid OTP. Use 1234 for testing.');
-        return;
-      }
-      currentUserPhone = pendingLoginPhone;
-      closeLoginModal();
-      renderAll();
-      showToast('Successfully logged in as +91 ' + currentUserPhone);
-    }
-
-    function handleLogout() {
-      currentUserPhone = null;
-      localStorage.removeItem('dhaba_current_user_phone');
-      closeLoginModal();
-      renderAll();
-      showToast('Logged out successfully');
-    }
-
-    function syncAuthUI() {
-      const navLabel = document.getElementById('nav-login-label');
-      const androidPill = document.getElementById('android-login-pill');
-      const trackingAuthText = document.getElementById('tracking-auth-text');
-      const trackingAuthIndicator = document.getElementById('tracking-auth-indicator');
-
-      if (currentUserPhone) {
-        const masked = '+91 ' + currentUserPhone.slice(0, 5) + '...';
-        if (navLabel) navLabel.textContent = masked;
-        if (androidPill) {
-          androidPill.textContent = 'Account';
-          androidPill.className = 'bg-emerald-600 text-white text-[10px] font-bold px-3 py-1.5 rounded-xl shrink-0';
-        }
-        if (trackingAuthText) trackingAuthText.textContent = 'Logged in as +91 ' + currentUserPhone;
-        if (trackingAuthIndicator) trackingAuthIndicator.className = 'text-xs font-bold bg-emerald-50 px-4 py-2.5 rounded-2xl shadow-sm border border-emerald-200 flex items-center gap-2 text-emerald-800';
-      } else {
-        if (navLabel) navLabel.textContent = 'Login / OTP';
-        if (androidPill) {
-          androidPill.textContent = 'Login';
-          androidPill.className = 'bg-white/10 hover:bg-white/20 text-white text-[10px] font-bold px-3 py-1.5 rounded-xl border border-white/20 shrink-0';
-        }
-        if (trackingAuthText) trackingAuthText.textContent = 'Not Logged In';
-        if (trackingAuthIndicator) trackingAuthIndicator.className = 'text-xs font-bold bg-amber-50 px-4 py-2.5 rounded-2xl shadow-sm border border-amber-200 flex items-center gap-2 text-amber-800';
-      }
     }
 
     // =========================================================================
@@ -1067,7 +774,7 @@
     }
 
     // =========================================================================
-    // KDS PIN ACCESS & MODE SWITCHING (METHOD 2)
+    // KDS PIN ACCESS & MODE SWITCHING
     // =========================================================================
     function promptKitchenAccess() {
       document.getElementById('kitchen-pin-input').value = '';
@@ -1092,60 +799,27 @@
 
     function switchMode(mode) {
       appMode = mode;
-      const websiteView = document.getElementById('website-mode-view');
-      const androidView = document.getElementById('android-mode-view');
-      const kdsView = document.getElementById('kds-mode-view');
-
-      const btnWeb = document.getElementById('mode-btn-website');
-      const btnAnd = document.getElementById('mode-btn-android');
-      const mobWeb = document.getElementById('mob-btn-website');
-      const mobAnd = document.getElementById('mob-btn-android');
-
-      [websiteView, androidView, kdsView].forEach(v => v.classList.add('hidden'));
-
-      if (mode === 'website') {
-        websiteView.classList.remove('hidden');
-        if (btnWeb) btnWeb.className = 'px-4 py-2 rounded-xl text-xs font-black flex items-center gap-2 transition bg-dhaba-600 text-white shadow';
-        if (btnAnd) btnAnd.className = 'px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition text-stone-300 hover:text-white';
-        if (mobWeb) mobWeb.className = 'text-dhaba-500 flex items-center gap-1 py-1';
-        if (mobAnd) mobAnd.className = 'text-stone-300 flex items-center gap-1 py-1';
-      } else if (mode === 'android') {
-        androidView.classList.remove('hidden');
-        if (btnAnd) btnAnd.className = 'px-4 py-2 rounded-xl text-xs font-black flex items-center gap-2 transition bg-dhaba-600 text-white shadow';
-        if (btnWeb) btnWeb.className = 'px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition text-stone-300 hover:text-white';
-        if (mobAnd) mobAnd.className = 'text-dhaba-500 flex items-center gap-1 py-1';
-        if (mobWeb) mobWeb.className = 'text-stone-300 flex items-center gap-1 py-1';
-      } else if (mode === 'kds') {
-        kdsView.classList.remove('hidden');
-      }
-
+      applyModeView();
       renderAll();
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    function switchAndroidTab(tab) {
-      androidTab = tab;
-      const menuSec = document.getElementById('android-menu-section');
-      const ordersSec = document.getElementById('android-orders-section');
-      const btnMenu = document.getElementById('android-tab-menu');
-      const btnOrders = document.getElementById('android-tab-orders');
+    function applyModeView() {
+      const websiteView = document.getElementById('website-mode-view');
+      const kdsView = document.getElementById('kds-mode-view');
 
-      if (tab === 'menu') {
-        menuSec.classList.remove('hidden');
-        ordersSec.classList.add('hidden');
-        btnMenu.className = 'flex-1 py-3 text-xs font-black flex items-center justify-center gap-1.5 border-b-2 border-dhaba-600 text-dhaba-600 bg-dhaba-50/50';
-        btnOrders.className = 'flex-1 py-3 text-xs font-bold flex items-center justify-center gap-1.5 border-b-2 border-transparent text-stone-500 hover:text-stone-900';
-      } else {
-        menuSec.classList.add('hidden');
-        ordersSec.classList.remove('hidden');
-        btnOrders.className = 'flex-1 py-3 text-xs font-black flex items-center justify-center gap-1.5 border-b-2 border-dhaba-600 text-dhaba-600 bg-dhaba-50/50';
-        btnMenu.className = 'flex-1 py-3 text-xs font-bold flex items-center justify-center gap-1.5 border-b-2 border-transparent text-stone-500 hover:text-stone-900';
-        renderCustomerOrders();
+      if (appMode === 'website') {
+        websiteView.classList.remove('hidden');
+        kdsView.classList.add('hidden');
+      } else if (appMode === 'kds') {
+        websiteView.classList.add('hidden');
+        kdsView.classList.remove('hidden');
       }
-      if (window.lucide) lucide.createIcons();
     }
 
-    // Render Categories & Menu
+    // =========================================================================
+    // RENDER CATEGORIES & MENU (WITH ORIGINAL DISH IMAGE MAPPINGS)
+    // =========================================================================
     function renderCategoryPills() {
       const container = document.getElementById('category-pills-container');
       if (!container) return;
@@ -1220,9 +894,7 @@
       }).join('');
 
       const websiteGrid = document.getElementById('website-menu-grid');
-      const androidGrid = document.getElementById('android-menu-grid');
       if (websiteGrid) websiteGrid.innerHTML = cardsHtml || '<div class="col-span-full py-12 text-center text-stone-400">No dishes found matching your search.</div>';
-      if (androidGrid) androidGrid.innerHTML = cardsHtml || '<div class="col-span-full py-12 text-center text-stone-400">No dishes found matching your search.</div>';
       if (window.lucide) lucide.createIcons();
     }
 
@@ -1241,15 +913,19 @@
         this.src = item.fallback || 'https://placehold.co/600x400/ea580c/ffffff?text=' + encodeURIComponent(item.name);
       };
       modalImg.src = item.image;
-      addonsContainer.innerHTML = BREAD_ADDONS.map(addon => `
-        <label class="flex items-center justify-between p-3 rounded-xl border border-stone-200 hover:bg-stone-50 cursor-pointer">
-          <div class="flex items-center gap-2.5">
-            <input type="checkbox" value="${addon.id}" onchange="toggleAddon('${addon.id}')" class="w-4 h-4 text-dhaba-600 rounded border-stone-300 focus:ring-dhaba-500" />
-            <span class="text-xs font-bold text-stone-800">${addon.name}</span>
-          </div>
-          <span class="text-xs font-bold text-dhaba-600">+₹${addon.price}</span>
-        </label>
-      `).join('');
+      
+      const addonsContainer = document.getElementById('modal-addons-list');
+      if (addonsContainer) {
+        addonsContainer.innerHTML = BREAD_ADDONS.map(addon => `
+          <label class="flex items-center justify-between p-3 rounded-xl border border-stone-200 hover:bg-stone-50 cursor-pointer">
+            <div class="flex items-center gap-2.5">
+              <input type="checkbox" value="${addon.id}" onchange="toggleAddon('${addon.id}')" class="w-4 h-4 text-dhaba-600 rounded border-stone-300 focus:ring-dhaba-500" />
+              <span class="text-xs font-bold text-stone-800">${addon.name}</span>
+            </div>
+            <span class="text-xs font-bold text-dhaba-600">+₹${addon.price}</span>
+          </label>
+        `).join('');
+      }
 
       updateCustomizerTotal();
       document.getElementById('customizer-modal').classList.remove('hidden');
@@ -1312,14 +988,10 @@
       openCartDrawer();
     }
 
-    // Cart & Checkout
+    // =========================================================================
+    // CART, QUANTITY CONTROLS & GUEST CHECKOUT (NO LOGIN NEEDED)
+    // =========================================================================
     function openCartDrawer() {
-      if (!currentUserPhone) {
-        showToast('Please login with your mobile number to checkout');
-        openLoginModal();
-        return;
-      }
-      document.getElementById('checkout-phone-display').textContent = '+91 ' + currentUserPhone;
       renderCartUI();
       document.getElementById('cart-drawer').classList.remove('hidden');
       if (window.lucide) lucide.createIcons();
@@ -1385,8 +1057,6 @@
       const itemsContainer = document.getElementById('cart-items-list');
       const footerContainer = document.getElementById('cart-footer-section');
       const badgeNav = document.getElementById('nav-cart-badge');
-      const badgeAndroid = document.getElementById('android-cart-badge');
-      const androidTotalBadge = document.getElementById('android-cart-total-badge');
 
       const totalQty = cart.reduce((acc, c) => acc + c.qty, 0);
       if (badgeNav) {
@@ -1395,14 +1065,6 @@
           badgeNav.classList.remove('hidden');
         } else {
           badgeNav.classList.add('hidden');
-        }
-      }
-      if (badgeAndroid) {
-        if (totalQty > 0) {
-          badgeAndroid.textContent = totalQty;
-          badgeAndroid.classList.remove('hidden');
-        } else {
-          badgeAndroid.classList.add('hidden');
         }
       }
 
@@ -1416,7 +1078,6 @@
             <p class="text-xs text-stone-500">Add delicious curries, combos, and parathas to start your order!</p>
           </div>
         `;
-        if (androidTotalBadge) androidTotalBadge.textContent = 'Cart is empty';
         if (footerContainer) footerContainer.classList.add('hidden');
         return;
       }
@@ -1431,10 +1092,11 @@
               <div class="text-xs font-extrabold text-dhaba-600 mt-1">₹${item.unitPrice * item.qty}</div>
             </div>
 
+            <!-- Add / Reduce Quantity Buttons -->
             <div class="flex items-center gap-2 bg-white rounded-xl border border-stone-200 p-1 shadow-sm shrink-0">
-              <button onclick="updateCartQty('${item.cartKey}', -1)" class="w-6 h-6 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold flex items-center justify-center">-</button>
+              <button onclick="updateCartQty('${item.cartKey}', -1)" class="w-7 h-7 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-700 font-black flex items-center justify-center">-</button>
               <span class="text-xs font-black w-5 text-center">${item.qty}</span>
-              <button onclick="updateCartQty('${item.cartKey}', 1)" class="w-6 h-6 rounded-lg bg-dhaba-600 hover:bg-dhaba-700 text-white font-bold flex items-center justify-center">+</button>
+              <button onclick="updateCartQty('${item.cartKey}', 1)" class="w-7 h-7 rounded-lg bg-dhaba-600 hover:bg-dhaba-700 text-white font-black flex items-center justify-center">+</button>
             </div>
           </div>
         `;
@@ -1447,15 +1109,26 @@
       document.getElementById('bill-gst').textContent = '₹' + gst;
       document.getElementById('bill-grandtotal').textContent = '₹' + grandTotal;
 
-      if (androidTotalBadge) androidTotalBadge.textContent = totalQty + ' items • ₹' + grandTotal;
       if (footerContainer) footerContainer.classList.remove('hidden');
     }
 
     function placeOrder() {
       if (cart.length === 0 || !kitchenState.isOpen) return;
-      if (!currentUserPhone) {
-        showToast('Please login to place an order');
-        openLoginModal();
+
+      const customerName = document.getElementById('checkout-name').value.trim();
+      const phone = document.getElementById('checkout-phone').value.trim();
+      const address = document.getElementById('checkout-address').value.trim();
+
+      if (!customerName) {
+        showToast('Please enter your name');
+        return;
+      }
+      if (!/^\d{10}$/.test(phone)) {
+        showToast('Please enter a valid 10-digit mobile number');
+        return;
+      }
+      if (!address) {
+        showToast('Please enter a delivery address');
         return;
       }
 
@@ -1466,14 +1139,15 @@
       }
 
       const { grandTotal } = calculateBill();
-      const address = document.getElementById('checkout-address').value.trim() || 'Connaught Place, New Delhi';
       const paymentMethod = document.querySelector('input[name="payment_method"]:checked')?.value || 'UPI / QR';
 
-      const newId = 'DHB-' + Math.floor(4000 + Math.random() * 5999);
+      // Generate Unique Order Number & Exact Timestamp
+      const newId = 'DHB-' + Date.now().toString().slice(-4) + Math.floor(10 + Math.random() * 89);
+
       orders.unshift({
         id: newId,
-        customerName: 'Customer (' + currentUserPhone.slice(-4) + ')',
-        phone: currentUserPhone,
+        customerName,
+        phone,
         address,
         gps: customerGps ? { ...customerGps } : null,
         status: 'received',
@@ -1497,145 +1171,7 @@
 
       closeCartDrawer();
       renderAll();
-      showToast('Order ' + newId + ' placed successfully!');
-      if (appMode === 'android') switchAndroidTab('orders');
-      else if (appMode === 'website') document.getElementById('tracking-section').scrollIntoView({ behavior: 'smooth' });
-    }
-
-    // =========================================================================
-    // LIVE ORDER TRACKING (SPECIFIC TO LOGGED-IN CUSTOMER)
-    // =========================================================================
-    function renderCustomerOrders() {
-      const steps = [
-        { key: 'received', label: 'Order Received', desc: 'Sent to KDS' },
-        { key: 'preparing', label: 'Cooking', desc: 'Chef preparing' },
-        { key: 'out_for_delivery', label: 'Dispatched', desc: 'Rider on way' },
-        { key: 'delivered', label: 'Delivered', desc: 'Enjoy meal!' }
-      ];
-
-      const webList = document.getElementById('website-orders-list');
-      const androidList = document.getElementById('android-orders-list');
-
-      if (!currentUserPhone) {
-        const loginPromptHtml = `
-          <div class="bg-white rounded-3xl p-10 text-center shadow-card border border-stone-200 space-y-4">
-            <div class="w-12 h-12 bg-dhaba-50 text-dhaba-600 rounded-full flex items-center justify-center mx-auto text-xl">
-              <i data-lucide="lock" class="w-6 h-6"></i>
-            </div>
-            <div>
-              <h3 class="text-base font-black text-stone-900">Login to View Your Orders</h3>
-              <p class="text-xs text-stone-500 mt-1 max-w-sm mx-auto">Please verify your mobile number with OTP to track your live orders and order history.</p>
-            </div>
-            <button onclick="openLoginModal()" class="bg-dhaba-600 hover:bg-dhaba-700 text-white font-bold text-xs px-6 py-3 rounded-xl shadow tap-scale">
-              Login with Mobile Number
-            </button>
-          </div>
-        `;
-        if (webList) webList.innerHTML = loginPromptHtml;
-        if (androidList) androidList.innerHTML = loginPromptHtml;
-        return;
-      }
-
-      const customerOrders = orders.filter(o => o.phone === currentUserPhone);
-
-      if (customerOrders.length === 0) {
-        const emptyHtml = `
-          <div class="bg-white rounded-3xl p-10 text-center shadow-card border border-stone-200">
-            <div class="text-4xl mb-2">🍽️</div>
-            <h3 class="text-base font-black text-stone-900">No Orders Found for +91 ${currentUserPhone}</h3>
-            <p class="text-xs text-stone-500 mt-1">Explore our signature menu and place your first Dhaba Express order!</p>
-          </div>
-        `;
-        if (webList) webList.innerHTML = emptyHtml;
-        if (androidList) androidList.innerHTML = emptyHtml;
-        return;
-      }
-
-      const html = customerOrders.map(order => {
-        const currentIdx = steps.findIndex(s => s.key === order.status);
-        const isDelivered = order.status === 'delivered';
-        return `
-          <div class="bg-white rounded-3xl p-5 shadow-card border border-stone-200 space-y-3">
-            <div class="flex flex-wrap items-center justify-between gap-2 border-b border-stone-100 pb-3">
-              <div>
-                <div class="flex items-center gap-2">
-                  <span class="text-sm font-black text-stone-900">${order.id}</span>
-                  <span class="text-[10px] font-black px-2.5 py-0.5 rounded-full ${isDelivered ? 'bg-emerald-100 text-emerald-800' : 'bg-dhaba-100 text-dhaba-700'}">
-                    ${steps[currentIdx]?.label || 'Processing'}
-                  </span>
-                </div>
-                <p class="text-[11px] text-stone-500 mt-0.5">${order.paymentMethod} • Total ₹${order.total}</p>
-              </div>
-              <button onclick="reorderItems('${order.id}')"
-                class="bg-dhaba-50 hover:bg-dhaba-100 text-dhaba-700 border border-dhaba-200 text-[11px] font-bold px-3 py-1.5 rounded-xl flex items-center gap-1 tap-scale">
-                <i data-lucide="rotate-ccw" class="w-3 h-3"></i>
-                <span>Reorder</span>
-              </button>
-            </div>
-
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-              ${steps.map((step, idx) => {
-                const completed = idx <= currentIdx;
-                return `
-                  <div class="flex items-center gap-2 bg-stone-50 p-2.5 rounded-xl border border-stone-100">
-                    <div class="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-black shrink-0 ${completed ? 'bg-emerald-600 text-white' : 'bg-stone-200 text-stone-600'}">
-                      ${completed ? '✓' : idx + 1}
-                    </div>
-                    <div class="min-w-0">
-                      <div class="text-[11px] font-bold text-stone-900 truncate">${step.label}</div>
-                      <div class="text-[9px] text-stone-500 truncate">${step.desc}</div>
-                    </div>
-                  </div>
-                `;
-              }).join('')}
-            </div>
-
-            <div class="bg-stone-50 rounded-xl p-2.5 text-xs space-y-1">
-              ${order.items.map(it => `
-                <div class="flex justify-between text-stone-700">
-                  <span><strong>${it.qty}×</strong> ${it.name} (${it.spice})</span>
-                  <span class="font-bold">₹${it.unitPrice * it.qty}</span>
-                </div>
-              `).join('')}
-            </div>
-          </div>
-        `;
-      }).join('');
-
-      if (webList) webList.innerHTML = html;
-      if (androidList) androidList.innerHTML = html;
-      if (window.lucide) lucide.createIcons();
-    }
-
-    function reorderItems(orderId) {
-      if (!kitchenState.isOpen) {
-        showToast('Kitchen is currently closed');
-        return;
-      }
-      if (!currentUserPhone) {
-        openLoginModal();
-        return;
-      }
-      const order = orders.find(o => o.id === orderId);
-      if (!order) return;
-      let addedCount = 0;
-      order.items.forEach(it => {
-        const dish = menuItems.find(m => m.id === it.menuId);
-        if (dish && dish.inStock) {
-          const cartKey = `${it.menuId}__${it.spice}__${it.addons.sort().join(',')}`;
-          const existing = cart.find(c => c.cartKey === cartKey);
-          if (existing) existing.qty += it.qty;
-          else cart.push({ cartKey, menuId: it.menuId, name: it.name, unitPrice: it.unitPrice, qty: it.qty, spice: it.spice, addons: [...it.addons] });
-          addedCount++;
-        }
-      });
-      renderAll();
-      if (addedCount > 0) {
-        openCartDrawer();
-        showToast('Available items added to cart');
-      } else {
-        showToast('Items from this order are currently out of stock');
-      }
+      showToast('Order ' + newId + ' placed & sent to Kitchen KDS!');
     }
 
     // =========================================================================
@@ -1690,7 +1226,10 @@
       }
 
       container.innerHTML = filtered.map(order => {
-        const timeAgo = Math.floor((Date.now() - order.createdAt) / 60000);
+        const orderDateObj = new Date(order.createdAt);
+        const formattedDate = orderDateObj.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+        const formattedTime = orderDateObj.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+
         const statusColors = {
           received: 'bg-amber-100 text-amber-800 border-amber-200',
           preparing: 'bg-dhaba-100 text-dhaba-800 border-dhaba-200',
@@ -1702,42 +1241,45 @@
           <div class="bg-white rounded-3xl p-6 shadow-card border border-stone-200 space-y-4">
             <div class="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-stone-100">
               <div class="flex items-center gap-3">
-                <span class="text-base font-black text-stone-900">${order.id}</span>
+                <span class="text-base font-black text-stone-900">#${order.id}</span>
                 <span class="text-xs font-black px-3 py-1 rounded-full border ${statusColors[order.status] || 'bg-stone-100 text-stone-800'} uppercase tracking-wider">
                   ${order.status.replace(/_/g, ' ')}
                 </span>
               </div>
-              <div class="flex items-center gap-2 text-xs font-bold text-stone-500">
-                <i data-lucide="clock" class="w-3.5 h-3.5"></i>
-                <span>${timeAgo}m ago</span>
+              <div class="flex items-center gap-2 text-xs font-bold text-stone-600 bg-stone-100 px-3 py-1.5 rounded-xl">
+                <i data-lucide="calendar" class="w-3.5 h-3.5 text-dhaba-600"></i>
+                <span>${formattedDate}</span>
+                <span>•</span>
+                <i data-lucide="clock" class="w-3.5 h-3.5 text-dhaba-600"></i>
+                <span>${formattedTime}</span>
               </div>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-              <div class="bg-stone-50 p-3 rounded-2xl border border-stone-100 space-y-2">
+              <div class="bg-stone-50 p-3.5 rounded-2xl border border-stone-100 space-y-2">
                 <div>
-                  <div class="font-bold text-stone-900">${order.customerName} (+91 ${order.phone})</div>
+                  <div class="font-black text-stone-900 text-sm">${order.customerName} • <a href="tel:${order.phone}" class="text-dhaba-600 hover:underline">+91 ${order.phone}</a></div>
                   <div class="text-stone-600 mt-0.5">${order.address}</div>
                 </div>
-                <div class="flex flex-wrap items-center justify-between gap-2 pt-1 border-t border-stone-200/60">
-                  <span class="text-[11px] font-semibold text-dhaba-600">${order.paymentMethod}</span>
+                <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-stone-200/60">
+                  <span class="text-[11px] font-semibold text-stone-500">Payment: <strong class="text-stone-800">${order.paymentMethod}</strong></span>
                   ${order.gps ? `
                     <a href="https://www.google.com/maps/dir/?api=1&destination=${order.gps.lat},${order.gps.lng}" target="_blank" rel="noopener noreferrer"
                       class="inline-flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] font-black px-3 py-1.5 rounded-xl shadow-sm transition tap-scale">
                       <i data-lucide="navigation" class="w-3 h-3"></i>
-                      <span>Navigate Driver (${order.gps.lat.toFixed(4)}, ${order.gps.lng.toFixed(4)})</span>
+                      <span>GPS Pin (${order.gps.lat.toFixed(4)}, ${order.gps.lng.toFixed(4)})</span>
                     </a>
                   ` : `
                     <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(order.address)}" target="_blank" rel="noopener noreferrer"
                       class="inline-flex items-center gap-1.5 bg-stone-800 hover:bg-stone-700 text-white text-[11px] font-bold px-3 py-1.5 rounded-xl shadow-sm transition tap-scale">
                       <i data-lucide="map-pin" class="w-3 h-3"></i>
-                      <span>Map Address</span>
+                      <span>Map Address (No GPS Pin)</span>
                     </a>
                   `}
                 </div>
               </div>
 
-              <div class="bg-stone-50 p-3 rounded-2xl border border-stone-100 space-y-1">
+              <div class="bg-stone-50 p-3.5 rounded-2xl border border-stone-100 space-y-1">
                 <div class="font-bold text-stone-900 mb-1">Items Ordered:</div>
                 ${order.items.map(it => `
                   <div class="flex justify-between text-stone-700">
@@ -1845,7 +1387,7 @@
 
       const toast = document.createElement('div');
       toast.id = 'dhaba-toast-popup';
-      toast.className = 'fixed bottom-24 left-1/2 -translate-x-1/2 z-50 bg-stone-900 text-white px-5 py-3 rounded-2xl text-xs font-bold shadow-2xl flex items-center gap-2 border border-stone-800 animate-bounce';
+      toast.className = 'fixed bottom-8 left-1/2 -translate-x-1/2 z-50 bg-stone-900 text-white px-5 py-3 rounded-2xl text-xs font-bold shadow-2xl flex items-center gap-2 border border-stone-800 animate-bounce';
       toast.innerHTML = '<span>🔔</span><span>' + msg + '</span>';
       document.body.appendChild(toast);
 
