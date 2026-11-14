@@ -1,0 +1,5 @@
+I have updated Dhaba Express with the requested upgrades:
+
+Method 2 Staff KDS Access: The KDS button is now hidden from regular customer screens. Staff can access the KDS directly via ?staff=1 in the URL (or the subtle Staff KDS Portal link in the footer) using PIN 3583.
+
+Customer GPS Detection & Driver Navigation: Customers can tap Detect GPS / Use Current GPS on the homepage, Android app header, or cart checkout to attach their exact latitude/longitude coordinates. On the KDS ticket, drivers get a direct Navigate Driver button that launches Google Maps turn-by-turn directions to the customer's exact pin.
