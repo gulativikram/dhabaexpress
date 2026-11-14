@@ -65,20 +65,24 @@
         <path d="M85,50 Q100,40 115,50 Q120,62 100,65 Q80,62 85,50 Z" fill="#ea580c"/>
         <path d="M93,38 Q100,32 105,42" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
         <path d="M100,35 Q106,28 111,38" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
+        <!-- Brand Ribbon Text -->
+        <rect x="36" y="102" width="128" height="24" rx="12" fill="#f59e0b"/>
+        <text x="100" y="118" text-anchor="middle" fill="#0f172a" font-family="Inter, sans-serif" font-weight="900" font-size="13" letter-spacing="0.5">DHABA EXPRESS</text>
+        <text x="100" y="142" text-anchor="middle" fill="#fde047" font-family="Inter, sans-serif" font-weight="700" font-size="8" letter-spacing="1.5">CLOUD KITCHEN</text>
       </g>
     </defs>
   </svg>
 
   <!-- ===================================================================== -->
-  <!-- GLOBAL TOP BANNER: MODE SWITCHER & BRAND HEADER                        -->
+  <!-- GLOBAL TOP BANNER: CUSTOMER VIEW SWITCHER & BRAND HEADER              -->
   <!-- ===================================================================== -->
   <header class="sticky top-0 z-40 bg-stone-900 text-white shadow-xl border-b border-stone-800">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
       
       <!-- Brand Logo & Name -->
-      <div class="flex items-center gap-3">
+      <div class="flex items-center gap-3 cursor-pointer" onclick="switchMode('website')">
         <div class="w-12 h-12 rounded-full shrink-0 shadow-md ring-2 ring-amber-400 overflow-hidden bg-stone-800 flex items-center justify-center">
-          <svg class="w-full h-full scale-125"><use href="#dhaba-express-emblem"/></svg>
+          <svg viewBox="0 0 200 200" class="w-full h-full"><use href="#dhaba-express-emblem"/></svg>
         </div>
         <div>
           <div class="flex items-center gap-2">
@@ -89,7 +93,7 @@
         </div>
       </div>
 
-      <!-- Mode Switcher Tabs (Website | Android App View | Kitchen KDS) -->
+      <!-- Mode Switcher Tabs (Customer Only: Website | Android App View) -->
       <div class="hidden md:flex items-center bg-stone-800/80 p-1.5 rounded-2xl border border-stone-700/60 shadow-inner">
         <button onclick="switchMode('website')" id="mode-btn-website"
           class="px-4 py-2 rounded-xl text-xs font-black flex items-center gap-2 transition bg-dhaba-600 text-white shadow">
@@ -100,11 +104,6 @@
           class="px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition text-stone-300 hover:text-white">
           <i data-lucide="smartphone" class="w-3.5 h-3.5"></i>
           <span>Android App View</span>
-        </button>
-        <button onclick="switchMode('kds')" id="mode-btn-kds"
-          class="px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition text-amber-400 hover:bg-stone-700">
-          <i data-lucide="chef-hat" class="w-3.5 h-3.5"></i>
-          <span>Kitchen KDS & Admin</span>
         </button>
       </div>
 
@@ -126,11 +125,10 @@
 
     </div>
 
-    <!-- Mobile Mode Switcher Bar -->
+    <!-- Mobile Mode Switcher Bar (Customer Only) -->
     <div class="md:hidden bg-stone-950 px-4 py-2.5 flex items-center justify-around border-t border-stone-800 text-xs font-bold">
-      <button onclick="switchMode('website')" class="text-dhaba-500 flex items-center gap-1 py-1">🌐 Website</button>
-      <button onclick="switchMode('android')" class="text-stone-300 flex items-center gap-1 py-1">📱 Android View</button>
-      <button onclick="switchMode('kds')" class="text-amber-400 flex items-center gap-1 py-1">👨‍🍳 KDS Admin</button>
+      <button onclick="switchMode('website')" id="mob-btn-website" class="text-dhaba-500 flex items-center gap-1 py-1">🌐 Website</button>
+      <button onclick="switchMode('android')" id="mob-btn-android" class="text-stone-300 flex items-center gap-1 py-1">📱 Android View</button>
     </div>
   </header>
 
@@ -150,9 +148,9 @@
     <!-- =================================================================== -->
     <!-- MODE 1: WEBSITE & ORDERING APP                                      -->
     <!-- =================================================================== -->
-    <div id="website-mode-view" class="space-y-12 pb-20">
+    <div id="website-mode-view" class="space-y-12">
       
-      <!-- Hero Banner with Logo & Pincode Checker -->
+      <!-- Hero Banner with Logo & GPS Tracker -->
       <section class="relative bg-gradient-to-b from-stone-900 via-stone-900 to-stone-950 text-white py-14 px-4 sm:px-6 lg:px-8 overflow-hidden">
         <div class="absolute inset-0 opacity-10 bg-[radial-gradient(#f97316_1px,transparent_1px)] [background-size:16px_16px]"></div>
         <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 items-center relative z-10">
@@ -170,23 +168,24 @@
               Slow-cooked Dal Makhni, Royal Shahi Paneer, Crispy Tandoori Parathas & Hearty Combos prepared fresh with traditional spices.
             </p>
 
-            <!-- Location & Pincode Bar -->
-            <div class="bg-white/10 backdrop-blur-md p-2 rounded-2xl border border-white/20 max-w-lg mx-auto lg:mx-0 flex flex-col sm:flex-row gap-2">
+            <!-- Location & GPS Tracker Bar -->
+            <div class="bg-white/10 backdrop-blur-md p-2 rounded-2xl border border-white/20 max-w-xl mx-auto lg:mx-0 flex flex-col sm:flex-row gap-2">
               <div class="flex items-center gap-2 bg-stone-900/90 px-3 py-2.5 rounded-xl flex-grow">
                 <i data-lucide="map-pin" class="w-4 h-4 text-dhaba-500 shrink-0"></i>
-                <input type="text" value="Connaught Place, New Delhi" class="w-full bg-transparent text-xs text-white font-bold focus:outline-none" />
+                <input id="hero-location-input" type="text" value="Connaught Place, New Delhi" oninput="syncAddressInputs(this.value)" class="w-full bg-transparent text-xs text-white font-bold focus:outline-none" />
               </div>
-              <div class="flex items-center gap-2 bg-stone-900/90 px-3 py-2.5 rounded-xl sm:w-36">
-                <i data-lucide="navigation" class="w-4 h-4 text-amber-400 shrink-0"></i>
-                <input type="text" maxlength="6" value="110001" class="w-full bg-transparent text-xs text-white font-bold focus:outline-none" placeholder="Pincode" />
-              </div>
+              <button onclick="detectCustomerGPS()" type="button"
+                class="bg-amber-400 hover:bg-amber-300 text-stone-950 px-4 py-2.5 rounded-xl text-xs font-black flex items-center justify-center gap-1.5 shrink-0 transition tap-scale shadow">
+                <i data-lucide="crosshair" class="w-3.5 h-3.5"></i>
+                <span id="hero-gps-btn-text">Detect GPS</span>
+              </button>
             </div>
 
             <!-- Kitchen Status Badge -->
             <div class="pt-2 flex items-center justify-center lg:justify-start gap-3">
-              <div id="kitchen-status-badge" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold bg-emerald-50 text-emerald-700 border border-emerald-200">
+              <div id="kitchen-status-badge" class="kitchen-status-badge inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold bg-emerald-50 text-emerald-700 border border-emerald-200">
                 <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                <span class="kitchen-status-text">OPEN • ACCEPTING ORDERS</span>
+                <span>Open Now</span>
               </div>
             </div>
           </div>
@@ -195,7 +194,7 @@
           <div class="lg:col-span-5 flex justify-center">
             <div class="w-64 sm:w-80 h-64 sm:h-80 rounded-full bg-gradient-to-br from-amber-500/20 to-dhaba-600/30 p-3 shadow-2xl border border-amber-400/40 relative flex items-center justify-center">
               <div class="w-full h-full rounded-full overflow-hidden shadow-inner bg-stone-900 flex items-center justify-center ring-4 ring-amber-400/50">
-                <svg class="w-full h-full"><use href="#dhaba-express-emblem"/></svg>
+                <svg viewBox="0 0 200 200" class="w-full h-full"><use href="#dhaba-express-emblem"/></svg>
               </div>
               <div class="absolute -bottom-2 bg-amber-400 text-stone-950 text-xs font-black px-4 py-1.5 rounded-full shadow-lg border border-amber-200">
                 ⭐ 4.9 Rated Cloud Kitchen
@@ -226,7 +225,7 @@
         </div>
 
         <!-- Category Pills -->
-        <div id="category-pills-container" class="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none"></div>
+        <div id="category-pills-container" class="flex items-center gap-2 overflow-x-auto pb-2"></div>
 
         <!-- Menu Grid -->
         <div id="website-menu-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"></div>
@@ -250,13 +249,23 @@
         </div>
       </section>
 
+      <!-- Footer with Hidden Staff Portal Link -->
+      <footer class="bg-stone-950 text-stone-500 py-8 px-4 text-center text-xs border-t border-stone-900">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+          <p>© 2026 Dhaba Express Cloud Kitchen • Authentic North Indian Rasoi</p>
+          <a href="?staff=1" onclick="event.preventDefault(); promptKitchenAccess();" class="text-stone-700 hover:text-stone-400 transition text-[11px]">
+            Staff KDS Portal
+          </a>
+        </div>
+      </footer>
+
     </div>
 
     <!-- =================================================================== -->
     <!-- MODE 2: ANDROID APP EMULATOR VIEW                                   -->
     <!-- =================================================================== -->
-    <div id="android-mode-view" class="hidden py-8 px-4 flex justify-center bg-stone-900">
-      <div class="w-full max-w-sm bg-white rounded-[40px] shadow-2xl border-[10px] border-stone-950 overflow-hidden flex flex-col h-[820px] relative">
+    <div id="android-mode-view" class="hidden py-8 px-4 flex justify-center bg-stone-900 min-h-[calc(100vh-5rem)]">
+      <div class="w-full max-w-sm bg-white rounded-[40px] shadow-2xl border-[10px] border-stone-950 overflow-hidden flex flex-col h-[780px] relative">
         
         <!-- Android Status Bar -->
         <div class="bg-stone-950 text-white px-6 py-2 flex items-center justify-between text-[11px] font-bold">
@@ -269,13 +278,16 @@
 
         <!-- Android App Top Bar with Official Circular Emblem -->
         <div class="bg-gradient-to-r from-navybrand via-stone-900 to-navybrand text-white p-4 flex items-center justify-between border-b border-stone-800 shadow-md">
-          <div class="flex items-center gap-3.5 min-w-0">
-            <div class="w-12 h-12 rounded-full shrink-0 shadow-lg overflow-hidden bg-stone-800 ring-2 ring-amber-400 flex items-center justify-center">
-              <svg class="w-full h-full scale-125"><use href="#dhaba-express-emblem"/></svg>
+          <div class="flex items-center gap-3 min-w-0">
+            <div class="w-11 h-11 rounded-full shrink-0 shadow-lg overflow-hidden bg-stone-800 ring-2 ring-amber-400 flex items-center justify-center">
+              <svg viewBox="0 0 200 200" class="w-full h-full"><use href="#dhaba-express-emblem"/></svg>
             </div>
             <div class="min-w-0">
               <h2 class="font-black text-sm tracking-tight text-white truncate">Dhaba Express</h2>
-              <span class="text-[10px] text-amber-300 font-semibold block truncate">Connaught Place, New Delhi</span>
+              <button onclick="detectCustomerGPS()" class="text-[10px] text-amber-300 font-semibold flex items-center gap-1 mt-0.5 truncate hover:underline">
+                <i data-lucide="crosshair" class="w-3 h-3 shrink-0"></i>
+                <span id="android-location-text" class="truncate">Tap to detect GPS</span>
+              </button>
             </div>
           </div>
 
@@ -343,7 +355,7 @@
     </div>
 
     <!-- =================================================================== -->
-    <!-- MODE 3: KITCHEN DISPLAY SYSTEM (KDS) & ADMIN MANAGER                -->
+    <!-- MODE 3: KITCHEN DISPLAY SYSTEM (KDS) & ADMIN MANAGER (HIDDEN)       -->
     <!-- =================================================================== -->
     <div id="kds-mode-view" class="hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       
@@ -354,7 +366,11 @@
             <span>👨‍🍳 Kitchen Display System (KDS) & Admin</span>
           </div>
           <h2 class="text-2xl sm:text-3xl font-black">Live Kitchen Operations Center</h2>
-          <p class="text-xs text-stone-400 mt-1">Manage live incoming orders, prepare tickets, toggle stock, and control kitchen availability.</p>
+          <p class="text-xs text-stone-400 mt-1">Manage live incoming orders, navigate delivery drivers via customer GPS, and control stock.</p>
+          <button onclick="switchMode('website')" class="mt-3 bg-stone-800 hover:bg-stone-700 text-stone-200 text-xs font-bold px-3.5 py-1.5 rounded-xl border border-stone-700 inline-flex items-center gap-1.5">
+            <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
+            <span>Exit KDS to Customer View</span>
+          </button>
         </div>
 
         <!-- Master Kitchen Open/Closed Toggle -->
@@ -444,6 +460,38 @@
   <!-- ===================================================================== -->
   <!-- MODALS & DRAWERS                                                      -->
   <!-- ===================================================================== -->
+
+  <!-- -1. Kitchen Staff PIN Access Modal -->
+  <div id="kitchen-pin-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+    <div class="bg-stone-900 text-white w-full max-w-sm rounded-3xl p-6 shadow-2xl border border-stone-800 space-y-5">
+      <div class="flex items-center justify-between pb-3 border-b border-stone-800">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center">
+            <i data-lucide="lock" class="w-4 h-4"></i>
+          </div>
+          <div>
+            <span class="text-[10px] font-black uppercase tracking-widest text-amber-400">Restricted Access</span>
+            <h3 class="text-base font-black text-white">Kitchen Staff PIN</h3>
+          </div>
+        </div>
+        <button onclick="closeKitchenPinModal()" class="p-2 rounded-full bg-stone-800 text-stone-400 hover:text-white">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <div class="space-y-4">
+        <div>
+          <label class="text-xs font-bold text-stone-300 block mb-1">Enter 4-Digit Staff PIN</label>
+          <input id="kitchen-pin-input" type="password" maxlength="4" placeholder="••••"
+            class="w-full bg-stone-950 text-center tracking-widest text-xl font-black py-3 rounded-xl border border-stone-700 text-white focus:border-amber-500 focus:outline-none" />
+        </div>
+        <button onclick="verifyKitchenPin()"
+          class="w-full bg-amber-500 hover:bg-amber-400 text-stone-950 font-black text-xs py-3.5 rounded-2xl shadow tap-scale transition">
+          Unlock Kitchen KDS 👨‍🍳
+        </button>
+      </div>
+    </div>
+  </div>
 
   <!-- 0. Mobile Number + OTP Login Modal -->
   <div id="login-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
@@ -563,7 +611,7 @@
 
   <!-- 2. Cart & Checkout Drawer -->
   <div id="cart-drawer" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex justify-end">
-    <div class="bg-white w-full max-w-md h-full shadow-2xl flex flex-col justify-between animate-in slide-in-from-right duration-200">
+    <div class="bg-white w-full max-w-md h-full shadow-2xl flex flex-col justify-between">
       
       <!-- Drawer Header -->
       <div class="p-5 border-b border-stone-100 flex items-center justify-between bg-stone-900 text-white">
@@ -590,11 +638,22 @@
           <p id="promo-feedback" class="hidden text-[11px] font-bold mt-1"></p>
         </div>
 
-        <!-- Address -->
-        <div class="bg-stone-50 rounded-2xl p-4 border border-stone-200 space-y-2">
-          <label class="text-xs font-black text-stone-700 block">Delivery Address & Contact</label>
-          <input id="checkout-address" type="text" value="Flat 402, Regal Building, Connaught Place, New Delhi"
+        <!-- Address & Live GPS Location -->
+        <div class="bg-stone-50 rounded-2xl p-4 border border-stone-200 space-y-2.5">
+          <div class="flex items-center justify-between">
+            <label class="text-xs font-black text-stone-700">Delivery Address & Live GPS</label>
+            <button onclick="detectCustomerGPS()" type="button"
+              class="bg-emerald-600 hover:bg-emerald-500 text-white text-[10px] font-black px-2.5 py-1 rounded-lg flex items-center gap-1 tap-scale shadow-sm">
+              <i data-lucide="crosshair" class="w-3 h-3"></i>
+              <span>Use Current GPS</span>
+            </button>
+          </div>
+          <input id="checkout-address" type="text" value="Flat 402, Regal Building, Connaught Place, New Delhi" oninput="syncAddressInputs(this.value)"
             class="w-full text-xs font-semibold bg-white px-3 py-2.5 rounded-xl border border-stone-200 focus:outline-none focus:border-dhaba-500" />
+          <div id="gps-coords-badge" class="hidden text-[11px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-xl flex items-center justify-between">
+            <span id="gps-coords-text">📍 GPS Pin Locked</span>
+            <span class="text-[10px] uppercase tracking-wider bg-emerald-600 text-white px-1.5 py-0.5 rounded">Shared to Driver</span>
+          </div>
           <div class="flex items-center justify-between text-xs text-stone-500 pt-1">
             <span>Verified Mobile:</span>
             <span id="checkout-phone-display" class="font-bold text-dhaba-600">+91 9811055210</span>
@@ -682,8 +741,14 @@
       { id: 'm12', category: 'Parathas', name: 'Paneer Paratha', desc: 'Generously stuffed cottage cheese paratha roasted with desi ghee, served with curd, butter & pickle.', price: 150, rating: 4.9, isVeg: true, inStock: true, bestseller: true, emoji: '🫓', image: 'https://images.unsplash.com/photo-1565557623262-b51c2513a641?auto=format&fit=crop&w=600&q=80' }
     ];
 
-    // Load & normalize persisted state
-    let menuItems = JSON.parse(localStorage.getItem('dhaba_menu_v4')) || [...DEFAULT_MENU_ITEMS];
+    // Load & normalize persisted state safely
+    let menuItems = [];
+    try {
+      menuItems = JSON.parse(localStorage.getItem('dhaba_menu_v9')) || [...DEFAULT_MENU_ITEMS];
+    } catch (e) {
+      menuItems = [...DEFAULT_MENU_ITEMS];
+    }
+
     DEFAULT_MENU_ITEMS.forEach(def => {
       const existing = menuItems.find(m => m.id === def.id);
       if (!existing) {
@@ -691,21 +756,28 @@
       } else {
         existing.category = def.category;
         existing.price = def.price;
+        existing.image = def.image;
       }
     });
 
-    let kitchenState = JSON.parse(localStorage.getItem('dhaba_kitchen_status_v2')) || {
-      isOpen: true,
-      closureReason: 'Kitchen Closed for Today / Reopens at 11:00 AM'
-    };
+    let kitchenState = { isOpen: true, closureReason: 'Kitchen Closed for Today / Reopens at 11:00 AM' };
+    try {
+      const savedKitchen = JSON.parse(localStorage.getItem('dhaba_kitchen_status_v2'));
+      if (savedKitchen) kitchenState = savedKitchen;
+    } catch (e) {}
 
-    let cart = JSON.parse(localStorage.getItem('dhaba_cart_v4')) || [];
-    let orders = JSON.parse(localStorage.getItem('dhaba_orders_v5')) || [
+    let cart = [];
+    try {
+      cart = JSON.parse(localStorage.getItem('dhaba_cart_v4')) || [];
+    } catch (e) {}
+
+    let orders = [
       {
         id: 'DHB-4921',
         customerName: 'Aarav Sharma',
         phone: '9811055210',
         address: 'Flat 402, Regal Building, Connaught Place',
+        gps: { lat: 28.6315, lng: 77.2167 },
         status: 'preparing',
         paymentMethod: 'UPI / QR',
         createdAt: Date.now() - 5 * 60 * 1000,
@@ -713,8 +785,12 @@
         items: [{ menuId: 'm1', name: 'Shahi Paneer', qty: 1, unitPrice: 300, spice: 'Medium', addons: [] }]
       }
     ];
+    try {
+      const savedOrders = JSON.parse(localStorage.getItem('dhaba_orders_v6'));
+      if (savedOrders && Array.isArray(savedOrders)) orders = savedOrders;
+    } catch (e) {}
 
-    // Customer Login state
+    let customerGps = null;
     let currentUserPhone = localStorage.getItem('dhaba_current_user_phone') || null;
     let pendingLoginPhone = '';
 
@@ -728,23 +804,32 @@
     let kdsFilter = 'all';
 
     document.addEventListener('DOMContentLoaded', () => {
-      document.getElementById('kds-closure-note-input').value = kitchenState.closureReason;
+      const noteInput = document.getElementById('kds-closure-note-input');
+      if (noteInput) noteInput.value = kitchenState.closureReason;
       renderAll();
+
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('staff') === '1') {
+        promptKitchenAccess();
+      }
+
       setInterval(() => {
         if (appMode === 'kds' && kdsSubTab === 'orders') renderKdsOrders();
       }, 30000);
     });
 
     function saveState() {
-      localStorage.setItem('dhaba_menu_v4', JSON.stringify(menuItems));
-      localStorage.setItem('dhaba_kitchen_status_v2', JSON.stringify(kitchenState));
-      localStorage.setItem('dhaba_cart_v4', JSON.stringify(cart));
-      localStorage.setItem('dhaba_orders_v5', JSON.stringify(orders));
-      if (currentUserPhone) {
-        localStorage.setItem('dhaba_current_user_phone', currentUserPhone);
-      } else {
-        localStorage.removeItem('dhaba_current_user_phone');
-      }
+      try {
+        localStorage.setItem('dhaba_menu_v9', JSON.stringify(menuItems));
+        localStorage.setItem('dhaba_kitchen_status_v2', JSON.stringify(kitchenState));
+        localStorage.setItem('dhaba_cart_v4', JSON.stringify(cart));
+        localStorage.setItem('dhaba_orders_v6', JSON.stringify(orders));
+        if (currentUserPhone) {
+          localStorage.setItem('dhaba_current_user_phone', currentUserPhone);
+        } else {
+          localStorage.removeItem('dhaba_current_user_phone');
+        }
+      } catch (e) {}
     }
 
     function renderAll() {
@@ -758,12 +843,67 @@
       renderKdsStockManager();
       updateKdsStats();
       saveState();
-      lucide.createIcons();
+      if (window.lucide) lucide.createIcons();
     }
 
-    // =========================================================================
-    // MOBILE NUMBER + OTP LOGIN SYSTEM
-    // =========================================================================
+    function syncAddressInputs(val) {
+      const heroInp = document.getElementById('hero-location-input');
+      const checkoutInp = document.getElementById('checkout-address');
+      const androidTxt = document.getElementById('android-location-text');
+      if (heroInp && heroInp.value !== val) heroInp.value = val;
+      if (checkoutInp && checkoutInp.value !== val) checkoutInp.value = val;
+      if (androidTxt) androidTxt.textContent = val || 'Set Location';
+    }
+
+    function detectCustomerGPS() {
+      if (!navigator.geolocation) {
+        showToast('GPS is not supported on this browser');
+        return;
+      }
+
+      const heroBtn = document.getElementById('hero-gps-btn-text');
+      const androidTxt = document.getElementById('android-location-text');
+      if (heroBtn) heroBtn.textContent = 'Locating...';
+      if (androidTxt) androidTxt.textContent = 'Detecting GPS...';
+
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const lat = Number(position.coords.latitude.toFixed(6));
+          const lng = Number(position.coords.longitude.toFixed(6));
+          customerGps = { lat, lng };
+
+          let resolvedAddress = 'GPS Pin (' + lat + ', ' + lng + ')';
+          try {
+            const res = await fetch('https://nominatim.openstreetmap.org/reverse?format=json&lat=' + lat + '&lon=' + lng);
+            if (res.ok) {
+              const data = await res.json();
+              if (data && data.display_name) {
+                resolvedAddress = data.display_name.split(',').slice(0, 4).join(', ');
+              }
+            }
+          } catch (err) {}
+
+          syncAddressInputs(resolvedAddress);
+
+          const coordsBadge = document.getElementById('gps-coords-badge');
+          const coordsText = document.getElementById('gps-coords-text');
+          if (coordsBadge && coordsText) {
+            coordsText.textContent = '📍 Pin: ' + lat + ', ' + lng;
+            coordsBadge.classList.remove('hidden');
+          }
+
+          if (heroBtn) heroBtn.textContent = 'GPS Locked ✓';
+          showToast('Exact GPS location detected & ready for driver!');
+        },
+        () => {
+          if (heroBtn) heroBtn.textContent = 'Detect GPS';
+          if (androidTxt) androidTxt.textContent = 'Connaught Place (Manual)';
+          showToast('Location permission denied. Please enter address manually.');
+        },
+        { enableHighAccuracy: true, timeout: 10000 }
+      );
+    }
+
     function openLoginModal() {
       const modal = document.getElementById('login-modal');
       const stepPhone = document.getElementById('login-step-phone');
@@ -774,7 +914,7 @@
         stepPhone.classList.add('hidden');
         stepOtp.classList.add('hidden');
         stepProfile.classList.remove('hidden');
-        document.getElementById('profile-phone-display').textContent = `+91 ${currentUserPhone}`;
+        document.getElementById('profile-phone-display').textContent = '+91 ' + currentUserPhone;
       } else {
         stepPhone.classList.remove('hidden');
         stepOtp.classList.add('hidden');
@@ -782,7 +922,7 @@
         document.getElementById('login-phone-input').value = '';
       }
       modal.classList.remove('hidden');
-      lucide.createIcons();
+      if (window.lucide) lucide.createIcons();
     }
 
     function closeLoginModal() {
@@ -816,7 +956,7 @@
       currentUserPhone = pendingLoginPhone;
       closeLoginModal();
       renderAll();
-      showToast(`Successfully logged in as +91 ${currentUserPhone}`);
+      showToast('Successfully logged in as +91 ' + currentUserPhone);
     }
 
     function handleLogout() {
@@ -834,27 +974,27 @@
       const trackingAuthIndicator = document.getElementById('tracking-auth-indicator');
 
       if (currentUserPhone) {
-        const masked = `+91 ${currentUserPhone.slice(0, 5)}...`;
-        navLabel.textContent = masked;
-        androidPill.textContent = 'Account';
-        androidPill.className = 'bg-emerald-600 text-white text-[10px] font-bold px-3 py-1.5 rounded-xl shrink-0';
-        trackingAuthText.textContent = `Logged in as +91 ${currentUserPhone}`;
-        trackingAuthIndicator.className = 'text-xs font-bold bg-emerald-50 px-4 py-2.5 rounded-2xl shadow-sm border border-emerald-200 flex items-center gap-2 text-emerald-800';
+        const masked = '+91 ' + currentUserPhone.slice(0, 5) + '...';
+        if (navLabel) navLabel.textContent = masked;
+        if (androidPill) {
+          androidPill.textContent = 'Account';
+          androidPill.className = 'bg-emerald-600 text-white text-[10px] font-bold px-3 py-1.5 rounded-xl shrink-0';
+        }
+        if (trackingAuthText) trackingAuthText.textContent = 'Logged in as +91 ' + currentUserPhone;
+        if (trackingAuthIndicator) trackingAuthIndicator.className = 'text-xs font-bold bg-emerald-50 px-4 py-2.5 rounded-2xl shadow-sm border border-emerald-200 flex items-center gap-2 text-emerald-800';
       } else {
-        navLabel.textContent = 'Login / OTP';
-        androidPill.textContent = 'Login';
-        androidPill.className = 'bg-white/10 hover:bg-white/20 text-white text-[10px] font-bold px-3 py-1.5 rounded-xl border border-white/20 shrink-0';
-        trackingAuthText.textContent = 'Not Logged In (Showing Login Prompt)';
-        trackingAuthIndicator.className = 'text-xs font-bold bg-amber-50 px-4 py-2.5 rounded-2xl shadow-sm border border-amber-200 flex items-center gap-2 text-amber-800';
+        if (navLabel) navLabel.textContent = 'Login / OTP';
+        if (androidPill) {
+          androidPill.textContent = 'Login';
+          androidPill.className = 'bg-white/10 hover:bg-white/20 text-white text-[10px] font-bold px-3 py-1.5 rounded-xl border border-white/20 shrink-0';
+        }
+        if (trackingAuthText) trackingAuthText.textContent = 'Not Logged In';
+        if (trackingAuthIndicator) trackingAuthIndicator.className = 'text-xs font-bold bg-amber-50 px-4 py-2.5 rounded-2xl shadow-sm border border-amber-200 flex items-center gap-2 text-amber-800';
       }
     }
 
-    // =========================================================================
-    // MASTER KITCHEN OPEN / CLOSED STATUS SYNC
-    // =========================================================================
     function syncKitchenStatusUI() {
       const banners = document.querySelectorAll('.kitchen-closed-banner');
-      const openTextEls = document.querySelectorAll('.kitchen-status-text');
       const badgeEls = document.querySelectorAll('.kitchen-status-badge');
       const bannerReason = document.getElementById('banner-closure-reason');
 
@@ -865,16 +1005,12 @@
         else b.classList.remove('hidden');
       });
 
-      openTextEls.forEach(el => {
-        el.textContent = kitchenState.isOpen ? 'OPEN • ACCEPTING ORDERS' : 'CLOSED • ' + kitchenState.closureReason;
-      });
-
       badgeEls.forEach(b => {
         if (kitchenState.isOpen) {
-          b.className = 'inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold bg-emerald-50 text-emerald-700 border border-emerald-200';
+          b.className = 'kitchen-status-badge inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold bg-emerald-50 text-emerald-700 border border-emerald-200';
           b.innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Open Now';
         } else {
-          b.className = 'inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold bg-rose-50 text-rose-700 border border-rose-200';
+          b.className = 'kitchen-status-badge inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold bg-rose-50 text-rose-700 border border-rose-200';
           b.innerHTML = '<span class="w-2 h-2 rounded-full bg-rose-500"></span> Closed';
         }
       });
@@ -910,23 +1046,61 @@
     function setClosurePreset(text) {
       kitchenState.isOpen = false;
       kitchenState.closureReason = text;
-      document.getElementById('kds-closure-note-input').value = text;
+      const noteInput = document.getElementById('kds-closure-note-input');
+      if (noteInput) noteInput.value = text;
       renderAll();
       showToast('Kitchen closed: ' + text);
     }
 
-    // Switch App Modes
+    function promptKitchenAccess() {
+      document.getElementById('kitchen-pin-input').value = '';
+      document.getElementById('kitchen-pin-modal').classList.remove('hidden');
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function closeKitchenPinModal() {
+      document.getElementById('kitchen-pin-modal').classList.add('hidden');
+    }
+
+    function verifyKitchenPin() {
+      const pin = document.getElementById('kitchen-pin-input').value.trim();
+      if (pin === '3583') {
+        closeKitchenPinModal();
+        switchMode('kds');
+        showToast('Kitchen KDS Unlocked Successfully');
+      } else {
+        showToast('Incorrect Staff PIN. Access Denied.');
+      }
+    }
+
     function switchMode(mode) {
       appMode = mode;
       const websiteView = document.getElementById('website-mode-view');
       const androidView = document.getElementById('android-mode-view');
       const kdsView = document.getElementById('kds-mode-view');
 
+      const btnWeb = document.getElementById('mode-btn-website');
+      const btnAnd = document.getElementById('mode-btn-android');
+      const mobWeb = document.getElementById('mob-btn-website');
+      const mobAnd = document.getElementById('mob-btn-android');
+
       [websiteView, androidView, kdsView].forEach(v => v.classList.add('hidden'));
 
-      if (mode === 'website') websiteView.classList.remove('hidden');
-      else if (mode === 'android') androidView.classList.remove('hidden');
-      else if (mode === 'kds') kdsView.classList.remove('hidden');
+      if (mode === 'website') {
+        websiteView.classList.remove('hidden');
+        if (btnWeb) btnWeb.className = 'px-4 py-2 rounded-xl text-xs font-black flex items-center gap-2 transition bg-dhaba-600 text-white shadow';
+        if (btnAnd) btnAnd.className = 'px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition text-stone-300 hover:text-white';
+        if (mobWeb) mobWeb.className = 'text-dhaba-500 flex items-center gap-1 py-1';
+        if (mobAnd) mobAnd.className = 'text-stone-300 flex items-center gap-1 py-1';
+      } else if (mode === 'android') {
+        androidView.classList.remove('hidden');
+        if (btnAnd) btnAnd.className = 'px-4 py-2 rounded-xl text-xs font-black flex items-center gap-2 transition bg-dhaba-600 text-white shadow';
+        if (btnWeb) btnWeb.className = 'px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition text-stone-300 hover:text-white';
+        if (mobAnd) mobAnd.className = 'text-dhaba-500 flex items-center gap-1 py-1';
+        if (mobWeb) mobWeb.className = 'text-stone-300 flex items-center gap-1 py-1';
+      } else if (mode === 'kds') {
+        kdsView.classList.remove('hidden');
+      }
 
       renderAll();
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -951,10 +1125,9 @@
         btnMenu.className = 'flex-1 py-3 text-xs font-bold flex items-center justify-center gap-1.5 border-b-2 border-transparent text-stone-500 hover:text-stone-900';
         renderCustomerOrders();
       }
-      lucide.createIcons();
+      if (window.lucide) lucide.createIcons();
     }
 
-    // Render Categories & Menu
     function renderCategoryPills() {
       const container = document.getElementById('category-pills-container');
       if (!container) return;
@@ -998,7 +1171,7 @@
           <div class="bg-white rounded-3xl p-4 shadow-card border border-stone-200 flex flex-col justify-between transition hover:shadow-lg ${oosClass}">
             <div>
               <div class="relative h-44 rounded-2xl overflow-hidden mb-3 bg-stone-100">
-                <img src="${item.image}" alt="${item.name}" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/600x400/ea580c/ffffff?text=${encodeURIComponent(item.name)}'" />
+                <img src="${item.image}" alt="${item.name}" class="w-full h-full object-cover" onerror="this.onerror=null; this.src='https://placehold.co/600x400/ea580c/ffffff?text=${encodeURIComponent(item.name)}'" />
                 ${badge}
                 <div class="absolute bottom-2 right-2 bg-stone-900/80 backdrop-blur-md text-white px-2 py-1 rounded-xl text-[10px] font-bold flex items-center gap-1">
                   <span>⭐ ${item.rating}</span>
@@ -1032,10 +1205,9 @@
       const androidGrid = document.getElementById('android-menu-grid');
       if (websiteGrid) websiteGrid.innerHTML = cardsHtml || '<div class="col-span-full py-12 text-center text-stone-400">No dishes found matching your search.</div>';
       if (androidGrid) androidGrid.innerHTML = cardsHtml || '<div class="col-span-full py-12 text-center text-stone-400">No dishes found matching your search.</div>';
-      lucide.createIcons();
+      if (window.lucide) lucide.createIcons();
     }
 
-    // Dish Customizer Modal
     function openCustomizer(itemId) {
       const item = menuItems.find(m => m.id === itemId);
       if (!item || !item.inStock) return;
@@ -1121,17 +1293,16 @@
       openCartDrawer();
     }
 
-    // Cart & Checkout
     function openCartDrawer() {
       if (!currentUserPhone) {
         showToast('Please login with your mobile number to checkout');
         openLoginModal();
         return;
       }
-      document.getElementById('checkout-phone-display').textContent = `+91 ${currentUserPhone}`;
+      document.getElementById('checkout-phone-display').textContent = '+91 ' + currentUserPhone;
       renderCartUI();
       document.getElementById('cart-drawer').classList.remove('hidden');
-      lucide.createIcons();
+      if (window.lucide) lucide.createIcons();
     }
 
     function closeCartDrawer() {
@@ -1256,7 +1427,7 @@
       document.getElementById('bill-gst').textContent = '₹' + gst;
       document.getElementById('bill-grandtotal').textContent = '₹' + grandTotal;
 
-      if (androidTotalBadge) androidTotalBadge.textContent = `${totalQty} items • ₹${grandTotal}`;
+      if (androidTotalBadge) androidTotalBadge.textContent = totalQty + ' items • ₹' + grandTotal;
       if (footerContainer) footerContainer.classList.remove('hidden');
     }
 
@@ -1284,6 +1455,7 @@
         customerName: 'Customer (' + currentUserPhone.slice(-4) + ')',
         phone: currentUserPhone,
         address,
+        gps: customerGps ? { ...customerGps } : null,
         status: 'received',
         paymentMethod,
         createdAt: Date.now(),
@@ -1310,9 +1482,6 @@
       else if (appMode === 'website') document.getElementById('tracking-section').scrollIntoView({ behavior: 'smooth' });
     }
 
-    // =========================================================================
-    // LIVE ORDER TRACKING (SPECIFIC TO LOGGED-IN CUSTOMER)
-    // =========================================================================
     function renderCustomerOrders() {
       const steps = [
         { key: 'received', label: 'Order Received', desc: 'Sent to KDS' },
@@ -1344,7 +1513,6 @@
         return;
       }
 
-      // Filter orders ONLY for the currently logged-in customer's phone number
       const customerOrders = orders.filter(o => o.phone === currentUserPhone);
 
       if (customerOrders.length === 0) {
@@ -1413,7 +1581,7 @@
 
       if (webList) webList.innerHTML = html;
       if (androidList) androidList.innerHTML = html;
-      lucide.createIcons();
+      if (window.lucide) lucide.createIcons();
     }
 
     function reorderItems(orderId) {
@@ -1447,9 +1615,6 @@
       }
     }
 
-    // =========================================================================
-    // KITCHEN DISPLAY SYSTEM (KDS) & MENU STOCK MANAGER
-    // =========================================================================
     function switchKdsSubTab(tab) {
       kdsSubTab = tab;
       const ordersSec = document.getElementById('kds-orders-section');
@@ -1523,10 +1688,27 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-              <div class="bg-stone-50 p-3 rounded-2xl border border-stone-100 space-y-1">
-                <div class="font-bold text-stone-900">${order.customerName} (+91 ${order.phone})</div>
-                <div class="text-stone-500">${order.address}</div>
-                <div class="text-[11px] font-semibold text-dhaba-600 mt-1">${order.paymentMethod}</div>
+              <div class="bg-stone-50 p-3 rounded-2xl border border-stone-100 space-y-2">
+                <div>
+                  <div class="font-bold text-stone-900">${order.customerName} (+91 ${order.phone})</div>
+                  <div class="text-stone-600 mt-0.5">${order.address}</div>
+                </div>
+                <div class="flex flex-wrap items-center justify-between gap-2 pt-1 border-t border-stone-200/60">
+                  <span class="text-[11px] font-semibold text-dhaba-600">${order.paymentMethod}</span>
+                  ${order.gps ? `
+                    <a href="https://www.google.com/maps/dir/?api=1&destination=${order.gps.lat},${order.gps.lng}" target="_blank" rel="noopener noreferrer"
+                      class="inline-flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] font-black px-3 py-1.5 rounded-xl shadow-sm transition tap-scale">
+                      <i data-lucide="navigation" class="w-3 h-3"></i>
+                      <span>Navigate Driver (${order.gps.lat.toFixed(4)}, ${order.gps.lng.toFixed(4)})</span>
+                    </a>
+                  ` : `
+                    <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(order.address)}" target="_blank" rel="noopener noreferrer"
+                      class="inline-flex items-center gap-1.5 bg-stone-800 hover:bg-stone-700 text-white text-[11px] font-bold px-3 py-1.5 rounded-xl shadow-sm transition tap-scale">
+                      <i data-lucide="map-pin" class="w-3 h-3"></i>
+                      <span>Map Address</span>
+                    </a>
+                  `}
+                </div>
               </div>
 
               <div class="bg-stone-50 p-3 rounded-2xl border border-stone-100 space-y-1">
@@ -1566,7 +1748,7 @@
           </div>
         `;
       }).join('');
-      lucide.createIcons();
+      if (window.lucide) lucide.createIcons();
     }
 
     function updateOrderStatus(orderId, newStatus) {
@@ -1630,7 +1812,6 @@
       document.getElementById('kds-stat-total').textContent = todayOrders.length;
     }
 
-    // Toast Notifications
     function showToast(msg) {
       const existing = document.getElementById('dhaba-toast-popup');
       if (existing) existing.remove();
