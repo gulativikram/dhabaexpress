@@ -118,11 +118,6 @@
           <i data-lucide="receipt" class="w-4 h-4 text-emerald-400"></i>
           <span class="hidden sm:inline">Order Receipt</span>
         </button>
-        <button onclick="openTrackOrderModal()"
-          class="bg-stone-800 hover:bg-stone-700 text-stone-200 border border-stone-700 px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition shrink-0">
-          <i data-lucide="search" class="w-4 h-4 text-amber-400"></i>
-          <span class="hidden sm:inline">Track Order</span>
-        </button>
         <button onclick="promptKitchenAccess()"
           class="bg-stone-800 hover:bg-stone-700 text-stone-200 px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition border border-stone-700 shrink-0">
           <i data-lucide="chef-hat" class="w-4 h-4 text-amber-400"></i>
@@ -327,45 +322,6 @@
 
       <!-- KDS Orders Sub-Tab -->
       <div id="kds-orders-section" class="space-y-6">
-        
-        <!-- Order MIS & Date Range Report Export Card -->
-        <div class="bg-white rounded-3xl p-6 shadow-card border border-stone-200 space-y-4">
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-stone-100">
-            <div>
-              <div class="inline-flex items-center gap-1.5 bg-indigo-50 text-indigo-700 px-3 py-1 rounded-full text-xs font-extrabold mb-1">
-                <i data-lucide="bar-chart-3" class="w-3.5 h-3.5"></i>
-                <span>Management Information System (MIS) Report</span>
-              </div>
-              <h3 class="text-base font-black text-stone-900">Download Order MIS by Date Range</h3>
-              <p class="text-xs text-stone-500">Exports comprehensive sales, revenue, delivery, cancellation & refund metrics.</p>
-            </div>
-            
-            <button onclick="downloadOrderMisReport()"
-              class="bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xs px-5 py-3 rounded-2xl shadow-lg flex items-center justify-center gap-2 shrink-0 tap-scale transition">
-              <i data-lucide="download" class="w-4 h-4"></i>
-              <span>Download MIS (CSV Report)</span>
-            </button>
-          </div>
-
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-end">
-            <div>
-              <label class="text-[11px] font-bold text-stone-700 block mb-1">Start Date *</label>
-              <input id="mis-start-date" type="date"
-                class="w-full bg-stone-50 text-xs font-bold px-3 py-2.5 rounded-xl border border-stone-200 text-stone-800 focus:outline-none focus:border-indigo-500" />
-            </div>
-            <div>
-              <label class="text-[11px] font-bold text-stone-700 block mb-1">End Date *</label>
-              <input id="mis-end-date" type="date"
-                class="w-full bg-stone-50 text-xs font-bold px-3 py-2.5 rounded-xl border border-stone-200 text-stone-800 focus:outline-none focus:border-indigo-500" />
-            </div>
-            <div>
-              <button onclick="quickSetMisToday()" class="w-full bg-stone-100 hover:bg-stone-200 text-stone-800 font-bold text-xs py-2.5 rounded-xl border border-stone-200">
-                Quick Select: Today
-              </button>
-            </div>
-          </div>
-        </div>
-
         <div class="flex items-center gap-2 flex-wrap">
           <button onclick="setKdsFilter('all')" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-white border border-stone-200 hover:bg-stone-100">All Orders</button>
           <button onclick="setKdsFilter('active')" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-dhaba-50 text-dhaba-700 border border-dhaba-200">Active Only</button>
@@ -775,42 +731,6 @@
     </div>
   </div>
 
-  <!-- Customer Track Order Modal -->
-  <div id="track-order-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-    <div class="bg-white w-full max-w-md rounded-3xl p-6 shadow-2xl border border-stone-200 space-y-5">
-      <div class="flex items-center justify-between pb-3 border-b border-stone-100">
-        <div class="flex items-center gap-2.5">
-          <div class="w-9 h-9 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center">
-            <i data-lucide="search" class="w-5 h-5"></i>
-          </div>
-          <div>
-            <span class="text-[10px] font-black uppercase tracking-widest text-amber-600">Live Status Tracker</span>
-            <h3 class="text-base font-black text-stone-900">Check Order Status</h3>
-          </div>
-        </div>
-        <button onclick="closeTrackOrderModal()" class="p-2 rounded-full bg-stone-100 text-stone-500 hover:text-stone-900">
-          <i data-lucide="x" class="w-4 h-4"></i>
-        </button>
-      </div>
-
-      <div class="space-y-4">
-        <div>
-          <label class="text-xs font-bold text-stone-700 block mb-1">Enter Order Number *</label>
-          <div class="flex gap-2">
-            <input id="track-order-id-input" type="text" placeholder="e.g. DHB-4921"
-              class="w-full bg-stone-50 text-xs font-black uppercase tracking-wider px-3.5 py-3 rounded-xl border border-stone-200 text-stone-900 focus:outline-none focus:border-dhaba-500" />
-            <button onclick="lookupOrderStatus()" class="bg-dhaba-600 hover:bg-dhaba-700 text-white px-5 py-3 rounded-xl text-xs font-black shadow shrink-0">
-              Track 🚀
-            </button>
-          </div>
-          <p class="text-[10px] text-stone-400 mt-1.5">Tip: You can find your order number on your order confirmation receipt.</p>
-        </div>
-
-        <div id="track-result-container" class="hidden"></div>
-      </div>
-    </div>
-  </div>
-
   <!-- KDS Refund Payment Modal -->
   <div id="kds-refund-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
     <div class="bg-white w-full max-w-md rounded-3xl p-6 shadow-2xl border border-stone-200 space-y-5">
@@ -983,12 +903,6 @@
       const noteInput = document.getElementById('kds-closure-note-input');
       if (noteInput) noteInput.value = kitchenState.closureReason;
 
-      const todayStr = new Date().toISOString().split('T')[0];
-      const startInp = document.getElementById('mis-start-date');
-      const endInp = document.getElementById('mis-end-date');
-      if (startInp && !startInp.value) startInp.value = todayStr;
-      if (endInp && !endInp.value) endInp.value = todayStr;
-
       renderAll();
 
       const urlParams = new URLSearchParams(window.location.search);
@@ -996,58 +910,6 @@
         promptKitchenAccess();
       }
     });
-
-    // =========================================================================
-    // REAL-TIME CROSS-DEVICE & CROSS-TAB SYNCHRONIZATION FIX
-    // =========================================================================
-    window.addEventListener('storage', (event) => {
-      try {
-        if (event.key === 'dhaba_orders_v7') {
-          const newOrders = JSON.parse(event.newValue);
-          if (newOrders && Array.isArray(newOrders)) {
-            orders = newOrders;
-            renderAll();
-          }
-        } else if (event.key === 'dhaba_kitchen_status_v2') {
-          const newKitchen = JSON.parse(event.newValue);
-          if (newKitchen) {
-            kitchenState = newKitchen;
-            renderAll();
-          }
-        } else if (event.key === 'dhaba_menu_v8') {
-          const newMenu = JSON.parse(event.newValue);
-          if (newMenu && Array.isArray(newMenu)) {
-            menuItems = newMenu;
-            renderAll();
-          }
-        }
-      } catch (e) {}
-    });
-
-    // Polling interval to automatically sync across devices / tabs sharing localStorage every 1.5 seconds
-    setInterval(() => {
-      try {
-        const savedOrders = JSON.parse(localStorage.getItem('dhaba_orders_v7'));
-        if (savedOrders && Array.isArray(savedOrders)) {
-          if (JSON.stringify(savedOrders) !== JSON.stringify(orders)) {
-            orders = savedOrders;
-            renderAll();
-          }
-        }
-        const savedKitchen = JSON.parse(localStorage.getItem('dhaba_kitchen_status_v2'));
-        if (savedKitchen && JSON.stringify(savedKitchen) !== JSON.stringify(kitchenState)) {
-          kitchenState = savedKitchen;
-          renderAll();
-        }
-        const savedMenu = JSON.parse(localStorage.getItem('dhaba_menu_v8'));
-        if (savedMenu && Array.isArray(savedMenu)) {
-          if (JSON.stringify(savedMenu) !== JSON.stringify(menuItems)) {
-            menuItems = savedMenu;
-            renderAll();
-          }
-        }
-      } catch (e) {}
-    }, 1500);
 
     function saveState() {
       try {
@@ -1624,7 +1486,6 @@
 
       closeCartDrawer();
       renderAll();
-      saveState(); // Ensure localStorage is instantly updated for cross-device/tab synchronization
       showToast('Order ' + newId + ' finalised & sent to Kitchen KDS!');
       openOrderSummaryModal(newId);
     }
@@ -1881,6 +1742,7 @@
           btn.disabled = true;
         }
 
+        // Render clean standalone markup at top-left (0,0) with opaque white background so html2canvas never captures a blank modal layer
         const wrapper = document.createElement('div');
         wrapper.style.position = 'fixed';
         wrapper.style.left = '0';
@@ -2125,7 +1987,6 @@
       if (order) {
         order.status = newStatus;
         renderAll();
-        saveState();
         showToast('Order ' + orderId + ' updated to ' + newStatus.replace(/_/g, ' '));
       }
     }
@@ -2162,7 +2023,6 @@
       if (item) {
         item.inStock = !item.inStock;
         renderAll();
-        saveState();
         showToast(item.name + ' is now ' + (item.inStock ? 'In Stock' : 'Out of Stock'));
       }
     }
@@ -2170,7 +2030,6 @@
     function markAllInStock() {
       menuItems.forEach(m => m.inStock = true);
       renderAll();
-      saveState();
       showToast('All menu items marked In Stock');
     }
 
@@ -2221,9 +2080,9 @@
 
       closeCancelOrderModal();
       renderAll();
-      saveState();
       showToast('Order ' + cancelledOrderId + ' cancelled');
 
+      // Prompt refund immediately if not yet refunded
       if (!order.refund) {
         openRefundModal(cancelledOrderId);
       }
@@ -2283,7 +2142,6 @@
       const refundedId = order.id;
       closeRefundModal();
       renderAll();
-      saveState();
       showToast('Refund of ₹' + amount + ' recorded for ' + refundedId + ' (Ref: ' + refNumber + ')');
     }
 
@@ -2299,167 +2157,6 @@
       document.getElementById('kds-stat-revenue').textContent = '₹' + rev;
       document.getElementById('kds-stat-active').textContent = active;
       document.getElementById('kds-stat-total').textContent = todayOrders.length;
-    }
-
-    // =========================================================================
-    // FEATURE (1): CHECK ORDER STATUS BY ORDER NUMBER
-    // =========================================================================
-    function openTrackOrderModal() {
-      document.getElementById('track-order-id-input').value = lastPlacedOrderId || '';
-      document.getElementById('track-result-container').classList.add('hidden');
-      document.getElementById('track-order-modal').classList.remove('hidden');
-      if (window.lucide) lucide.createIcons();
-    }
-
-    function closeTrackOrderModal() {
-      document.getElementById('track-order-modal').classList.add('hidden');
-    }
-
-    function lookupOrderStatus() {
-      const inputId = document.getElementById('track-order-id-input').value.trim().toUpperCase();
-      const container = document.getElementById('track-result-container');
-      container.classList.remove('hidden');
-
-      if (!inputId) {
-        container.innerHTML = `<div class="bg-rose-50 text-rose-700 text-xs p-3 rounded-xl border border-rose-200 font-bold">Please enter a valid order number.</div>`;
-        return;
-      }
-
-      const order = orders.find(o => o.id.toUpperCase() === inputId || o.id.toUpperCase() === '#' + inputId);
-      if (!order) {
-        container.innerHTML = `<div class="bg-amber-50 text-amber-800 text-xs p-3.5 rounded-xl border border-amber-200 space-y-1">
-          <div class="font-black">Order Not Found</div>
-          <p class="text-stone-600">No order matches <strong>#${inputId}</strong>. Please check your order ID and try again.</p>
-        </div>`;
-        return;
-      }
-
-      const orderDateObj = new Date(order.createdAt);
-      const formattedDate = orderDateObj.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
-      const formattedTime = orderDateObj.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
-
-      const statusColors = {
-        received: 'bg-amber-100 text-amber-800 border-amber-200',
-        preparing: 'bg-dhaba-100 text-dhaba-800 border-dhaba-200',
-        out_for_delivery: 'bg-blue-100 text-blue-800 border-blue-200',
-        delivered: 'bg-emerald-100 text-emerald-800 border-emerald-200',
-        cancelled: 'bg-rose-100 text-rose-800 border-rose-200'
-      };
-
-      const isRefunded = Boolean(order.refund && order.refund.refNumber);
-
-      container.innerHTML = `
-        <div class="bg-stone-50 border border-stone-200 rounded-2xl p-4 space-y-3 text-xs">
-          <div class="flex items-center justify-between border-b border-stone-200 pb-2.5">
-            <div>
-              <span class="font-black text-stone-900 text-sm">#${order.id}</span>
-              <div class="text-[10px] text-stone-500">${formattedDate} • ${formattedTime}</div>
-            </div>
-            <span class="font-black px-3 py-1 rounded-full border ${statusColors[order.status] || 'bg-stone-100 text-stone-800'} uppercase tracking-wider text-[10px]">
-              ${order.status.replace(/_/g, ' ')}
-            </span>
-          </div>
-
-          <div class="space-y-1">
-            <div class="flex justify-between text-stone-600"><span>Customer:</span><strong class="text-stone-900">${order.customerName}</strong></div>
-            <div class="flex justify-between text-stone-600"><span>Payment:</span><strong class="text-stone-900">${order.paymentMethod}</strong></div>
-            <div class="flex justify-between text-stone-600"><span>Delivery Address:</span><span class="text-right text-stone-900 font-semibold max-w-[200px] truncate">${order.address}</span></div>
-            <div class="flex justify-between text-stone-600"><span>Grand Total:</span><strong class="text-dhaba-600 font-black">₹${order.total}</strong></div>
-            ${isRefunded ? `<div class="flex justify-between text-indigo-700 font-bold bg-indigo-50 px-2.5 py-1 rounded-lg mt-1"><span>Refunded:</span><span>₹${order.refund.amount} (Ref: ${order.refund.refNumber})</span></div>` : ''}
-          </div>
-
-          <div class="pt-2 flex gap-2">
-            <button onclick="closeTrackOrderModal(); openOrderSummaryModal('${order.id}')"
-              class="w-full bg-stone-900 hover:bg-stone-800 text-white font-black py-2.5 rounded-xl shadow">
-              View Detailed Receipt & PDF 📄
-            </button>
-          </div>
-        </div>
-      `;
-    }
-
-    // =========================================================================
-    // FEATURE (2): KDS ORDER MIS REPORT DOWNLOAD BY DATE RANGE
-    // =========================================================================
-    function quickSetMisToday() {
-      const todayStr = new Date().toISOString().split('T')[0];
-      document.getElementById('mis-start-date').value = todayStr;
-      document.getElementById('mis-end-date').value = todayStr;
-      showToast('Date range set to Today');
-    }
-
-    function downloadOrderMisReport() {
-      const startVal = document.getElementById('mis-start-date').value;
-      const endVal = document.getElementById('mis-end-date').value;
-
-      if (!startVal || !endVal) {
-        showToast('Please select both start and end dates');
-        return;
-      }
-
-      const startDate = new Date(startVal + 'T00:00:00');
-      const endDate = new Date(endVal + 'T23:59:59');
-
-      if (startDate > endDate) {
-        showToast('Start date cannot be after end date');
-        return;
-      }
-
-      const filtered = orders.filter(o => {
-        const orderTime = new Date(o.createdAt);
-        return orderTime >= startDate && orderTime <= endDate;
-      });
-
-      if (filtered.length === 0) {
-        showToast('No orders found in the selected date range');
-        return;
-      }
-
-      let csvContent = "data:text/csv;charset=utf-8,";
-      csvContent += "Order ID,Date,Time,Customer Name,Phone,Delivery Address,Status,Payment Method,Subtotal,Discount,Delivery Fee,GST,Grand Total,Cancellation Reason,Refund Amount,Refund Reference Number\r\n";
-
-      filtered.forEach(o => {
-        const d = new Date(o.createdAt);
-        const dateStr = d.toLocaleDateString('en-IN');
-        const timeStr = d.toLocaleTimeString('en-IN');
-        const sub = o.subtotal || 0;
-        const disc = o.discount || 0;
-        const del = o.deliveryFee || 40;
-        const gst = o.gst || 0;
-        const cancelReason = (o.cancelReason || '').replace(/,/g, ' ');
-        const refundAmt = o.refund ? o.refund.amount : 0;
-        const refundRef = o.refund ? o.refund.refNumber : '';
-
-        const row = [
-          o.id,
-          dateStr,
-          timeStr,
-          '"' + o.customerName + '"',
-          o.phone,
-          '"' + (o.address || '').replace(/,/g, ' ') + '"',
-          o.status,
-          o.paymentMethod,
-          sub,
-          disc,
-          del,
-          gst,
-          o.total,
-          '"' + cancelReason + '"',
-          refundAmt,
-          refundRef
-        ];
-        csvContent += row.join(",") + "\r\n";
-      });
-
-      const encodedUri = encodeURI(csvContent);
-      const link = document.createElement("a");
-      link.setAttribute("href", encodedUri);
-      link.setAttribute("download", `Dhaba_Express_MIS_${startVal}_to_${endVal}.csv`);
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-
-      showToast(`MIS Report downloaded successfully (${filtered.length} orders)`);
     }
 
     // Toast Notifications
