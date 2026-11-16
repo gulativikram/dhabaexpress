@@ -1,806 +1,625 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dhaba Express - Cloud Kitchen & KDS</title>
-  <!-- Tailwind CSS -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dhaba Express | Cloud Kitchen & Live KDS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Tailwind Custom Configuration -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <script>
     tailwind.config = {
       theme: {
         extend: {
+          fontFamily: { sans: ['Inter', 'sans-serif'] },
           colors: {
             dhaba: {
               50: '#fff7ed',
               100: '#ffedd5',
+              200: '#fed7aa',
               500: '#f97316',
               600: '#ea580c',
               700: '#c2410c',
               800: '#9a3412',
-              900: '#7c2d12',
-            },
-            navybrand: '#0f172a'
+              900: '#7c2d12'
+            }
           },
           boxShadow: {
-            card: '0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05)',
-            floating: '0 20px 30px -10px rgba(234, 88, 12, 0.3)'
+            card: '0 4px 20px -2px rgba(28, 25, 23, 0.08)'
           }
         }
       }
-    }
+    };
   </script>
-  <!-- Google Fonts: Inter -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <!-- Lucide Icons -->
-  <script src="https://unpkg.com/lucide@latest"></script>
   <style>
     body { font-family: 'Inter', sans-serif; }
-    .tap-scale { transition: transform 0.1s ease; }
     .tap-scale:active { transform: scale(0.97); }
-    ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-track { background: #f1f1f1; }
-    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
-  </style>
-  <!-- html2pdf.js for direct PDF download -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-  <style>
-    @media print {
-      body * { visibility: hidden !important; }
-      #order-receipt-printable, #order-receipt-printable * { visibility: visible !important; }
-      #order-receipt-printable {
-        position: fixed !important;
-        left: 0 !important;
-        top: 0 !important;
-        width: 100% !important;
-        box-shadow: none !important;
-        border: none !important;
-        background: white !important;
-      }
-      .no-print { display: none !important; }
-    }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
   </style>
 </head>
-<body class="bg-stone-50 text-stone-900 min-h-screen flex flex-col antialiased selection:bg-dhaba-500 selection:text-white">
+<body class="bg-stone-50 text-stone-900 min-h-screen flex flex-col">
 
   <!-- ===================================================================== -->
-  <!-- SVG DEFINITIONS (Official Dhaba Express Logo Emblem)                  -->
+  <!-- TOP NAVIGATION BAR                                                    -->
   <!-- ===================================================================== -->
-  <svg class="hidden">
-    <defs>
-      <g id="dhaba-express-emblem">
-        <circle cx="100" cy="100" r="96" fill="#0f172a" stroke="#f59e0b" stroke-width="4"/>
-        <!-- Inner ring -->
-        <circle cx="100" cy="100" r="84" fill="none" stroke="#fde047" stroke-width="1.5" stroke-dasharray="4 4"/>
-        <!-- Dhaba Hut Silhouette -->
-        <path d="M70,95 L130,95 L125,75 L75,75 Z" fill="#d97706"/>
-        <path d="M65,75 L135,75 L100,50 Z" fill="#b45309"/>
-        <rect x="90" y="80" width="20" height="15" fill="#fef08a"/>
-        <!-- Steaming Kadhai -->
-        <path d="M85,50 Q100,40 115,50 Q120,62 100,65 Q80,62 85,50 Z" fill="#ea580c"/>
-        <path d="M93,38 Q100,32 105,42" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
-        <path d="M100,35 Q106,28 111,38" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
-        <!-- Brand Ribbon Text -->
-        <rect x="36" y="102" width="128" height="24" rx="12" fill="#f59e0b"/>
-        <text x="100" y="118" text-anchor="middle" fill="#0f172a" font-family="Inter, sans-serif" font-weight="900" font-size="13" letter-spacing="0.5">DHABA EXPRESS</text>
-        <text x="100" y="142" text-anchor="middle" fill="#fde047" font-family="Inter, sans-serif" font-weight="700" font-size="8" letter-spacing="1.5">CLOUD KITCHEN</text>
-      </g>
-    </defs>
-  </svg>
-
-  <!-- ===================================================================== -->
-  <!-- GLOBAL TOP BANNER: BRAND HEADER                                       -->
-  <!-- ===================================================================== -->
-  <header class="sticky top-0 z-40 bg-stone-900 text-white shadow-xl border-b border-stone-800">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
-      
-      <!-- Brand Logo & Name -->
+  <header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-stone-200 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-3">
+      <!-- Brand Logo -->
       <div class="flex items-center gap-3 cursor-pointer" onclick="switchMode('website')">
-        <div class="w-12 h-12 rounded-full shrink-0 shadow-md ring-2 ring-amber-400 overflow-hidden bg-stone-800 flex items-center justify-center">
-          <svg viewBox="0 0 200 200" class="w-full h-full"><use href="#dhaba-express-emblem"/></svg>
+        <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-dhaba-600 to-amber-600 text-white flex items-center justify-center font-black text-lg shadow">
+          🍛
         </div>
         <div>
           <div class="flex items-center gap-2">
-            <h1 class="font-black text-base sm:text-lg tracking-tight text-white">Dhaba Express</h1>
-            <span class="bg-amber-400 text-stone-950 text-[10px] font-extrabold px-2 py-0.5 rounded-full uppercase tracking-wider hidden sm:inline-block">Cloud Kitchen</span>
+            <h1 class="text-base sm:text-lg font-black tracking-tight text-stone-900">Dhaba Express</h1>
+            <span class="kitchen-status-badge inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-extrabold bg-emerald-50 text-emerald-700 border border-emerald-200">
+              <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Open Now
+            </span>
           </div>
-          <p class="text-[11px] text-stone-400">Authentic Punjabi Rasoi & Tawa Special</p>
+          <p class="text-[11px] text-stone-500 hidden sm:block">Authentic Punjabi Cloud Kitchen • Connaught Place</p>
         </div>
       </div>
 
-      <!-- Right Actions: Last Order, Cart & Staff KDS -->
+      <!-- Navigation Actions -->
       <div class="flex items-center gap-2 sm:gap-3">
         <button id="nav-last-order-btn" onclick="openLastOrderSummary()"
-          class="hidden bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/40 px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition shrink-0">
-          <i data-lucide="receipt" class="w-4 h-4 text-emerald-400"></i>
-          <span class="hidden sm:inline">Order Receipt</span>
+          class="hidden bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 px-3 py-2 rounded-xl text-xs font-extrabold inline-flex items-center gap-1.5 transition tap-scale">
+          <i data-lucide="receipt" class="w-3.5 h-3.5 text-dhaba-600"></i>
+          <span class="hidden md:inline">Last Receipt</span>
         </button>
-        <button onclick="promptKitchenAccess()"
-          class="bg-stone-800 hover:bg-stone-700 text-stone-200 px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition border border-stone-700 shrink-0">
-          <i data-lucide="chef-hat" class="w-4 h-4 text-amber-400"></i>
-          <span class="hidden sm:inline">Staff KDS</span>
+
+        <button onclick="openTrackOrderModal()"
+          class="bg-stone-100 hover:bg-stone-200 text-stone-800 px-3 py-2 rounded-xl text-xs font-extrabold inline-flex items-center gap-1.5 transition tap-scale">
+          <i data-lucide="search" class="w-3.5 h-3.5 text-dhaba-600"></i>
+          <span>Track Order</span>
         </button>
 
         <button onclick="openCartDrawer()"
-          class="bg-dhaba-600 hover:bg-dhaba-700 text-white px-3.5 sm:px-4 py-2 rounded-xl text-xs font-extrabold flex items-center gap-1.5 shadow-floating tap-scale transition relative shrink-0">
+          class="relative bg-dhaba-600 hover:bg-dhaba-700 text-white px-3.5 py-2 rounded-xl text-xs font-black inline-flex items-center gap-2 shadow transition tap-scale">
           <i data-lucide="shopping-bag" class="w-4 h-4"></i>
           <span>Cart</span>
-          <span id="nav-cart-badge" class="hidden absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-amber-400 text-stone-950 text-[10px] font-black flex items-center justify-center shadow">0</span>
+          <span id="nav-cart-badge" class="hidden bg-amber-300 text-stone-950 text-[10px] font-black px-1.5 py-0.5 rounded-full">0</span>
+        </button>
+
+        <button onclick="promptKitchenAccess()"
+          class="bg-stone-900 hover:bg-stone-800 text-amber-400 px-3 py-2 rounded-xl text-xs font-extrabold inline-flex items-center gap-1.5 shadow transition tap-scale"
+          title="Staff Kitchen Display System">
+          <i data-lucide="chef-hat" class="w-4 h-4"></i>
+          <span class="hidden sm:inline">KDS</span>
         </button>
       </div>
+    </div>
 
+    <!-- Master Kitchen Closed Banner -->
+    <div class="kitchen-closed-banner hidden bg-rose-600 text-white px-4 py-2 text-center text-xs font-extrabold">
+      🚫 <span id="banner-closure-reason">Kitchen Closed for Today / Reopens at 11:00 AM</span> — Ordering is currently paused.
     </div>
   </header>
 
   <!-- ===================================================================== -->
-  <!-- KITCHEN CLOSED ALERT BANNER (If Kitchen is toggled Closed)            -->
+  <!-- CUSTOMER WEBSITE VIEW                                                 -->
   <!-- ===================================================================== -->
-  <div id="master-closed-banner" class="kitchen-closed-banner hidden bg-rose-600 text-white px-4 py-3 text-center text-xs sm:text-sm font-black flex items-center justify-center gap-2 shadow-md">
-    <i data-lucide="alert-triangle" class="w-4 h-4 shrink-0 animate-pulse"></i>
-    <span>KITCHEN CURRENTLY CLOSED • <span id="banner-closure-reason">Orders are temporarily paused</span></span>
-  </div>
+  <main id="website-mode-view" class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 space-y-8">
 
-  <!-- ===================================================================== -->
-  <!-- MAIN CONTAINER MODES                                                  -->
-  <!-- ===================================================================== -->
-  <main class="flex-grow">
-
-    <!-- =================================================================== -->
-    <!-- MODE 1: SINGLE RESPONSIVE WEBSITE & ORDERING VIEW                   -->
-    <!-- =================================================================== -->
-    <div id="website-mode-view" class="space-y-12">
-      
-      <!-- Hero Banner with Logo & GPS Tracker -->
-      <section class="relative bg-gradient-to-b from-stone-900 via-stone-900 to-stone-950 text-white py-14 px-4 sm:px-6 lg:px-8 overflow-hidden">
-        <div class="absolute inset-0 opacity-10 bg-[radial-gradient(#f97316_1px,transparent_1px)] [background-size:16px_16px]"></div>
-        <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 items-center relative z-10">
-          
-          <div class="lg:col-span-7 space-y-6 text-center lg:text-left">
-            <div class="inline-flex items-center gap-2 bg-dhaba-500/20 text-amber-400 border border-amber-400/30 px-3.5 py-1.5 rounded-full text-xs font-extrabold tracking-wide">
-              <span>🔥 Pure Desi Ghee & Tandoor Specialties</span>
-            </div>
-            
-            <h1 class="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-tight">
-              Authentic Punjabi <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-dhaba-500">Dhaba Flavors</span> Delivered Hot.
-            </h1>
-            
-            <p class="text-sm sm:text-base text-stone-300 max-w-xl mx-auto lg:mx-0 leading-relaxed">
-              Slow-cooked Dal Makhni, Royal Shahi Paneer, Crispy Tandoori Parathas & Hearty Combos prepared fresh with traditional spices.
-            </p>
-
-            <!-- Location & GPS Tracker Bar -->
-            <div class="bg-white/10 backdrop-blur-md p-2 rounded-2xl border border-white/20 max-w-xl mx-auto lg:mx-0 flex flex-col sm:flex-row gap-2">
-              <div class="flex items-center gap-2 bg-stone-900/90 px-3 py-2.5 rounded-xl flex-grow">
-                <i data-lucide="map-pin" class="w-4 h-4 text-dhaba-500 shrink-0"></i>
-                <input id="hero-location-input" type="text" value="Connaught Place, New Delhi" oninput="syncAddressInputs(this.value)" class="w-full bg-transparent text-xs text-white font-bold focus:outline-none" />
-              </div>
-              <button onclick="detectCustomerGPS()" type="button"
-                class="bg-amber-400 hover:bg-amber-300 text-stone-950 px-4 py-2.5 rounded-xl text-xs font-black flex items-center justify-center gap-1.5 shrink-0 transition tap-scale shadow">
-                <i data-lucide="crosshair" class="w-3.5 h-3.5"></i>
-                <span id="hero-gps-btn-text">Detect GPS</span>
-              </button>
-            </div>
-
-            <!-- Kitchen Status Badge -->
-            <div class="pt-2 flex items-center justify-center lg:justify-start gap-3">
-              <div id="kitchen-status-badge" class="kitchen-status-badge inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                <span>Open Now</span>
-              </div>
-              <span class="text-xs text-stone-400 font-semibold">• Instant Order (No Login Needed)</span>
-            </div>
-          </div>
-
-          <!-- Hero Right: Official Logo Showcase Card -->
-          <div class="lg:col-span-5 flex justify-center">
-            <div class="w-64 sm:w-80 h-64 sm:h-80 rounded-full bg-gradient-to-br from-amber-500/20 to-dhaba-600/30 p-3 shadow-2xl border border-amber-400/40 relative flex items-center justify-center">
-              <div class="w-full h-full rounded-full overflow-hidden shadow-inner bg-stone-900 flex items-center justify-center ring-4 ring-amber-400/50">
-                <svg viewBox="0 0 200 200" class="w-full h-full"><use href="#dhaba-express-emblem"/></svg>
-              </div>
-              <div class="absolute -bottom-2 bg-amber-400 text-stone-950 text-xs font-black px-4 py-1.5 rounded-full shadow-lg border border-amber-200">
-                ⭐ 4.9 Rated Cloud Kitchen
-              </div>
-            </div>
-          </div>
-
+    <!-- Hero Banner & Live GPS Capture -->
+    <section class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-stone-900 via-stone-900 to-dhaba-900 text-white p-6 sm:p-10 shadow-xl">
+      <div class="max-w-2xl space-y-4">
+        <div class="inline-flex items-center gap-2 bg-amber-400/15 border border-amber-400/30 text-amber-300 px-3 py-1 rounded-full text-xs font-extrabold">
+          <span>🔥 Tandoor Fired Fresh • Use Code <span class="underline">KITCHEN20</span> for 20% OFF</span>
         </div>
-      </section>
+        <h2 class="text-2xl sm:text-4xl font-black tracking-tight leading-tight">
+          Rich Punjabi Curries, Stuffed Parathas & Royal Thalis Delivered Hot.
+        </h2>
+        <p class="text-xs sm:text-sm text-stone-300 leading-relaxed">
+          Prepared fresh upon order with pure white makkhan, slow-simmered gravies, and whole aromatic spices.
+        </p>
 
-      <!-- Menu Section -->
-      <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
-        
-        <!-- Category Filter & Search Bar -->
-        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
-            <span class="text-xs font-black uppercase tracking-widest text-dhaba-600 block mb-1">Our Rasoi Menu</span>
-            <h2 class="text-2xl sm:text-3xl font-black text-stone-900">Explore Authentic Specialties</h2>
+        <!-- Address & GPS Bar -->
+        <div class="pt-2 flex flex-col sm:flex-row gap-2.5">
+          <div class="flex-1 flex items-center bg-white rounded-2xl px-3.5 py-2.5 text-stone-900 shadow">
+            <i data-lucide="map-pin" class="w-4 h-4 text-dhaba-600 shrink-0 mr-2"></i>
+            <input id="hero-location-input" type="text" oninput="syncAddressInputs(this.value)"
+              placeholder="Enter delivery address or detect live GPS..."
+              class="w-full text-xs font-semibold bg-transparent focus:outline-none placeholder:text-stone-400" />
           </div>
-
-          <div class="flex items-center gap-3">
-            <div class="relative w-full md:w-64">
-              <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400"></i>
-              <input id="menu-search-input" oninput="handleSearchInput(this.value)" type="text" placeholder="Search paneer, paratha..."
-                class="w-full bg-white text-xs font-semibold pl-9 pr-4 py-2.5 rounded-2xl border border-stone-200 shadow-sm focus:outline-none focus:border-dhaba-500" />
-            </div>
-          </div>
-        </div>
-
-        <!-- Category Pills -->
-        <div id="category-pills-container" class="flex items-center gap-2 overflow-x-auto pb-2"></div>
-
-        <!-- Menu Grid -->
-        <div id="website-menu-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"></div>
-      </section>
-
-      <!-- Footer with Staff Portal Link -->
-      <footer class="bg-stone-950 text-stone-500 py-8 px-4 text-center text-xs border-t border-stone-900">
-        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p>© 2026 Dhaba Express Cloud Kitchen • Authentic North Indian Rasoi</p>
-          <a href="?staff=1" onclick="event.preventDefault(); promptKitchenAccess();" class="text-stone-400 hover:text-white transition text-xs font-bold">
-            Staff KDS Portal
-          </a>
-        </div>
-      </footer>
-
-    </div>
-
-    <!-- =================================================================== -->
-    <!-- MODE 2: KITCHEN DISPLAY SYSTEM (KDS) & ADMIN MANAGER                -->
-    <!-- =================================================================== -->
-    <div id="kds-mode-view" class="hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-      
-      <!-- KDS Header & Master Controls -->
-      <div class="bg-stone-900 text-white rounded-3xl p-6 sm:p-8 shadow-xl border border-stone-800 flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div>
-          <div class="inline-flex items-center gap-2 bg-amber-500/20 text-amber-400 px-3 py-1 rounded-full text-xs font-extrabold mb-2">
-            <span>👨‍🍳 Kitchen Display System (KDS) & Admin</span>
-          </div>
-          <h2 class="text-2xl sm:text-3xl font-black">Live Kitchen Operations Center</h2>
-          <p class="text-xs text-stone-400 mt-1">Tracks unique Order ID, Date & Time, Customer Name, Mobile Number, and GPS Location.</p>
-          <button onclick="switchMode('website')" class="mt-3 bg-stone-800 hover:bg-stone-700 text-stone-200 text-xs font-bold px-3.5 py-1.5 rounded-xl border border-stone-700 inline-flex items-center gap-1.5">
-            <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
-            <span>Exit KDS to Website View</span>
+          <button onclick="detectCustomerGPS()"
+            class="bg-amber-400 hover:bg-amber-300 text-stone-950 font-black text-xs px-4 py-3 rounded-2xl inline-flex items-center justify-center gap-2 shadow transition tap-scale shrink-0">
+            <i data-lucide="crosshair" class="w-4 h-4"></i>
+            <span id="hero-gps-btn-text">Detect GPS</span>
           </button>
         </div>
+        <div id="gps-coords-badge" class="hidden inline-flex items-center gap-1.5 bg-emerald-500/20 border border-emerald-400/30 text-emerald-300 text-[11px] font-bold px-3 py-1 rounded-xl">
+          <span id="gps-coords-text"></span>
+        </div>
+      </div>
+    </section>
 
-        <!-- Master Kitchen Open/Closed Toggle -->
-        <div class="bg-stone-800 p-4 rounded-2xl border border-stone-700 flex flex-col gap-3 shrink-0">
-          <div class="flex items-center justify-between gap-4">
-            <div>
-              <div class="text-xs font-bold text-stone-300">Kitchen Status</div>
-              <div id="kds-status-text-label" class="text-sm font-black text-emerald-400">OPEN • ACCEPTING ORDERS</div>
-            </div>
-            <button onclick="toggleMasterKitchenStatus()" id="kds-toggle-status-btn"
-              class="px-4 py-2 rounded-xl text-xs font-black bg-rose-600 hover:bg-rose-500 text-white shadow tap-scale transition">
-              Close Kitchen
-            </button>
-          </div>
+    <!-- Category Pills & Search Bar -->
+    <section class="space-y-4">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div id="category-pills-container" class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1"></div>
 
-          <!-- Closure Note Presets -->
-          <div class="space-y-1.5 pt-2 border-t border-stone-700">
-            <input id="kds-closure-note-input" oninput="updateKitchenClosureNote(this.value)" type="text" placeholder="Closure reason (e.g. 30m break)"
-              class="w-full bg-stone-900 text-xs px-3 py-1.5 rounded-xl border border-stone-700 text-white focus:outline-none" />
-            <div class="flex items-center gap-1.5 flex-wrap">
-              <button onclick="setClosurePreset('Reopens at 11:00 AM')" class="bg-stone-700 hover:bg-stone-600 text-[10px] font-bold px-2 py-1 rounded-lg">11 AM</button>
-              <button onclick="setClosurePreset('Sold Out Today')" class="bg-stone-700 hover:bg-stone-600 text-[10px] font-bold px-2 py-1 rounded-lg">Sold Out</button>
-              <button onclick="setClosurePreset('30 Mins Prep Break')" class="bg-stone-700 hover:bg-stone-600 text-[10px] font-bold px-2 py-1 rounded-lg">30m Break</button>
-            </div>
-          </div>
+        <div class="relative w-full md:w-72">
+          <i data-lucide="search" class="w-4 h-4 text-stone-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+          <input type="text" oninput="handleSearchInput(this.value)" placeholder="Search dishes (e.g. Paneer, Dal)..."
+            class="w-full bg-white border border-stone-200 rounded-2xl pl-10 pr-4 py-2.5 text-xs font-semibold focus:outline-none focus:border-dhaba-500 shadow-sm" />
         </div>
       </div>
 
-      <!-- KDS Stats Summary -->
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div class="bg-white rounded-2xl p-5 shadow-card border border-stone-200">
-          <div class="text-xs font-bold text-stone-500">Today's Revenue</div>
-          <div class="text-2xl font-black text-stone-900 mt-1" id="kds-stat-revenue">₹0</div>
-        </div>
-        <div class="bg-white rounded-2xl p-5 shadow-card border border-stone-200">
-          <div class="text-xs font-bold text-stone-500">Active Orders</div>
-          <div class="text-2xl font-black text-dhaba-600 mt-1" id="kds-stat-active">0</div>
-        </div>
-        <div class="bg-white rounded-2xl p-5 shadow-card border border-stone-200">
-          <div class="text-xs font-bold text-stone-500">Total Orders Today</div>
-          <div class="text-2xl font-black text-stone-900 mt-1" id="kds-stat-total">0</div>
-        </div>
-      </div>
-
-      <!-- KDS Tab Switcher -->
-      <div class="flex items-center gap-2 border-b border-stone-200 pb-2">
-        <button onclick="switchKdsSubTab('orders')" id="kds-tab-orders-btn"
-          class="px-4 py-2 rounded-xl text-xs font-extrabold bg-dhaba-600 text-white shadow">
-          Live Orders Queue
-        </button>
-        <button onclick="switchKdsSubTab('stock')" id="kds-tab-stock-btn"
-          class="px-4 py-2 rounded-xl text-xs font-bold text-stone-600 hover:bg-stone-100">
-          Menu & Stock Manager (Out of Stock Toggles)
-        </button>
-      </div>
-
-      <!-- KDS Orders Sub-Tab -->
-      <div id="kds-orders-section" class="space-y-6">
-        <div class="flex items-center gap-2 flex-wrap">
-          <button onclick="setKdsFilter('all')" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-white border border-stone-200 hover:bg-stone-100">All Orders</button>
-          <button onclick="setKdsFilter('active')" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-dhaba-50 text-dhaba-700 border border-dhaba-200">Active Only</button>
-          <button onclick="setKdsFilter('delivered')" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">Completed</button>
-          <button onclick="setKdsFilter('cancelled')" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-rose-50 text-rose-700 border border-rose-200">Cancelled / Refunded</button>
-        </div>
-
-        <div id="kds-orders-container" class="space-y-4"></div>
-      </div>
-
-      <!-- KDS Menu Stock Manager Sub-Tab -->
-      <div id="kds-stock-section" class="hidden space-y-6">
-        <div class="flex items-center justify-between">
-          <div>
-            <h3 class="text-base font-black text-stone-900">Manage Dish Availability</h3>
-            <p class="text-xs text-stone-500">Instantly mark any dish Out of Stock. Customers will see it greyed out immediately.</p>
-          </div>
-          <button onclick="markAllInStock()" class="bg-stone-900 hover:bg-stone-800 text-white px-4 py-2 rounded-xl text-xs font-bold shadow">
-            Mark All In Stock
-          </button>
-        </div>
-
-        <div id="kds-stock-container" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
-      </div>
-
-    </div>
-
+      <!-- Menu Cards Grid -->
+      <div id="website-menu-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5"></div>
+    </section>
   </main>
 
   <!-- ===================================================================== -->
-  <!-- MODALS & DRAWERS                                                      -->
+  <!-- KITCHEN DISPLAY SYSTEM (KDS) & ADMIN OPERATIONS VIEW                  -->
   <!-- ===================================================================== -->
+  <main id="kds-mode-view" class="hidden flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 space-y-6">
 
-  <!-- Kitchen Staff PIN Access Modal -->
-  <div id="kitchen-pin-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-    <div class="bg-stone-900 text-white w-full max-w-sm rounded-3xl p-6 shadow-2xl border border-stone-800 space-y-5">
-      <div class="flex items-center justify-between pb-3 border-b border-stone-800">
-        <div class="flex items-center gap-2">
-          <div class="w-8 h-8 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center">
-            <i data-lucide="lock" class="w-4 h-4"></i>
-          </div>
-          <div>
-            <span class="text-[10px] font-black uppercase tracking-widest text-amber-400">Restricted Access</span>
-            <h3 class="text-base font-black text-white">Kitchen Staff PIN</h3>
-          </div>
+    <!-- KDS Top Header -->
+    <div class="bg-stone-900 text-white rounded-3xl p-6 sm:p-8 shadow-xl border border-stone-800 flex flex-col md:flex-row md:items-center justify-between gap-6">
+      <div>
+        <div class="inline-flex items-center gap-2 bg-amber-500/20 text-amber-400 px-3 py-1 rounded-full text-xs font-extrabold mb-2">
+          <span>👨‍🍳 Kitchen Display System (KDS) & Admin (Supabase Live Sync)</span>
         </div>
-        <button onclick="closeKitchenPinModal()" class="p-2 rounded-full bg-stone-800 text-stone-400 hover:text-white">
-          <i data-lucide="x" class="w-4 h-4"></i>
-        </button>
+        <h2 class="text-2xl sm:text-3xl font-black">Live Kitchen Operations Center</h2>
+        <p class="text-xs text-stone-400 mt-1">Manage live orders, toggle dish stock, process refunds, and export MIS reports.</p>
       </div>
 
-      <div class="space-y-4">
-        <div>
-          <label class="text-xs font-bold text-stone-300 block mb-1">Enter 4-Digit Staff PIN (3583)</label>
-          <input id="kitchen-pin-input" type="password" maxlength="4" placeholder="••••"
-            class="w-full bg-stone-950 text-center tracking-widest text-xl font-black py-3 rounded-xl border border-stone-700 text-white focus:border-amber-500 focus:outline-none" />
-        </div>
-        <button onclick="verifyKitchenPin()"
-          class="w-full bg-amber-500 hover:bg-amber-400 text-stone-950 font-black text-xs py-3.5 rounded-2xl shadow tap-scale transition">
-          Unlock Kitchen KDS 👨‍🍳
+      <div class="flex flex-wrap items-center gap-3">
+        <button onclick="switchMode('website')"
+          class="bg-stone-800 hover:bg-stone-700 text-white px-4 py-2.5 rounded-xl text-xs font-bold inline-flex items-center gap-2 border border-stone-700 transition tap-scale">
+          <i data-lucide="arrow-left" class="w-4 h-4"></i>
+          <span>Back to Storefront</span>
         </button>
       </div>
     </div>
-  </div>
 
-  <!-- Dish Customization Modal -->
-  <div id="customizer-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-    <div class="bg-white w-full max-w-md rounded-3xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]">
-      <div class="relative h-48 bg-stone-100 shrink-0">
-        <img id="modal-item-img" src="" alt="Dish" class="w-full h-full object-cover" />
-        <button onclick="closeCustomizer()" class="absolute top-4 right-4 bg-stone-900/80 text-white p-2 rounded-full hover:bg-stone-900">
-          <i data-lucide="x" class="w-4 h-4"></i>
+    <!-- Master Kitchen Open / Close Control & Live Stats -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+      <!-- Master Kitchen Switch -->
+      <div class="lg:col-span-2 bg-stone-900 text-white rounded-3xl p-5 border border-stone-800 space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <div class="text-[11px] font-bold text-stone-400 uppercase tracking-wider">Master Store Status</div>
+            <div id="kds-status-text-label" class="text-sm font-black text-emerald-400">OPEN • ACCEPTING ORDERS</div>
+          </div>
+          <button id="kds-toggle-status-btn" onclick="toggleMasterKitchenStatus()"
+            class="px-4 py-2 rounded-xl text-xs font-black bg-rose-600 hover:bg-rose-500 text-white shadow tap-scale transition">
+            Close Kitchen
+          </button>
+        </div>
+
+        <div class="space-y-2">
+          <label class="text-[11px] font-bold text-stone-400">Closure / Status Notice Shown to Customers:</label>
+          <input id="kds-closure-note-input" type="text" oninput="updateKitchenClosureNote(this.value)"
+            value="Kitchen Closed for Today / Reopens at 11:00 AM"
+            class="w-full bg-stone-800 border border-stone-700 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-amber-400" />
+          <div class="flex flex-wrap gap-2 pt-1">
+            <button onclick="setClosurePreset('Kitchen Closed for Today / Reopens at 11:00 AM')" class="text-[10px] bg-stone-800 hover:bg-stone-700 text-stone-300 px-2.5 py-1 rounded-lg">Closed for Night</button>
+            <button onclick="setClosurePreset('Paused Temporarily due to Heavy Rush (30 mins)')" class="text-[10px] bg-stone-800 hover:bg-stone-700 text-stone-300 px-2.5 py-1 rounded-lg">Heavy Rush Pause</button>
+            <button onclick="setClosurePreset('Closed for Maintenance / Holiday')" class="text-[10px] bg-stone-800 hover:bg-stone-700 text-stone-300 px-2.5 py-1 rounded-lg">Holiday Notice</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Live Kitchen Metrics -->
+      <div class="bg-white rounded-3xl p-5 shadow-card border border-stone-200 grid grid-cols-3 lg:grid-cols-1 gap-3">
+        <div class="bg-amber-50 rounded-2xl p-3 border border-amber-100">
+          <div class="text-[10px] font-extrabold text-amber-800 uppercase">Today's Net Sales</div>
+          <div id="kds-stat-revenue" class="text-xl font-black text-stone-900 mt-0.5">₹0</div>
+        </div>
+        <div class="bg-dhaba-50 rounded-2xl p-3 border border-dhaba-100">
+          <div class="text-[10px] font-extrabold text-dhaba-800 uppercase">Active Queue</div>
+          <div id="kds-stat-active" class="text-xl font-black text-dhaba-600 mt-0.5">0</div>
+        </div>
+        <div class="bg-stone-100 rounded-2xl p-3 border border-stone-200">
+          <div class="text-[10px] font-extrabold text-stone-600 uppercase">Orders (24h)</div>
+          <div id="kds-stat-total" class="text-xl font-black text-stone-900 mt-0.5">0</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MIS CSV Report Export Bar -->
+    <div class="bg-white rounded-3xl p-5 shadow-card border border-stone-200 flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div>
+        <h3 class="text-sm font-black text-stone-900 flex items-center gap-2">
+          <i data-lucide="file-spreadsheet" class="w-4 h-4 text-emerald-600"></i>
+          <span>Export MIS Sales & Refund Report (CSV)</span>
+        </h3>
+        <p class="text-[11px] text-stone-500">Download itemized order logs, GST, cancellations, and refund reference numbers.</p>
+      </div>
+      <div class="flex flex-wrap items-center gap-2">
+        <input id="mis-start-date" type="date" class="bg-stone-50 border border-stone-200 rounded-xl px-3 py-2 text-xs font-bold" />
+        <span class="text-xs font-bold text-stone-400">to</span>
+        <input id="mis-end-date" type="date" class="bg-stone-50 border border-stone-200 rounded-xl px-3 py-2 text-xs font-bold" />
+        <button onclick="quickSetMisToday()" class="bg-stone-100 hover:bg-stone-200 text-stone-700 px-3 py-2 rounded-xl text-xs font-bold">Today</button>
+        <button onclick="downloadOrderMisReport()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-xl text-xs font-black inline-flex items-center gap-1.5 shadow tap-scale">
+          <i data-lucide="download" class="w-3.5 h-3.5"></i>
+          <span>Download CSV</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- KDS Sub-Tabs (Orders Queue vs Menu Stock) -->
+    <div class="flex items-center justify-between flex-wrap gap-3">
+      <div class="flex items-center gap-2 bg-white p-1.5 rounded-2xl border border-stone-200 shadow-sm">
+        <button id="kds-tab-orders-btn" onclick="switchKdsSubTab('orders')" class="px-4 py-2 rounded-xl text-xs font-extrabold bg-dhaba-600 text-white shadow">
+          Live Order Queue
+        </button>
+        <button id="kds-tab-stock-btn" onclick="switchKdsSubTab('stock')" class="px-4 py-2 rounded-xl text-xs font-bold text-stone-600 hover:bg-stone-100">
+          Menu Stock Manager
         </button>
       </div>
 
-      <div class="p-6 overflow-y-auto space-y-5 flex-grow">
+      <!-- Order Filter Buttons -->
+      <div class="flex flex-wrap items-center gap-1.5">
+        <button onclick="setKdsFilter('all')" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-white border border-stone-200 hover:bg-stone-100">All</button>
+        <button onclick="setKdsFilter('active')" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-amber-50 text-amber-800 border border-amber-200 hover:bg-amber-100">Active</button>
+        <button onclick="setKdsFilter('delivered')" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-200 hover:bg-emerald-100">Delivered</button>
+        <button onclick="setKdsFilter('cancelled')" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-rose-50 text-rose-800 border border-rose-200 hover:bg-rose-100">Cancelled / Refunded</button>
+      </div>
+    </div>
+
+    <!-- KDS Live Orders Section -->
+    <div id="kds-orders-section" class="space-y-4">
+      <div id="kds-orders-container" class="space-y-4"></div>
+    </div>
+
+    <!-- KDS Menu Stock Manager Section -->
+    <div id="kds-stock-section" class="hidden space-y-4">
+      <div class="flex items-center justify-between">
+        <h3 class="text-sm font-black text-stone-900">Real-Time Dish Availability</h3>
+        <button onclick="markAllInStock()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-xl text-xs font-black shadow tap-scale">
+          Mark All In Stock ✓
+        </button>
+      </div>
+      <div id="kds-stock-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+    </div>
+  </main>
+
+  <!-- ===================================================================== -->
+  <!-- FOOTER                                                                -->
+  <!-- ===================================================================== -->
+  <footer class="bg-white border-t border-stone-200 mt-12 py-6 px-4 text-center text-xs text-stone-500">
+    <p class="font-bold text-stone-700">Dhaba Express Cloud Kitchen • Connaught Place, New Delhi</p>
+    <p class="mt-1">Freshly Prepared Punjabi Cuisine • Powered by Real-Time Cloud Sync</p>
+  </footer>
+
+  <!-- ===================================================================== -->
+  <!-- MODAL 1: DISH CUSTOMIZER                                              -->
+  <!-- ===================================================================== -->
+  <div id="customizer-modal" class="hidden fixed inset-0 z-50 bg-stone-950/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-md w-full overflow-hidden shadow-2xl border border-stone-200">
+      <div class="relative h-44 bg-stone-100">
+        <img id="modal-item-img" src="" alt="" class="w-full h-full object-cover" />
+        <button onclick="closeCustomizer()" class="absolute top-3 right-3 w-8 h-8 rounded-full bg-stone-900/75 text-white flex items-center justify-center font-bold hover:bg-stone-900">✕</button>
+      </div>
+      <div class="p-5 space-y-4">
         <div>
           <div class="flex items-center justify-between">
-            <h3 id="modal-item-name" class="text-lg font-black text-stone-900">Dish Name</h3>
-            <span id="modal-item-price" class="text-base font-black text-dhaba-600">₹0</span>
+            <h3 id="modal-item-name" class="text-lg font-black text-stone-900"></h3>
+            <span id="modal-item-price" class="text-base font-black text-dhaba-600"></span>
           </div>
-          <p id="modal-item-desc" class="text-xs text-stone-500 mt-1 leading-relaxed">Description</p>
+          <p id="modal-item-desc" class="text-xs text-stone-500 mt-1"></p>
         </div>
 
         <!-- Spice Level -->
         <div class="space-y-2">
-          <label class="text-xs font-black uppercase tracking-wider text-stone-700 block">Spice Level</label>
+          <div class="text-xs font-black text-stone-800">Choose Spice Level</div>
           <div class="grid grid-cols-3 gap-2">
-            <label class="flex items-center justify-center gap-1.5 p-2.5 rounded-xl border border-stone-200 hover:bg-stone-50 cursor-pointer text-xs font-bold text-stone-700">
-              <input type="radio" name="spice_level" value="Mild" onchange="updateCustomizerTotal()" class="text-dhaba-600 focus:ring-dhaba-500" /> Mild
+            <label class="cursor-pointer">
+              <input type="radio" name="spice_level" value="Mild" onchange="updateCustomizerTotal()" class="peer hidden" />
+              <div class="text-center py-2 rounded-xl border border-stone-200 text-xs font-bold peer-checked:bg-dhaba-600 peer-checked:text-white peer-checked:border-dhaba-600">Mild</div>
             </label>
-            <label class="flex items-center justify-center gap-1.5 p-2.5 rounded-xl border border-dhaba-500 bg-dhaba-50 cursor-pointer text-xs font-black text-dhaba-800">
-              <input type="radio" name="spice_level" value="Medium" checked onchange="updateCustomizerTotal()" class="text-dhaba-600 focus:ring-dhaba-500" /> Medium
+            <label class="cursor-pointer">
+              <input type="radio" name="spice_level" value="Medium" checked onchange="updateCustomizerTotal()" class="peer hidden" />
+              <div class="text-center py-2 rounded-xl border border-stone-200 text-xs font-bold peer-checked:bg-dhaba-600 peer-checked:text-white peer-checked:border-dhaba-600">Medium</div>
             </label>
-            <label class="flex items-center justify-center gap-1.5 p-2.5 rounded-xl border border-stone-200 hover:bg-stone-50 cursor-pointer text-xs font-bold text-stone-700">
-              <input type="radio" name="spice_level" value="Spicy" onchange="updateCustomizerTotal()" class="text-dhaba-600 focus:ring-dhaba-500" /> Spicy 🔥
+            <label class="cursor-pointer">
+              <input type="radio" name="spice_level" value="Spicy" onchange="updateCustomizerTotal()" class="peer hidden" />
+              <div class="text-center py-2 rounded-xl border border-stone-200 text-xs font-bold peer-checked:bg-dhaba-600 peer-checked:text-white peer-checked:border-dhaba-600">Dhaba Spicy</div>
             </label>
           </div>
         </div>
 
         <!-- Add-ons -->
         <div class="space-y-2">
-          <label class="text-xs font-black uppercase tracking-wider text-stone-700 block">Add-ons & Accompaniments</label>
-          <div id="modal-addons-list" class="space-y-2"></div>
+          <div class="text-xs font-black text-stone-800">Extra Breads & Sides</div>
+          <div id="modal-addons-list" class="space-y-2 max-h-40 overflow-y-auto"></div>
         </div>
-      </div>
 
-      <!-- Modal Footer -->
-      <div class="p-4 bg-stone-50 border-t border-stone-100 flex items-center justify-between gap-3 shrink-0">
-        <button onclick="closeCustomizer()" class="w-1/3 py-3 rounded-2xl text-xs font-bold text-stone-600 hover:bg-stone-200">Cancel</button>
-        <button id="modal-add-btn" onclick="addCustomizedItemToCart()" class="w-2/3 bg-dhaba-600 hover:bg-dhaba-700 text-white py-3 rounded-2xl text-xs font-black shadow tap-scale">
-          Add Item • ₹0
+        <button id="modal-add-btn" onclick="addCustomizedItemToCart()"
+          class="w-full bg-dhaba-600 hover:bg-dhaba-700 text-white font-black py-3 rounded-2xl text-xs shadow-lg transition tap-scale">
+          Add Item
         </button>
       </div>
     </div>
   </div>
 
-  <!-- Cart & Guest Checkout Drawer (No Login Needed) -->
-  <div id="cart-drawer" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex justify-end">
-    <div class="bg-white w-full max-w-md h-full shadow-2xl flex flex-col justify-between">
-      
-      <!-- Drawer Header -->
-      <div class="p-5 border-b border-stone-100 flex items-center justify-between bg-stone-900 text-white">
+  <!-- ===================================================================== -->
+  <!-- DRAWER 2: CART & GUEST CHECKOUT                                       -->
+  <!-- ===================================================================== -->
+  <div id="cart-drawer" class="hidden fixed inset-0 z-50 bg-stone-950/60 backdrop-blur-sm flex justify-end">
+    <div class="bg-white w-full max-w-md h-full flex flex-col shadow-2xl">
+      <div class="p-5 border-b border-stone-200 flex items-center justify-between">
         <div class="flex items-center gap-2">
-          <i data-lucide="shopping-bag" class="w-5 h-5 text-amber-400"></i>
-          <h3 class="text-base font-black">Your Dhaba Cart</h3>
+          <i data-lucide="shopping-bag" class="w-5 h-5 text-dhaba-600"></i>
+          <h3 class="text-base font-black text-stone-900">Your Order Cart</h3>
         </div>
-        <button onclick="closeCartDrawer()" class="p-2 rounded-full hover:bg-stone-800 text-stone-400 hover:text-white">
-          <i data-lucide="x" class="w-5 h-5"></i>
-        </button>
+        <button onclick="closeCartDrawer()" class="w-8 h-8 rounded-full bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold">✕</button>
       </div>
 
-      <!-- Drawer Body Items -->
-      <div class="p-5 overflow-y-auto flex-grow space-y-4">
+      <div class="flex-1 overflow-y-auto p-5 space-y-5">
         <div id="cart-items-list" class="space-y-3"></div>
 
-        <!-- Promo Code Box -->
-        <div class="bg-stone-50 rounded-2xl p-4 border border-stone-200 space-y-2">
-          <label class="text-xs font-black text-stone-700 block">Have Promo Code?</label>
-          <div class="flex gap-2">
-            <input id="promo-input" type="text" placeholder="Try KITCHEN20" class="w-full text-xs uppercase font-bold bg-white px-3 py-2.5 rounded-xl border border-stone-200 focus:outline-none focus:border-dhaba-500" />
-            <button onclick="applyPromo()" class="bg-stone-900 hover:bg-stone-800 text-white text-xs font-bold px-4 py-2.5 rounded-xl shrink-0">Apply</button>
-          </div>
-          <p id="promo-feedback" class="hidden text-[11px] font-bold mt-1"></p>
-        </div>
-
-        <!-- Customer Name, Mobile Number, Address & Live GPS Location -->
-        <div class="bg-stone-50 rounded-2xl p-4 border border-stone-200 space-y-3">
-          <div class="text-xs font-black text-stone-800 uppercase tracking-wider">Customer Details (No Login Required)</div>
-
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-            <div>
-              <label class="text-[11px] font-bold text-stone-700 block mb-1">Full Name *</label>
-              <input id="checkout-name" type="text" placeholder="Enter your name"
-                class="w-full text-xs font-semibold bg-white px-3 py-2.5 rounded-xl border border-stone-200 focus:outline-none focus:border-dhaba-500" />
+        <div id="cart-footer-section" class="hidden space-y-5">
+          <!-- Promo Code -->
+          <div class="bg-amber-50/70 border border-amber-200 rounded-2xl p-3.5 space-y-2">
+            <label class="text-[11px] font-extrabold text-amber-900 uppercase">Apply Promo Code</label>
+            <div class="flex gap-2">
+              <input id="promo-input" type="text" placeholder="Try KITCHEN20"
+                class="flex-1 bg-white border border-amber-200 rounded-xl px-3 py-2 text-xs font-bold uppercase focus:outline-none" />
+              <button onclick="applyPromo()" class="bg-stone-900 text-white px-4 py-2 rounded-xl text-xs font-black">Apply</button>
             </div>
-            <div>
-              <label class="text-[11px] font-bold text-stone-700 block mb-1">Mobile Number *</label>
-              <input id="checkout-phone" type="tel" maxlength="10" placeholder="10-digit mobile"
-                class="w-full text-xs font-semibold bg-white px-3 py-2.5 rounded-xl border border-stone-200 focus:outline-none focus:border-dhaba-500" />
-            </div>
+            <div id="promo-feedback" class="hidden"></div>
           </div>
 
-          <div class="space-y-1.5">
-            <div class="flex items-center justify-between">
-              <label class="text-[11px] font-bold text-stone-700">Delivery Address & GPS Location *</label>
-              <button onclick="detectCustomerGPS()" type="button"
-                class="bg-emerald-600 hover:bg-emerald-500 text-white text-[10px] font-black px-2.5 py-1 rounded-lg flex items-center gap-1 tap-scale shadow-sm">
+          <!-- Guest Checkout Details -->
+          <div class="space-y-3 bg-stone-50 p-4 rounded-2xl border border-stone-200">
+            <div class="text-xs font-black text-stone-900">Delivery Details</div>
+            <input id="checkout-name" type="text" placeholder="Your Full Name *"
+              class="w-full bg-white border border-stone-200 rounded-xl px-3.5 py-2.5 text-xs font-semibold focus:outline-none focus:border-dhaba-500" />
+            <input id="checkout-phone" type="tel" maxlength="10" placeholder="10-Digit Mobile Number *"
+              class="w-full bg-white border border-stone-200 rounded-xl px-3.5 py-2.5 text-xs font-semibold focus:outline-none focus:border-dhaba-500" />
+            <div class="space-y-1.5">
+              <textarea id="checkout-address" rows="2" oninput="syncAddressInputs(this.value)" placeholder="Complete Delivery Address (House/Flat, Street, Landmark) *"
+                class="w-full bg-white border border-stone-200 rounded-xl px-3.5 py-2 text-xs font-semibold focus:outline-none focus:border-dhaba-500"></textarea>
+              <button type="button" onclick="detectCustomerGPS()" class="text-[11px] font-extrabold text-dhaba-600 hover:underline inline-flex items-center gap-1">
                 <i data-lucide="crosshair" class="w-3 h-3"></i>
-                <span>Capture GPS</span>
+                <span>Use My Live GPS Location</span>
               </button>
             </div>
-            <input id="checkout-address" type="text" value="Flat 402, Regal Building, Connaught Place, New Delhi" oninput="syncAddressInputs(this.value)"
-              class="w-full text-xs font-semibold bg-white px-3 py-2.5 rounded-xl border border-stone-200 focus:outline-none focus:border-dhaba-500" />
+
+            <!-- Payment Mode -->
+            <div class="pt-1 space-y-1.5">
+              <div class="text-[11px] font-extrabold text-stone-600">Payment Mode</div>
+              <div class="grid grid-cols-2 gap-2">
+                <label class="cursor-pointer">
+                  <input type="radio" name="payment_method" value="UPI / QR" checked class="peer hidden" />
+                  <div class="text-center py-2 rounded-xl border border-stone-200 bg-white text-xs font-bold peer-checked:bg-dhaba-600 peer-checked:text-white peer-checked:border-dhaba-600">UPI / QR</div>
+                </label>
+                <label class="cursor-pointer">
+                  <input type="radio" name="payment_method" value="Cash on Delivery" class="peer hidden" />
+                  <div class="text-center py-2 rounded-xl border border-stone-200 bg-white text-xs font-bold peer-checked:bg-dhaba-600 peer-checked:text-white peer-checked:border-dhaba-600">Cash on Delivery</div>
+                </label>
+              </div>
+            </div>
           </div>
 
-          <div id="gps-coords-badge" class="hidden text-[11px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-xl flex items-center justify-between">
-            <span id="gps-coords-text">📍 GPS Pin Locked</span>
-            <span class="text-[10px] uppercase tracking-wider bg-emerald-600 text-white px-1.5 py-0.5 rounded">Sent to KDS</span>
+          <!-- Bill Breakdown -->
+          <div class="bg-stone-50 p-4 rounded-2xl border border-stone-200 space-y-2 text-xs">
+            <div class="flex justify-between text-stone-600"><span>Item Subtotal</span><span id="bill-subtotal" class="font-bold">₹0</span></div>
+            <div class="flex justify-between text-emerald-600"><span>Promo Discount</span><span id="bill-discount" class="font-bold">-₹0</span></div>
+            <div class="flex justify-between text-stone-600"><span>Delivery & Packaging</span><span id="bill-delivery" class="font-bold">₹40</span></div>
+            <div class="flex justify-between text-stone-600"><span>GST (5%)</span><span id="bill-gst" class="font-bold">₹0</span></div>
+            <div class="flex justify-between text-sm font-black text-stone-900 pt-2 border-t border-stone-200">
+              <span>Grand Total</span>
+              <span id="bill-grandtotal" class="text-dhaba-600">₹0</span>
+            </div>
           </div>
-        </div>
 
-        <!-- Payment Method -->
-        <div class="bg-stone-50 rounded-2xl p-4 border border-stone-200 space-y-2">
-          <label class="text-xs font-black text-stone-700 block">Payment Method</label>
-          <div class="grid grid-cols-2 gap-2">
-            <label class="flex items-center gap-2 p-3 rounded-xl border border-dhaba-500 bg-dhaba-50 cursor-pointer text-xs font-bold text-stone-800">
-              <input type="radio" name="payment_method" value="UPI / QR" checked class="text-dhaba-600" /> UPI / QR Scan
-            </label>
-            <label class="flex items-center gap-2 p-3 rounded-xl border border-stone-200 bg-white cursor-pointer text-xs font-bold text-stone-800">
-              <input type="radio" name="payment_method" value="Cash on Delivery" class="text-dhaba-600" /> Cash on Delivery
-            </label>
-          </div>
+          <button onclick="placeOrder()"
+            class="w-full bg-dhaba-600 hover:bg-dhaba-700 text-white font-black py-3.5 rounded-2xl text-sm shadow-lg transition tap-scale">
+            Place Order Now →
+          </button>
         </div>
       </div>
-
-      <!-- Drawer Footer / Bill Summary -->
-      <div id="cart-footer-section" class="p-5 bg-stone-100 border-t border-stone-200 space-y-3">
-        <div class="space-y-1.5 text-xs">
-          <div class="flex justify-between text-stone-600">
-            <span>Item Subtotal</span>
-            <span id="bill-subtotal" class="font-bold text-stone-900">₹0</span>
-          </div>
-          <div id="bill-discount-row" class="flex justify-between text-emerald-600">
-            <span>Promo Discount (KITCHEN20)</span>
-            <span id="bill-discount" class="font-bold">-₹0</span>
-          </div>
-          <div class="flex justify-between text-stone-600">
-            <span>Delivery & Packaging</span>
-            <span id="bill-delivery" class="font-bold text-stone-900">₹40</span>
-          </div>
-          <div class="flex justify-between text-stone-600">
-            <span>GST (5%)</span>
-            <span id="bill-gst" class="font-bold text-stone-900">₹0</span>
-          </div>
-          <div class="flex justify-between text-sm font-black text-stone-900 pt-2 border-t border-stone-200">
-            <span>Grand Total</span>
-            <span id="bill-grandtotal" class="text-dhaba-600">₹0</span>
-          </div>
-        </div>
-
-        <button onclick="placeOrder()" class="w-full bg-dhaba-600 hover:bg-dhaba-700 text-white font-black text-xs py-3.5 rounded-2xl shadow-floating tap-scale">
-          Place Order Now 🚀
-        </button>
-      </div>
-
     </div>
   </div>
 
-  <!-- Customer Order Summary & PDF Receipt Modal -->
-  <div id="order-summary-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 overflow-y-auto">
-    <div class="bg-white w-full max-w-lg rounded-3xl overflow-hidden shadow-2xl border border-stone-200 my-auto flex flex-col max-h-[92vh]">
-      <!-- Modal Top Bar -->
-      <div class="bg-stone-900 text-white px-6 py-4 flex items-center justify-between shrink-0 no-print">
-        <div class="flex items-center gap-2.5">
-          <div class="w-8 h-8 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
-            <i data-lucide="check-circle-2" class="w-5 h-5"></i>
-          </div>
-          <div>
-            <span class="text-[10px] font-black uppercase tracking-widest text-emerald-400">Order Confirmed</span>
-            <h3 class="text-sm font-black text-white">Order Summary & Tax Receipt</h3>
-          </div>
-        </div>
-        <button onclick="closeOrderSummaryModal()" class="p-2 rounded-full bg-stone-800 text-stone-400 hover:text-white">
-          <i data-lucide="x" class="w-4 h-4"></i>
-        </button>
-      </div>
-
-      <!-- Printable Receipt Area -->
-      <div id="order-receipt-printable" class="p-6 overflow-y-auto space-y-5 bg-white text-stone-900">
-        <!-- Brand Header in Receipt -->
-        <div class="flex items-start justify-between border-b border-dashed border-stone-300 pb-4">
-          <div class="flex items-center gap-3">
-            <div class="w-11 h-11 rounded-full bg-stone-900 flex items-center justify-center shrink-0 ring-2 ring-amber-400">
-              <svg viewBox="0 0 200 200" class="w-full h-full"><use href="#dhaba-express-emblem"/></svg>
-            </div>
-            <div>
-              <h4 class="text-base font-black text-stone-900">Dhaba Express</h4>
-              <p class="text-[11px] text-stone-500 font-medium">Authentic Punjabi Rasoi & Cloud Kitchen</p>
-              <p class="text-[10px] text-stone-400">Connaught Place, New Delhi • GSTIN: 07AABCD1234F1Z5</p>
-            </div>
-          </div>
-          <div class="text-right">
-            <span id="receipt-status-pill" class="inline-block bg-emerald-100 text-emerald-800 text-[10px] font-black px-2.5 py-1 rounded-full uppercase">Confirmed</span>
-            <div id="receipt-order-id" class="text-sm font-black text-stone-900 mt-1">#DHB-0000</div>
-            <div id="receipt-datetime" class="text-[10px] text-stone-500 font-medium">Date & Time</div>
-          </div>
-        </div>
-
-        <!-- Customer & Delivery Details -->
-        <div class="bg-stone-50 rounded-2xl p-4 border border-stone-200/80 grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-          <div>
-            <span class="text-[10px] font-black uppercase tracking-wider text-stone-400 block">Billed To</span>
-            <div id="receipt-customer-name" class="font-black text-stone-900 mt-0.5">Customer Name</div>
-            <div id="receipt-customer-phone" class="text-stone-600 font-semibold">+91 0000000000</div>
-          </div>
-          <div>
-            <span class="text-[10px] font-black uppercase tracking-wider text-stone-400 block">Payment & Mode</span>
-            <div id="receipt-payment-method" class="font-black text-stone-900 mt-0.5">UPI / QR</div>
-            <div id="receipt-gps-info" class="text-[11px] text-emerald-700 font-semibold">Home Delivery</div>
-          </div>
-          <div class="sm:col-span-2 pt-2 border-t border-stone-200/70">
-            <span class="text-[10px] font-black uppercase tracking-wider text-stone-400 block">Delivery Address</span>
-            <div id="receipt-address" class="text-stone-700 font-medium mt-0.5">Address</div>
-          </div>
-        </div>
-
-        <!-- Refund Banner in Customer Summary (shown if cancelled/refunded) -->
-        <div id="receipt-refund-box" class="hidden bg-rose-50 border border-rose-200 rounded-2xl p-3.5 text-xs space-y-1">
-          <div class="font-black text-rose-800 flex items-center gap-1.5">
-            <span>⚠️ Order Cancelled</span>
-            <span id="receipt-cancel-reason" class="font-semibold text-rose-700"></span>
-          </div>
-          <div id="receipt-refund-details" class="text-emerald-800 font-bold bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-xl mt-1"></div>
-        </div>
-
-        <!-- Itemized Order Table -->
+  <!-- ===================================================================== -->
+  <!-- MODAL 3: ORDER SUMMARY & PDF RECEIPT                                  -->
+  <!-- ===================================================================== -->
+  <div id="order-summary-modal" class="hidden fixed inset-0 z-50 bg-stone-950/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-lg w-full max-h-[90vh] overflow-y-auto p-6 shadow-2xl border border-stone-200 space-y-5">
+      <div class="flex items-start justify-between border-b border-stone-200 pb-4">
         <div>
-          <div class="text-[10px] font-black uppercase tracking-wider text-stone-400 mb-2">Order Items</div>
-          <div class="border border-stone-200 rounded-2xl overflow-hidden">
-            <table class="w-full text-left border-collapse text-xs">
-              <thead>
-                <tr class="bg-stone-100 text-stone-600 text-[10px] uppercase font-black border-b border-stone-200">
-                  <th class="py-2.5 px-3">Item & Customizations</th>
-                  <th class="py-2.5 px-2 text-center">Qty</th>
-                  <th class="py-2.5 px-3 text-right">Amount</th>
-                </tr>
-              </thead>
-              <tbody id="receipt-items-tbody" class="divide-y divide-stone-100"></tbody>
-            </table>
-          </div>
+          <span id="receipt-status-pill" class="inline-block bg-emerald-100 text-emerald-800 text-[10px] font-black px-2.5 py-1 rounded-full uppercase">Received</span>
+          <h3 class="text-lg font-black text-stone-900 mt-1">Order <span id="receipt-order-id">#DHB-0000</span></h3>
+          <p id="receipt-datetime" class="text-[11px] text-stone-500"></p>
         </div>
+        <button onclick="closeOrderSummaryModal()" class="w-8 h-8 rounded-full bg-stone-100 hover:bg-stone-200 font-bold">✕</button>
+      </div>
 
-        <!-- Bill Breakdown -->
-        <div class="bg-stone-50 rounded-2xl p-4 border border-stone-200/80 space-y-1.5 text-xs">
-          <div class="flex justify-between text-stone-600">
-            <span>Item Subtotal</span>
-            <span id="receipt-subtotal" class="font-bold text-stone-900">₹0</span>
-          </div>
-          <div id="receipt-discount-row" class="hidden flex justify-between text-emerald-600">
-            <span>Promo Discount (KITCHEN20)</span>
-            <span id="receipt-discount" class="font-bold">-₹0</span>
-          </div>
-          <div class="flex justify-between text-stone-600">
-            <span>Delivery & Packaging Charges</span>
-            <span id="receipt-delivery" class="font-bold text-stone-900">₹40</span>
-          </div>
-          <div class="flex justify-between text-stone-600">
-            <span>GST (5%)</span>
-            <span id="receipt-gst" class="font-bold text-stone-900">₹0</span>
-          </div>
-          <div class="flex justify-between text-base font-black text-stone-900 pt-2.5 border-t border-stone-200">
-            <span>Total Paid</span>
-            <span id="receipt-grandtotal" class="text-dhaba-600">₹0</span>
-          </div>
-        </div>
+      <div id="receipt-refund-box" class="hidden bg-rose-50 border border-rose-200 rounded-2xl p-3 text-xs space-y-1">
+        <div class="font-black text-rose-800">Order Cancelled <span id="receipt-cancel-reason" class="font-semibold"></span></div>
+        <div id="receipt-refund-details"></div>
+      </div>
 
-        <div class="text-center text-[10px] text-stone-400 pt-1">
-          Thank you for ordering from Dhaba Express! Prepared fresh upon order.
+      <div class="bg-stone-50 rounded-2xl p-4 border border-stone-200 text-xs space-y-2">
+        <div class="flex justify-between"><span class="text-stone-500">Customer:</span><strong id="receipt-customer-name"></strong></div>
+        <div class="flex justify-between"><span class="text-stone-500">Phone:</span><strong id="receipt-customer-phone"></strong></div>
+        <div class="flex justify-between"><span class="text-stone-500">Payment:</span><strong id="receipt-payment-method"></strong></div>
+        <div class="flex justify-between"><span class="text-stone-500">Delivery Mode:</span><strong id="receipt-gps-info" class="text-emerald-700"></strong></div>
+        <div class="pt-1 border-t border-stone-200">
+          <span class="text-stone-500 block">Delivery Address:</span>
+          <span id="receipt-address" class="font-semibold text-stone-800"></span>
         </div>
       </div>
 
-      <!-- Modal Footer Actions -->
-      <div class="p-4 bg-stone-50 border-t border-stone-200 flex items-center justify-between gap-3 shrink-0 no-print">
-        <button onclick="closeOrderSummaryModal()" class="px-4 py-3 rounded-2xl text-xs font-bold text-stone-600 hover:bg-stone-200 transition">
-          Done
-        </button>
+      <div class="border border-stone-200 rounded-2xl overflow-hidden">
+        <table class="w-full text-xs">
+          <thead class="bg-stone-100 text-stone-600 text-[10px] uppercase">
+            <tr>
+              <th class="py-2 px-3 text-left">Item</th>
+              <th class="py-2 px-2 text-center">Qty</th>
+              <th class="py-2 px-3 text-right">Amount</th>
+            </tr>
+          </thead>
+          <tbody id="receipt-items-tbody" class="divide-y divide-stone-100"></tbody>
+        </table>
+      </div>
+
+      <div class="bg-stone-50 rounded-2xl p-4 border border-stone-200 text-xs space-y-1.5">
+        <div class="flex justify-between text-stone-600"><span>Item Subtotal</span><span id="receipt-subtotal" class="font-bold"></span></div>
+        <div id="receipt-discount-row" class="hidden flex justify-between text-emerald-600"><span>Promo Discount</span><span id="receipt-discount" class="font-bold"></span></div>
+        <div class="flex justify-between text-stone-600"><span>Delivery Charges</span><span id="receipt-delivery" class="font-bold"></span></div>
+        <div class="flex justify-between text-stone-600"><span>GST (5%)</span><span id="receipt-gst" class="font-bold"></span></div>
+        <div class="flex justify-between text-sm font-black text-stone-900 pt-2 border-t border-stone-200">
+          <span>Total Paid</span>
+          <span id="receipt-grandtotal" class="text-dhaba-600"></span>
+        </div>
+      </div>
+
+      <div class="flex gap-2.5">
         <button id="download-pdf-btn" onclick="downloadOrderPDF()"
-          class="flex-grow bg-stone-900 hover:bg-stone-800 text-white py-3 px-5 rounded-2xl text-xs font-black flex items-center justify-center gap-2 shadow-lg tap-scale transition">
-          <i data-lucide="download" class="w-4 h-4 text-amber-400"></i>
-          <span>Save Order as PDF</span>
+          class="flex-1 bg-stone-900 hover:bg-stone-800 text-white font-black py-3 rounded-2xl text-xs inline-flex items-center justify-center gap-2 shadow tap-scale">
+          <i data-lucide="download" class="w-4 h-4"></i>
+          <span>Download Tax Receipt (PDF)</span>
         </button>
+        <button onclick="closeOrderSummaryModal()" class="px-5 py-3 rounded-2xl bg-stone-100 hover:bg-stone-200 text-xs font-bold">Done</button>
       </div>
     </div>
   </div>
 
-  <!-- KDS Cancel Order Modal -->
-  <div id="kds-cancel-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-    <div class="bg-white w-full max-w-md rounded-3xl p-6 shadow-2xl border border-stone-200 space-y-5">
-      <div class="flex items-center justify-between pb-3 border-b border-stone-100">
-        <div class="flex items-center gap-2.5">
-          <div class="w-9 h-9 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center">
-            <i data-lucide="x-circle" class="w-5 h-5"></i>
-          </div>
-          <div>
-            <span class="text-[10px] font-black uppercase tracking-widest text-rose-600">KDS Order Cancellation</span>
-            <h3 class="text-base font-black text-stone-900">Cancel Order <span id="cancel-modal-order-id">#DHB</span></h3>
-          </div>
-        </div>
-        <button onclick="closeCancelOrderModal()" class="p-2 rounded-full bg-stone-100 text-stone-500 hover:text-stone-900">
-          <i data-lucide="x" class="w-4 h-4"></i>
-        </button>
+  <!-- ===================================================================== -->
+  <!-- MODAL 4: TRACK ORDER BY ID                                            -->
+  <!-- ===================================================================== -->
+  <div id="track-order-modal" class="hidden fixed inset-0 z-50 bg-stone-950/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-stone-200 space-y-4">
+      <div class="flex items-center justify-between">
+        <h3 class="text-base font-black text-stone-900">Track Your Order</h3>
+        <button onclick="closeTrackOrderModal()" class="w-8 h-8 rounded-full bg-stone-100 hover:bg-stone-200 font-bold">✕</button>
       </div>
+      <p class="text-xs text-stone-500">Enter your Dhaba Express Order ID (e.g., DHB-4921) to view live kitchen status.</p>
+      <div class="flex gap-2">
+        <input id="track-order-id-input" type="text" placeholder="Enter Order ID (e.g. DHB-4921)"
+          class="flex-1 bg-stone-50 border border-stone-200 rounded-xl px-3.5 py-2.5 text-xs font-bold uppercase focus:outline-none focus:border-dhaba-500" />
+        <button onclick="lookupOrderStatus()" class="bg-dhaba-600 hover:bg-dhaba-700 text-white px-4 py-2.5 rounded-xl text-xs font-black shadow">Track</button>
+      </div>
+      <div id="track-result-container" class="hidden"></div>
+    </div>
+  </div>
 
-      <div class="space-y-4">
-        <div>
-          <label class="text-xs font-bold text-stone-700 block mb-1.5">Cancellation Reason *</label>
-          <select id="cancel-reason-select" onchange="toggleCustomCancelReason(this.value)"
-            class="w-full bg-stone-50 text-xs font-bold px-3.5 py-2.5 rounded-xl border border-stone-200 text-stone-800 focus:outline-none focus:border-rose-500">
-            <option value="Item out of stock">Item out of stock</option>
-            <option value="Customer requested cancellation">Customer requested cancellation</option>
-            <option value="Delivery area out of range">Delivery area out of range</option>
-            <option value="Kitchen overloaded / equipment issue">Kitchen overloaded / equipment issue</option>
-            <option value="Other">Other (Specify below)</option>
-          </select>
-        </div>
+  <!-- ===================================================================== -->
+  <!-- MODAL 5: KDS STAFF PIN UNLOCK (PIN: 3583)                             -->
+  <!-- ===================================================================== -->
+  <div id="kitchen-pin-modal" class="hidden fixed inset-0 z-50 bg-stone-950/70 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-stone-900 text-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-stone-800 space-y-4 text-center">
+      <div class="w-12 h-12 rounded-2xl bg-amber-500/20 text-amber-400 flex items-center justify-center mx-auto text-2xl">🔐</div>
+      <div>
+        <h3 class="text-base font-black">Kitchen Staff KDS Access</h3>
+        <p class="text-xs text-stone-400 mt-1">Enter 4-digit staff PIN to open Live Kitchen Operations.</p>
+      </div>
+      <input id="kitchen-pin-input" type="password" maxlength="4" placeholder="••••"
+        onkeydown="if(event.key==='Enter') verifyKitchenPin()"
+        class="w-full bg-stone-800 border border-stone-700 rounded-2xl py-3 text-center text-lg font-black tracking-[0.5em] text-amber-400 focus:outline-none focus:border-amber-400" />
+      <div class="flex gap-2">
+        <button onclick="closeKitchenPinModal()" class="flex-1 bg-stone-800 hover:bg-stone-700 py-2.5 rounded-xl text-xs font-bold">Cancel</button>
+        <button onclick="verifyKitchenPin()" class="flex-1 bg-amber-400 hover:bg-amber-300 text-stone-950 py-2.5 rounded-xl text-xs font-black shadow">Unlock KDS</button>
+      </div>
+    </div>
+  </div>
 
+  <!-- ===================================================================== -->
+  <!-- MODAL 6: KDS CANCEL ORDER                                             -->
+  <!-- ===================================================================== -->
+  <div id="kds-cancel-modal" class="hidden fixed inset-0 z-50 bg-stone-950/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-stone-200 space-y-4">
+      <div class="flex items-center justify-between">
+        <h3 class="text-base font-black text-rose-700">Cancel Order <span id="cancel-modal-order-id"></span></h3>
+        <button onclick="closeCancelOrderModal()" class="w-8 h-8 rounded-full bg-stone-100 font-bold">✕</button>
+      </div>
+      <div class="space-y-3 text-xs">
+        <label class="font-bold text-stone-700 block">Select Cancellation Reason:</label>
+        <select id="cancel-reason-select" onchange="toggleCustomCancelReason(this.value)"
+          class="w-full bg-stone-50 border border-stone-200 rounded-xl px-3.5 py-2.5 font-semibold">
+          <option value="Item out of stock">Item out of stock</option>
+          <option value="Customer requested cancellation">Customer requested cancellation</option>
+          <option value="Delivery area unserviceable">Delivery area unserviceable</option>
+          <option value="Kitchen closing / rush overload">Kitchen closing / rush overload</option>
+          <option value="Other">Other (Specify)</option>
+        </select>
         <div id="cancel-custom-reason-wrap" class="hidden">
-          <label class="text-xs font-bold text-stone-700 block mb-1">Specify Reason *</label>
-          <input id="cancel-custom-reason-input" type="text" placeholder="Enter cancellation reason..."
-            class="w-full bg-stone-50 text-xs font-semibold px-3.5 py-2.5 rounded-xl border border-stone-200 focus:outline-none focus:border-rose-500" />
+          <input id="cancel-custom-reason-input" type="text" placeholder="Enter specific reason..."
+            class="w-full bg-stone-50 border border-stone-200 rounded-xl px-3.5 py-2.5 font-semibold" />
         </div>
-
-        <div id="cancel-refund-prompt-box" class="bg-amber-50 border border-amber-200 rounded-2xl p-3.5 text-xs text-amber-900">
-          <span class="font-black">Note:</span> Paid orders can be refunded immediately after cancellation by recording the Refund Reference Number.
-        </div>
-
-        <div class="flex items-center gap-3 pt-1">
-          <button onclick="closeCancelOrderModal()" class="w-1/3 py-3 rounded-2xl text-xs font-bold text-stone-600 hover:bg-stone-100">
-            Keep Order
-          </button>
-          <button onclick="confirmCancelOrder()" class="w-2/3 bg-rose-600 hover:bg-rose-700 text-white py-3 rounded-2xl text-xs font-black shadow tap-scale transition">
-            Confirm Cancel Order
-          </button>
-        </div>
+      </div>
+      <div class="flex gap-2 pt-2">
+        <button onclick="closeCancelOrderModal()" class="flex-1 bg-stone-100 hover:bg-stone-200 py-2.5 rounded-xl text-xs font-bold">Keep Order</button>
+        <button onclick="confirmCancelOrder()" class="flex-1 bg-rose-600 hover:bg-rose-500 text-white py-2.5 rounded-xl text-xs font-black shadow">Confirm Cancellation</button>
       </div>
     </div>
   </div>
 
-  <!-- KDS Refund Payment Modal -->
-  <div id="kds-refund-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-    <div class="bg-white w-full max-w-md rounded-3xl p-6 shadow-2xl border border-stone-200 space-y-5">
-      <div class="flex items-center justify-between pb-3 border-b border-stone-100">
-        <div class="flex items-center gap-2.5">
-          <div class="w-9 h-9 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center">
-            <i data-lucide="rotate-ccw" class="w-5 h-5"></i>
-          </div>
-          <div>
-            <span class="text-[10px] font-black uppercase tracking-widest text-indigo-600">Payment Refund</span>
-            <h3 class="text-base font-black text-stone-900">Refund Order <span id="refund-modal-order-id">#DHB</span></h3>
-          </div>
+  <!-- ===================================================================== -->
+  <!-- MODAL 7: KDS REFUND PAYMENT                                           -->
+  <!-- ===================================================================== -->
+  <div id="kds-refund-modal" class="hidden fixed inset-0 z-50 bg-stone-950/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-stone-200 space-y-4">
+      <div class="flex items-center justify-between">
+        <div>
+          <h3 class="text-base font-black text-indigo-900">Record Payment Refund <span id="refund-modal-order-id"></span></h3>
+          <p id="refund-modal-customer" class="text-[11px] text-stone-500"></p>
         </div>
-        <button onclick="closeRefundModal()" class="p-2 rounded-full bg-stone-100 text-stone-500 hover:text-stone-900">
-          <i data-lucide="x" class="w-4 h-4"></i>
-        </button>
+        <button onclick="closeRefundModal()" class="w-8 h-8 rounded-full bg-stone-100 font-bold">✕</button>
       </div>
 
-      <div class="space-y-4">
-        <div class="bg-stone-50 rounded-2xl p-3.5 border border-stone-200 flex items-center justify-between text-xs">
-          <div>
-            <span class="text-stone-500 block">Customer & Payment Mode</span>
-            <span id="refund-modal-customer" class="font-black text-stone-900">Customer • UPI / QR</span>
-          </div>
-          <div class="text-right">
-            <span class="text-stone-500 block">Order Total</span>
-            <span id="refund-modal-total" class="font-black text-dhaba-600 text-sm">₹0</span>
-          </div>
-        </div>
+      <div class="bg-indigo-50 border border-indigo-100 rounded-2xl p-3 flex justify-between items-center text-xs">
+        <span class="font-bold text-indigo-900">Original Order Total:</span>
+        <span id="refund-modal-total" class="text-base font-black text-indigo-700">₹0</span>
+      </div>
 
+      <div class="space-y-3 text-xs">
         <div>
-          <label class="text-xs font-bold text-stone-700 block mb-1">Refund Amount (₹) *</label>
-          <input id="refund-amount-input" type="number" min="1" step="1"
-            class="w-full bg-stone-50 text-sm font-black px-3.5 py-2.5 rounded-xl border border-stone-200 text-stone-900 focus:outline-none focus:border-indigo-500" />
+          <label class="font-bold text-stone-700 block mb-1">Refund Amount (₹)</label>
+          <input id="refund-amount-input" type="number" class="w-full bg-stone-50 border border-stone-200 rounded-xl px-3.5 py-2.5 font-black" />
         </div>
-
         <div>
           <div class="flex items-center justify-between mb-1">
-            <label class="text-xs font-bold text-stone-700">Refund Reference Number (UTR / RRN / Txn ID) *</label>
-            <button type="button" onclick="generateSampleRefundRef()" class="text-[10px] font-black text-indigo-600 hover:underline">
-              Auto-Generate Ref
-            </button>
+            <label class="font-bold text-stone-700">Bank / UPI Refund Reference #</label>
+            <button type="button" onclick="generateSampleRefundRef()" class="text-[10px] font-extrabold text-indigo-600 hover:underline">Generate Ref #</button>
           </div>
-          <input id="refund-ref-input" type="text" placeholder="e.g. RRN42918472910 or UPI-REF-8821"
-            class="w-full bg-stone-50 text-xs font-black uppercase tracking-wider px-3.5 py-2.5 rounded-xl border border-stone-200 text-stone-900 focus:outline-none focus:border-indigo-500" />
-          <p class="text-[10px] text-stone-400 mt-1">Mandatory: Enter the bank/UPI/gateway refund reference number for audit tracking.</p>
+          <input id="refund-ref-input" type="text" placeholder="e.g. RRN492819402194"
+            class="w-full bg-stone-50 border border-stone-200 rounded-xl px-3.5 py-2.5 font-bold uppercase" />
         </div>
-
         <div>
-          <label class="text-xs font-bold text-stone-700 block mb-1">Refund Remarks (Optional)</label>
-          <input id="refund-notes-input" type="text" placeholder="e.g. Refunded via GPay / Razorpay"
-            class="w-full bg-stone-50 text-xs font-semibold px-3.5 py-2.5 rounded-xl border border-stone-200 focus:outline-none focus:border-indigo-500" />
+          <label class="font-bold text-stone-700 block mb-1">Internal Notes (Optional)</label>
+          <input id="refund-notes-input" type="text" placeholder="Refunded via UPI..."
+            class="w-full bg-stone-50 border border-stone-200 rounded-xl px-3.5 py-2.5 font-semibold" />
         </div>
+      </div>
 
-        <div class="flex items-center gap-3 pt-1">
-          <button onclick="closeRefundModal()" class="w-1/3 py-3 rounded-2xl text-xs font-bold text-stone-600 hover:bg-stone-100">
-            Cancel
-          </button>
-          <button onclick="confirmRefundPayment()" class="w-2/3 bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-2xl text-xs font-black shadow tap-scale transition">
-            Record Refund ✓
-          </button>
-        </div>
+      <div class="flex gap-2 pt-2">
+        <button onclick="closeRefundModal()" class="flex-1 bg-stone-100 hover:bg-stone-200 py-2.5 rounded-xl text-xs font-bold">Cancel</button>
+        <button onclick="confirmRefundPayment()" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white py-2.5 rounded-xl text-xs font-black shadow">Confirm Refund ✓</button>
       </div>
     </div>
   </div>
 
   <!-- ===================================================================== -->
-  <!-- APPLICATION JAVASCRIPT LOGIC                                          -->
+  <!-- SUPABASE & APPLICATION LOGIC                                          -->
   <!-- ===================================================================== -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
+    // =========================================================================
+    // SUPABASE CONFIGURATION (100% FREE TIER - NO CREDIT CARD REQUIRED)
+    // =========================================================================
+    const SUPABASE_URL = "https://vcmprujvfeeqgkxvdqlv.supabase.co";
+    const SUPABASE_ANON_KEY = "sb_publishable_jcK_YFu_13A9MO_MOZ0cJQ_AkVdQROJ";
+
+    window.isCloudConfigured = SUPABASE_URL !== "YOUR_SUPABASE_URL" && SUPABASE_ANON_KEY !== "YOUR_SUPABASE_ANON_KEY";
+    let supabaseClient = null;
+
+    if (window.isCloudConfigured && window.supabase) {
+      supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    }
+
     const CATEGORIES = [
       { id: 'all', name: 'All Specials (12)', emoji: '🥘' },
       { id: 'Curries', name: 'Curries', emoji: '🍛' },
@@ -816,48 +635,23 @@
       { id: 'gulab_jamun', name: 'Hot Gulab Jamun (1 Pc)', price: 40 }
     ];
 
-    // Exact original dish picture mappings preserved
     const DEFAULT_MENU_ITEMS = [
-      { id: 'm1', category: 'Curries', name: 'Shahi Paneer', desc: 'Rich, creamy cottage cheese preparation simmered in royal tomato & cashew gravy with aromatic spices.', price: 300, rating: 4.9, isVeg: true, inStock: true, bestseller: true, emoji: '🥘', image: 'shahi paneer.jfif' },
-      { id: 'm2', category: 'Curries', name: 'Dal Makhni', desc: 'Whole black lentils & kidney beans slow-cooked overnight over charcoal clay ovens with white butter & cream.', price: 280, rating: 4.8, isVeg: true, inStock: true, bestseller: true, emoji: '🍲', image: 'Dal Makhni.jfif' },
-      { id: 'm3', category: 'Curries', name: 'Rajma', desc: 'Comforting red kidney beans cooked in a thick, onion-tomato masala flavored with whole Punjabi spices.', price: 180, rating: 4.6, isVeg: true, inStock: true, bestseller: false, emoji: '🍛', image: 'rajma.jfif' },
-      { id: 'm4', category: 'Curries', name: 'Kadi Pakora', desc: 'Crispy gram flour fritters immersed in tangy, spiced yogurt curry tempered with mustard & curry leaves.', price: 200, rating: 4.7, isVeg: true, inStock: true, bestseller: false, emoji: '🥣', image: 'Kadi Pakora.jfif' },
-      { id: 'm5', category: 'Combos', name: 'Kadi Chawal Combo', desc: 'Soul-satisfying tangy Kadi Pakora served alongside steaming hot, fragrant basmati jeera rice.', price: 200, rating: 4.8, isVeg: true, inStock: true, bestseller: true, emoji: '🍚', image: 'Kadi Pakora.jfif' },
-      { id: 'm6', category: 'Combos', name: 'Rajma Rice Combo', desc: 'Classic Dhaba comfort combo of homestyle Punjabi Rajma masala served with long-grain steamed basmati rice.', price: 250, rating: 4.9, isVeg: true, inStock: true, bestseller: true, emoji: '🍛', image: 'Rajma Combo.jfif' },
-      { id: 'm7', category: 'Combos', name: 'Dal Makhni Combo', desc: 'Velvety Dal Makhni paired with 2 fluffy butter tawa rotis or jeera rice for a hearty meal.', price: 250, rating: 4.8, isVeg: true, inStock: true, bestseller: false, emoji: '🍽️', image: 'Dal Makhni.jfif' },
-      { id: 'm8', category: 'Combos', name: 'Shahi Paneer Combo', desc: 'Royal Shahi Paneer served with 2 butter naan or fragrant basmati pulao and salad.', price: 300, rating: 4.9, isVeg: true, inStock: true, bestseller: true, emoji: '🥘', image: 'shahi paneer combo.jfif' },
-      { id: 'm9', category: 'Thalis', name: 'Deluxe Thali', desc: 'Ultimate feast featuring Shahi Paneer, Dal Makhni, Mix Veg, Jeera Rice, 2 Butter Naan, Raita, Salad & Gulab Jamun.', price: 350, rating: 5.0, isVeg: true, inStock: true, bestseller: true, emoji: '👑', image: 'shahi paneer combo.jfif' },
-      { id: 'm10', category: 'Parathas', name: 'Aloo Paratha', desc: 'Stuffed whole wheat tandoori/tawa paratha with spiced mashed potatoes, served with white butter, curd & pickle.', price: 100, rating: 4.8, isVeg: true, inStock: true, bestseller: true, emoji: '🫓', image: 'Aloo Paratha.jfif' },
-      { id: 'm11', category: 'Parathas', name: 'Aloo Pyaz Paratha', desc: 'Crispy stuffed paratha with spiced potato & onion filling, served with makkhan, dahi & achaar.', price: 120, rating: 4.8, isVeg: true, inStock: true, bestseller: false, emoji: '🫓', image: 'Aloo Pyaz Paratha.jfif' },
-      { id: 'm12', category: 'Parathas', name: 'Paneer Paratha', desc: 'Generously stuffed cottage cheese paratha roasted with desi ghee, served with curd, butter & pickle.', price: 150, rating: 4.9, isVeg: true, inStock: true, bestseller: true, emoji: '🫓', image: 'Paneer Paratha.jfif' }
+      { id: 'm1', category: 'Curries', name: 'Shahi Paneer', desc: 'Rich, creamy cottage cheese preparation simmered in royal tomato & cashew gravy with aromatic spices.', price: 300, rating: 4.9, isVeg: true, inStock: true, bestseller: true, emoji: '🥘', image: 'shahi paneer.jfif', fallback: 'https://placehold.co/600x400/ea580c/ffffff?text=Shahi+Paneer' },
+      { id: 'm2', category: 'Curries', name: 'Dal Makhni', desc: 'Whole black lentils & kidney beans slow-cooked overnight over charcoal clay ovens with white butter & cream.', price: 280, rating: 4.8, isVeg: true, inStock: true, bestseller: true, emoji: '🍲', image: 'Dal Makhni.jfif', fallback: 'https://placehold.co/600x400/7c2d12/ffffff?text=Dal+Makhni' },
+      { id: 'm3', category: 'Curries', name: 'Rajma', desc: 'Comforting red kidney beans cooked in a thick, onion-tomato masala flavored with whole Punjabi spices.', price: 180, rating: 4.6, isVeg: true, inStock: true, bestseller: false, emoji: '🍛', image: 'rajma.jfif', fallback: 'https://placehold.co/600x400/9a3412/ffffff?text=Punjabi+Rajma' },
+      { id: 'm4', category: 'Curries', name: 'Kadi Pakora', desc: 'Crispy gram flour fritters immersed in tangy, spiced yogurt curry tempered with mustard & curry leaves.', price: 200, rating: 4.7, isVeg: true, inStock: true, bestseller: false, emoji: '🥣', image: 'Kadi Pakora.jfif', fallback: 'https://placehold.co/600x400/d97706/ffffff?text=Kadi+Pakora' },
+      { id: 'm5', category: 'Combos', name: 'Kadi Chawal Combo', desc: 'Soul-satisfying tangy Kadi Pakora served alongside steaming hot, fragrant basmati jeera rice.', price: 200, rating: 4.8, isVeg: true, inStock: true, bestseller: true, emoji: '🍚', image: 'Kadi Pakora.jfif', fallback: 'https://placehold.co/600x400/b45309/ffffff?text=Kadi+Chawal+Combo' },
+      { id: 'm6', category: 'Combos', name: 'Rajma Rice Combo', desc: 'Classic Dhaba comfort combo of homestyle Punjabi Rajma masala served with long-grain steamed basmati rice.', price: 250, rating: 4.9, isVeg: true, inStock: true, bestseller: true, emoji: '🍛', image: 'Rajma Combo.jfif', fallback: 'https://placehold.co/600x400/c2410c/ffffff?text=Rajma+Rice+Combo' },
+      { id: 'm7', category: 'Combos', name: 'Dal Makhni Combo', desc: 'Velvety Dal Makhni paired with 2 fluffy butter tawa rotis or jeera rice for a hearty meal.', price: 250, rating: 4.8, isVeg: true, inStock: true, bestseller: false, emoji: '🍽️', image: 'Dal Makhni.jfif', fallback: 'https://placehold.co/600x400/7c2d12/ffffff?text=Dal+Makhni+Combo' },
+      { id: 'm8', category: 'Combos', name: 'Shahi Paneer Combo', desc: 'Royal Shahi Paneer served with 2 butter naan or fragrant basmati pulao and salad.', price: 300, rating: 4.9, isVeg: true, inStock: true, bestseller: true, emoji: '🥘', image: 'shahi paneer combo.jfif', fallback: 'https://placehold.co/600x400/ea580c/ffffff?text=Shahi+Paneer+Combo' },
+      { id: 'm9', category: 'Thalis', name: 'Deluxe Thali', desc: 'Ultimate feast featuring Shahi Paneer, Dal Makhni, Mix Veg, Jeera Rice, 2 Butter Naan, Raita, Salad & Gulab Jamun.', price: 350, rating: 5.0, isVeg: true, inStock: true, bestseller: true, emoji: '👑', image: 'shahi paneer combo.jfif', fallback: 'https://placehold.co/600x400/92400e/ffffff?text=Royal+Deluxe+Thali' },
+      { id: 'm10', category: 'Parathas', name: 'Aloo Paratha', desc: 'Stuffed whole wheat tandoori/tawa paratha with spiced mashed potatoes, served with white butter, curd & pickle.', price: 100, rating: 4.8, isVeg: true, inStock: true, bestseller: true, emoji: '🫓', image: 'Aloo Paratha.jfif', fallback: 'https://placehold.co/600x400/d97706/ffffff?text=Aloo+Paratha' },
+      { id: 'm11', category: 'Parathas', name: 'Aloo Pyaz Paratha', desc: 'Crispy stuffed paratha with spiced potato & onion filling, served with makkhan, dahi & achaar.', price: 120, rating: 4.8, isVeg: true, inStock: true, bestseller: false, emoji: '🫓', image: 'Aloo Pyaz Paratha.jfif', fallback: 'https://placehold.co/600x400/b45309/ffffff?text=Aloo+Pyaz+Paratha' },
+      { id: 'm12', category: 'Parathas', name: 'Paneer Paratha', desc: 'Generously stuffed cottage cheese paratha roasted with desi ghee, served with curd, butter & pickle.', price: 150, rating: 4.9, isVeg: true, inStock: true, bestseller: true, emoji: '🫓', image: 'Paneer Paratha.jfif', fallback: 'https://placehold.co/600x400/ea580c/ffffff?text=Paneer+Paratha' }
     ];
 
-    // Load & normalize persisted state safely
-    let menuItems = [];
-    try {
-      menuItems = JSON.parse(localStorage.getItem('dhaba_menu_v8')) || [...DEFAULT_MENU_ITEMS];
-    } catch (e) {
-      menuItems = [...DEFAULT_MENU_ITEMS];
-    }
-
-    DEFAULT_MENU_ITEMS.forEach(def => {
-      const existing = menuItems.find(m => m.id === def.id);
-      if (!existing) {
-        menuItems.push({ ...def });
-      } else {
-        existing.category = def.category;
-        existing.price = def.price;
-        existing.image = def.image;
-        existing.fallback = def.fallback;
-      }
-    });
-
+    let menuItems = [...DEFAULT_MENU_ITEMS];
     let kitchenState = { isOpen: true, closureReason: 'Kitchen Closed for Today / Reopens at 11:00 AM' };
-    try {
-      const savedKitchen = JSON.parse(localStorage.getItem('dhaba_kitchen_status_v2'));
-      if (savedKitchen) kitchenState = savedKitchen;
-    } catch (e) {}
-
     let cart = [];
     try {
       cart = JSON.parse(localStorage.getItem('dhaba_cart_v4')) || [];
@@ -873,14 +667,43 @@
         status: 'preparing',
         paymentMethod: 'UPI / QR',
         createdAt: Date.now() - 5 * 60 * 1000,
-        total: 345,
+        subtotal: 300,
+        discount: 0,
+        deliveryFee: 40,
+        gst: 15,
+        total: 355,
+        refund: null,
+        cancelReason: null,
         items: [{ menuId: 'm1', name: 'Shahi Paneer', qty: 1, unitPrice: 300, spice: 'Medium', addons: [] }]
       }
     ];
-    try {
-      const savedOrders = JSON.parse(localStorage.getItem('dhaba_orders_v7'));
-      if (savedOrders && Array.isArray(savedOrders)) orders = savedOrders;
-    } catch (e) {}
+
+    function saveFallbackState() {
+      try {
+        localStorage.setItem('dhaba_menu_v8', JSON.stringify(menuItems));
+        localStorage.setItem('dhaba_kitchen_status_v2', JSON.stringify(kitchenState));
+        localStorage.setItem('dhaba_cart_v4', JSON.stringify(cart));
+        localStorage.setItem('dhaba_orders_v7', JSON.stringify(orders));
+      } catch (e) {}
+    }
+
+    function loadFallbackState() {
+      try {
+        const savedMenu = JSON.parse(localStorage.getItem('dhaba_menu_v8'));
+        if (savedMenu && Array.isArray(savedMenu)) menuItems = savedMenu;
+        const savedKitchen = JSON.parse(localStorage.getItem('dhaba_kitchen_status_v2'));
+        if (savedKitchen) kitchenState = savedKitchen;
+        const savedOrders = JSON.parse(localStorage.getItem('dhaba_orders_v7'));
+        if (savedOrders && Array.isArray(savedOrders)) orders = savedOrders;
+      } catch (e) {}
+    }
+
+    window.addEventListener('storage', () => {
+      if (!window.isCloudConfigured) {
+        loadFallbackState();
+        renderAll();
+      }
+    });
 
     let customerGps = null;
     let appMode = 'website';
@@ -900,8 +723,16 @@
     } catch (e) {}
 
     document.addEventListener('DOMContentLoaded', () => {
-      const noteInput = document.getElementById('kds-closure-note-input');
-      if (noteInput) noteInput.value = kitchenState.closureReason;
+      if (!window.isCloudConfigured) {
+        loadFallbackState();
+      } else {
+        startSupabaseRealtimeListeners();
+      }
+      const todayStr = new Date().toISOString().split('T')[0];
+      const startInp = document.getElementById('mis-start-date');
+      const endInp = document.getElementById('mis-end-date');
+      if (startInp && !startInp.value) startInp.value = todayStr;
+      if (endInp && !endInp.value) endInp.value = todayStr;
 
       renderAll();
 
@@ -911,13 +742,165 @@
       }
     });
 
-    function saveState() {
+    // =========================================================================
+    // SUPABASE REAL-TIME SYNCHRONIZATION
+    // =========================================================================
+    async function startSupabaseRealtimeListeners() {
+      if (!supabaseClient) return;
+
+      const { data: initialOrders } = await supabaseClient
+        .from('dhaba_orders')
+        .select('*')
+        .order('createdAt', { ascending: false });
+      if (initialOrders) {
+        orders = initialOrders;
+      }
+
+      const { data: initialMenu } = await supabaseClient
+        .from('dhaba_menu_stock')
+        .select('*');
+      if (initialMenu && initialMenu.length > 0) {
+        initialMenu.forEach(row => {
+          const found = menuItems.find(m => m.id === row.id);
+          if (found) found.inStock = row.inStock;
+        });
+      }
+
+      const { data: initialKitchen } = await supabaseClient
+        .from('dhaba_kitchen_config')
+        .select('*')
+        .eq('id', 'main')
+        .single();
+      if (initialKitchen) {
+        kitchenState = { isOpen: initialKitchen.isOpen, closureReason: initialKitchen.closureReason };
+        const noteInput = document.getElementById('kds-closure-note-input');
+        if (noteInput) noteInput.value = kitchenState.closureReason;
+      }
+
+      renderAll();
+
+      supabaseClient
+        .channel('dhaba-kds-realtime')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'dhaba_orders' }, (payload) => {
+          if (payload.eventType === 'INSERT' || payload.eventType === 'UPDATE') {
+            const updated = payload.new;
+            const idx = orders.findIndex(o => o.id === updated.id);
+            if (idx > -1) orders[idx] = updated;
+            else orders.unshift(updated);
+            orders.sort((a, b) => b.createdAt - a.createdAt);
+            renderAll();
+          }
+        })
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'dhaba_menu_stock' }, (payload) => {
+          const updated = payload.new;
+          const found = menuItems.find(m => m.id === updated.id);
+          if (found) {
+            found.inStock = updated.inStock;
+            renderAll();
+          }
+        })
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'dhaba_kitchen_config' }, (payload) => {
+          const updated = payload.new;
+          if (updated && updated.id === 'main') {
+            kitchenState = { isOpen: updated.isOpen, closureReason: updated.closureReason };
+            renderAll();
+          }
+        })
+        .subscribe();
+    }
+
+    async function saveOrderToFirestore(orderObj) {
+      const existingIdx = orders.findIndex(o => o.id === orderObj.id);
+      if (existingIdx > -1) orders[existingIdx] = orderObj;
+      else orders.unshift(orderObj);
+      saveFallbackState();
+
+      if (!window.isCloudConfigured || !supabaseClient) return;
       try {
-        localStorage.setItem('dhaba_menu_v8', JSON.stringify(menuItems));
-        localStorage.setItem('dhaba_kitchen_status_v2', JSON.stringify(kitchenState));
-        localStorage.setItem('dhaba_cart_v4', JSON.stringify(cart));
-        localStorage.setItem('dhaba_orders_v7', JSON.stringify(orders));
-      } catch (e) {}
+        await supabaseClient.from('dhaba_orders').upsert([orderObj]);
+      } catch (e) {
+        console.error("Error saving order to Supabase:", e);
+      }
+    }
+
+    async function updateOrderStatusInFirestore(orderId, newStatus) {
+      const order = orders.find(o => o.id === orderId);
+      if (order) {
+        order.status = newStatus;
+        saveFallbackState();
+        renderAll();
+      }
+
+      if (!window.isCloudConfigured || !supabaseClient) return;
+      try {
+        await supabaseClient.from('dhaba_orders').update({ status: newStatus }).eq('id', orderId);
+      } catch (e) {
+        console.error("Error updating order status:", e);
+      }
+    }
+
+    async function cancelOrderInFirestore(orderId, cancelReason) {
+      const order = orders.find(o => o.id === orderId);
+      const cancelledAt = Date.now();
+      if (order) {
+        order.status = 'cancelled';
+        order.cancelReason = cancelReason;
+        order.cancelledAt = cancelledAt;
+        saveFallbackState();
+        renderAll();
+      }
+
+      if (!window.isCloudConfigured || !supabaseClient) return;
+      try {
+        await supabaseClient.from('dhaba_orders').update({ status: 'cancelled', cancelReason, cancelledAt }).eq('id', orderId);
+      } catch (e) {
+        console.error("Error cancelling order:", e);
+      }
+    }
+
+    async function recordRefundInFirestore(orderId, refundObj) {
+      const order = orders.find(o => o.id === orderId);
+      if (order) {
+        order.refund = refundObj;
+        saveFallbackState();
+        renderAll();
+      }
+
+      if (!window.isCloudConfigured || !supabaseClient) return;
+      try {
+        await supabaseClient.from('dhaba_orders').update({ refund: refundObj }).eq('id', orderId);
+      } catch (e) {
+        console.error("Error recording refund:", e);
+      }
+    }
+
+    async function updateMenuStockInFirestore(itemId, inStock) {
+      const item = menuItems.find(m => m.id === itemId);
+      if (item) {
+        item.inStock = inStock;
+        saveFallbackState();
+        renderAll();
+      }
+
+      if (!window.isCloudConfigured || !supabaseClient) return;
+      try {
+        await supabaseClient.from('dhaba_menu_stock').upsert([{ id: itemId, inStock }]);
+      } catch (e) {
+        console.error("Error updating stock:", e);
+      }
+    }
+
+    async function updateKitchenStatusInFirestore(isOpen, closureReason) {
+      kitchenState = { isOpen, closureReason };
+      saveFallbackState();
+      renderAll();
+
+      if (!window.isCloudConfigured || !supabaseClient) return;
+      try {
+        await supabaseClient.from('dhaba_kitchen_config').upsert([{ id: 'main', isOpen, closureReason }]);
+      } catch (e) {
+        console.error("Error updating kitchen status:", e);
+      }
     }
 
     function renderAll() {
@@ -930,7 +913,7 @@
       updateKdsStats();
       applyModeView();
       updateLastOrderNavButton();
-      saveState();
+      saveFallbackState();
       if (window.lucide) lucide.createIcons();
     }
 
@@ -1018,10 +1001,10 @@
 
       badgeEls.forEach(b => {
         if (kitchenState.isOpen) {
-          b.className = 'kitchen-status-badge inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold bg-emerald-50 text-emerald-700 border border-emerald-200';
+          b.className = 'kitchen-status-badge inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-extrabold bg-emerald-50 text-emerald-700 border border-emerald-200';
           b.innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Open Now';
         } else {
-          b.className = 'kitchen-status-badge inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold bg-rose-50 text-rose-700 border border-rose-200';
+          b.className = 'kitchen-status-badge inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-extrabold bg-rose-50 text-rose-700 border border-rose-200';
           b.innerHTML = '<span class="w-2 h-2 rounded-full bg-rose-500"></span> Closed';
         }
       });
@@ -1044,22 +1027,19 @@
     }
 
     function toggleMasterKitchenStatus() {
-      kitchenState.isOpen = !kitchenState.isOpen;
-      renderAll();
-      showToast(kitchenState.isOpen ? 'Kitchen is now OPEN for orders' : 'Kitchen is now CLOSED');
+      const nextState = !kitchenState.isOpen;
+      updateKitchenStatusInFirestore(nextState, kitchenState.closureReason);
+      showToast(nextState ? 'Kitchen is now OPEN for orders' : 'Kitchen is now CLOSED');
     }
 
     function updateKitchenClosureNote(val) {
-      kitchenState.closureReason = val;
-      saveState();
+      updateKitchenStatusInFirestore(kitchenState.isOpen, val);
     }
 
     function setClosurePreset(text) {
-      kitchenState.isOpen = false;
-      kitchenState.closureReason = text;
       const noteInput = document.getElementById('kds-closure-note-input');
       if (noteInput) noteInput.value = text;
-      renderAll();
+      updateKitchenStatusInFirestore(false, text);
       showToast('Kitchen closed: ' + text);
     }
 
@@ -1098,6 +1078,8 @@
       const websiteView = document.getElementById('website-mode-view');
       const kdsView = document.getElementById('kds-mode-view');
 
+      if (!websiteView || !kdsView) return;
+
       if (appMode === 'website') {
         websiteView.classList.remove('hidden');
         kdsView.classList.add('hidden');
@@ -1108,7 +1090,7 @@
     }
 
     // =========================================================================
-    // RENDER CATEGORIES & MENU (WITH ORIGINAL DISH IMAGE MAPPINGS)
+    // RENDER CATEGORIES & MENU
     // =========================================================================
     function renderCategoryPills() {
       const container = document.getElementById('category-pills-container');
@@ -1188,7 +1170,6 @@
       if (window.lucide) lucide.createIcons();
     }
 
-    // Dish Customizer Modal
     function openCustomizer(itemId) {
       const item = menuItems.find(m => m.id === itemId);
       if (!item || !item.inStock) return;
@@ -1279,7 +1260,7 @@
     }
 
     // =========================================================================
-    // CART, QUANTITY CONTROLS & GUEST CHECKOUT (NO LOGIN NEEDED)
+    // CART, QUANTITY CONTROLS & GUEST CHECKOUT
     // =========================================================================
     function openCartDrawer() {
       renderCartUI();
@@ -1382,7 +1363,6 @@
               <div class="text-xs font-extrabold text-dhaba-600 mt-1">₹${item.unitPrice * item.qty}</div>
             </div>
 
-            <!-- Add / Reduce Quantity Buttons -->
             <div class="flex items-center gap-2 bg-white rounded-xl border border-stone-200 p-1 shadow-sm shrink-0">
               <button onclick="updateCartQty('${item.cartKey}', -1)" class="w-7 h-7 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-700 font-black flex items-center justify-center">-</button>
               <span class="text-xs font-black w-5 text-center">${item.qty}</span>
@@ -1402,7 +1382,7 @@
       if (footerContainer) footerContainer.classList.remove('hidden');
     }
 
-    function placeOrder() {
+    async function placeOrder() {
       if (cart.length === 0 || !kitchenState.isOpen) return;
 
       const customerName = document.getElementById('checkout-name').value.trim();
@@ -1430,8 +1410,6 @@
 
       const { subtotal, discount, deliveryFee, gst, grandTotal } = calculateBill();
       const paymentMethod = document.querySelector('input[name="payment_method"]:checked')?.value || 'UPI / QR';
-
-      // Generate Unique Order Number & Exact Timestamp
       const newId = 'DHB-' + Date.now().toString().slice(-4) + Math.floor(10 + Math.random() * 89);
 
       const newOrderObj = {
@@ -1473,7 +1451,8 @@
         })
       };
 
-      orders.unshift(newOrderObj);
+      await saveOrderToFirestore(newOrderObj);
+
       lastPlacedOrderId = newId;
       try {
         localStorage.setItem('dhaba_last_order_id', newId);
@@ -1550,7 +1529,6 @@
         refundBox.classList.add('hidden');
       }
 
-      // Populate items table
       const tbody = document.getElementById('receipt-items-tbody');
       let computedSub = 0;
       tbody.innerHTML = order.items.map(it => {
@@ -1742,7 +1720,6 @@
           btn.disabled = true;
         }
 
-        // Render clean standalone markup at top-left (0,0) with opaque white background so html2canvas never captures a blank modal layer
         const wrapper = document.createElement('div');
         wrapper.style.position = 'fixed';
         wrapper.style.left = '0';
@@ -1835,7 +1812,7 @@
           <div class="bg-white rounded-3xl p-12 text-center shadow-card border border-stone-200">
             <div class="text-4xl mb-2">📋</div>
             <h3 class="text-base font-black text-stone-900">No Orders in this view</h3>
-            <p class="text-xs text-stone-500 mt-1">Incoming customer orders will appear here automatically.</p>
+            <p class="text-xs text-stone-500 mt-1">Incoming customer orders will appear here automatically via Supabase.</p>
           </div>
         `;
         return;
@@ -1983,12 +1960,8 @@
     }
 
     function updateOrderStatus(orderId, newStatus) {
-      const order = orders.find(o => o.id === orderId);
-      if (order) {
-        order.status = newStatus;
-        renderAll();
-        showToast('Order ' + orderId + ' updated to ' + newStatus.replace(/_/g, ' '));
-      }
+      updateOrderStatusInFirestore(orderId, newStatus);
+      showToast('Order ' + orderId + ' updated to ' + newStatus.replace(/_/g, ' '));
     }
 
     function renderKdsStockManager() {
@@ -2021,15 +1994,14 @@
     function toggleItemStock(itemId) {
       const item = menuItems.find(m => m.id === itemId);
       if (item) {
-        item.inStock = !item.inStock;
-        renderAll();
-        showToast(item.name + ' is now ' + (item.inStock ? 'In Stock' : 'Out of Stock'));
+        const nextStock = !item.inStock;
+        updateMenuStockInFirestore(itemId, nextStock);
+        showToast(item.name + ' is now ' + (nextStock ? 'In Stock' : 'Out of Stock'));
       }
     }
 
     function markAllInStock() {
-      menuItems.forEach(m => m.inStock = true);
-      renderAll();
+      menuItems.forEach(m => updateMenuStockInFirestore(m.id, true));
       showToast('All menu items marked In Stock');
     }
 
@@ -2074,15 +2046,10 @@
       const finalReason = selectedReason === 'Other' ? customReason : selectedReason;
       const cancelledOrderId = order.id;
 
-      order.status = 'cancelled';
-      order.cancelReason = finalReason;
-      order.cancelledAt = Date.now();
-
+      cancelOrderInFirestore(cancelledOrderId, finalReason);
       closeCancelOrderModal();
-      renderAll();
       showToast('Order ' + cancelledOrderId + ' cancelled');
 
-      // Prompt refund immediately if not yet refunded
       if (!order.refund) {
         openRefundModal(cancelledOrderId);
       }
@@ -2132,7 +2099,7 @@
         return;
       }
 
-      order.refund = {
+      const refundObj = {
         amount,
         refNumber,
         notes,
@@ -2140,8 +2107,8 @@
       };
 
       const refundedId = order.id;
+      recordRefundInFirestore(refundedId, refundObj);
       closeRefundModal();
-      renderAll();
       showToast('Refund of ₹' + amount + ' recorded for ' + refundedId + ' (Ref: ' + refNumber + ')');
     }
 
@@ -2154,9 +2121,174 @@
       }, 0);
       const active = orders.filter(o => o.status !== 'delivered' && o.status !== 'cancelled').length;
 
-      document.getElementById('kds-stat-revenue').textContent = '₹' + rev;
-      document.getElementById('kds-stat-active').textContent = active;
-      document.getElementById('kds-stat-total').textContent = todayOrders.length;
+      const revEl = document.getElementById('kds-stat-revenue');
+      const activeEl = document.getElementById('kds-stat-active');
+      const totalEl = document.getElementById('kds-stat-total');
+
+      if (revEl) revEl.textContent = '₹' + rev;
+      if (activeEl) activeEl.textContent = active;
+      if (totalEl) totalEl.textContent = todayOrders.length;
+    }
+
+    // =========================================================================
+    // CHECK ORDER STATUS BY ORDER NUMBER
+    // =========================================================================
+    function openTrackOrderModal() {
+      document.getElementById('track-order-id-input').value = lastPlacedOrderId || '';
+      document.getElementById('track-result-container').classList.add('hidden');
+      document.getElementById('track-order-modal').classList.remove('hidden');
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function closeTrackOrderModal() {
+      document.getElementById('track-order-modal').classList.add('hidden');
+    }
+
+    function lookupOrderStatus() {
+      const inputId = document.getElementById('track-order-id-input').value.trim().toUpperCase();
+      const container = document.getElementById('track-result-container');
+      container.classList.remove('hidden');
+
+      if (!inputId) {
+        container.innerHTML = `<div class="bg-rose-50 text-rose-700 text-xs p-3 rounded-xl border border-rose-200 font-bold">Please enter a valid order number.</div>`;
+        return;
+      }
+
+      const order = orders.find(o => o.id.toUpperCase() === inputId || o.id.toUpperCase() === '#' + inputId);
+      if (!order) {
+        container.innerHTML = `<div class="bg-amber-50 text-amber-800 text-xs p-3.5 rounded-xl border border-amber-200 space-y-1">
+          <div class="font-black">Order Not Found</div>
+          <p class="text-stone-600">No order matches <strong>#${inputId}</strong>. Please check your order ID and try again.</p>
+        </div>`;
+        return;
+      }
+
+      const orderDateObj = new Date(order.createdAt);
+      const formattedDate = orderDateObj.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+      const formattedTime = orderDateObj.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+
+      const statusColors = {
+        received: 'bg-amber-100 text-amber-800 border-amber-200',
+        preparing: 'bg-dhaba-100 text-dhaba-800 border-dhaba-200',
+        out_for_delivery: 'bg-blue-100 text-blue-800 border-blue-200',
+        delivered: 'bg-emerald-100 text-emerald-800 border-emerald-200',
+        cancelled: 'bg-rose-100 text-rose-800 border-rose-200'
+      };
+
+      const isRefunded = Boolean(order.refund && order.refund.refNumber);
+
+      container.innerHTML = `
+        <div class="bg-stone-50 border border-stone-200 rounded-2xl p-4 space-y-3 text-xs">
+          <div class="flex items-center justify-between border-b border-stone-200 pb-2.5">
+            <div>
+              <span class="font-black text-stone-900 text-sm">#${order.id}</span>
+              <div class="text-[10px] text-stone-500">${formattedDate} • ${formattedTime}</div>
+            </div>
+            <span class="font-black px-3 py-1 rounded-full border ${statusColors[order.status] || 'bg-stone-100 text-stone-800'} uppercase tracking-wider text-[10px]">
+              ${order.status.replace(/_/g, ' ')}
+            </span>
+          </div>
+
+          <div class="space-y-1">
+            <div class="flex justify-between text-stone-600"><span>Customer:</span><strong class="text-stone-900">${order.customerName}</strong></div>
+            <div class="flex justify-between text-stone-600"><span>Payment:</span><strong class="text-stone-900">${order.paymentMethod}</strong></div>
+            <div class="flex justify-between text-stone-600"><span>Delivery Address:</span><span class="text-right text-stone-900 font-semibold max-w-[200px] truncate">${order.address}</span></div>
+            <div class="flex justify-between text-stone-600"><span>Grand Total:</span><strong class="text-dhaba-600 font-black">₹${order.total}</strong></div>
+            ${isRefunded ? `<div class="flex justify-between text-indigo-700 font-bold bg-indigo-50 px-2.5 py-1 rounded-lg mt-1"><span>Refunded:</span><span>₹${order.refund.amount} (Ref: ${order.refund.refNumber})</span></div>` : ''}
+          </div>
+
+          <div class="pt-2 flex gap-2">
+            <button onclick="closeTrackOrderModal(); openOrderSummaryModal('${order.id}')"
+              class="w-full bg-stone-900 hover:bg-stone-800 text-white font-black py-2.5 rounded-xl shadow">
+              View Detailed Receipt & PDF 📄
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    // =========================================================================
+    // KDS ORDER MIS REPORT DOWNLOAD BY DATE RANGE
+    // =========================================================================
+    function quickSetMisToday() {
+      const todayStr = new Date().toISOString().split('T')[0];
+      document.getElementById('mis-start-date').value = todayStr;
+      document.getElementById('mis-end-date').value = todayStr;
+      showToast('Date range set to Today');
+    }
+
+    function downloadOrderMisReport() {
+      const startVal = document.getElementById('mis-start-date').value;
+      const endVal = document.getElementById('mis-end-date').value;
+
+      if (!startVal || !endVal) {
+        showToast('Please select both start and end dates');
+        return;
+      }
+
+      const startDate = new Date(startVal + 'T00:00:00');
+      const endDate = new Date(endVal + 'T23:59:59');
+
+      if (startDate > endDate) {
+        showToast('Start date cannot be after end date');
+        return;
+      }
+
+      const filtered = orders.filter(o => {
+        const orderTime = new Date(o.createdAt);
+        return orderTime >= startDate && orderTime <= endDate;
+      });
+
+      if (filtered.length === 0) {
+        showToast('No orders found in the selected date range');
+        return;
+      }
+
+      let csvContent = "data:text/csv;charset=utf-8,";
+      csvContent += "Order ID,Date,Time,Customer Name,Phone,Delivery Address,Status,Payment Method,Subtotal,Discount,Delivery Fee,GST,Grand Total,Cancellation Reason,Refund Amount,Refund Reference Number\r\n";
+
+      filtered.forEach(o => {
+        const d = new Date(o.createdAt);
+        const dateStr = d.toLocaleDateString('en-IN');
+        const timeStr = d.toLocaleTimeString('en-IN');
+        const sub = o.subtotal || 0;
+        const disc = o.discount || 0;
+        const del = o.deliveryFee || 40;
+        const gst = o.gst || 0;
+        const cancelReason = (o.cancelReason || '').replace(/,/g, ' ');
+        const refundAmt = o.refund ? o.refund.amount : 0;
+        const refundRef = o.refund ? o.refund.refNumber : '';
+
+        const row = [
+          o.id,
+          dateStr,
+          timeStr,
+          '"' + o.customerName + '"',
+          o.phone,
+          '"' + (o.address || '').replace(/,/g, ' ') + '"',
+          o.status,
+          o.paymentMethod,
+          sub,
+          disc,
+          del,
+          gst,
+          o.total,
+          '"' + cancelReason + '"',
+          refundAmt,
+          refundRef
+        ];
+        csvContent += row.join(",") + "\r\n";
+      });
+
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", `Dhaba_Express_MIS_${startVal}_to_${endVal}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+
+      showToast(`MIS Report downloaded successfully (${filtered.length} orders)`);
     }
 
     // Toast Notifications
