@@ -41,6 +41,275 @@
     .tap-scale:active { transform: scale(0.97); }
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+    /* ================================================================
+       DHABA EXPRESS — VISUAL REFRESH
+       Presentation-only CSS. Existing HTML, IDs, event handlers,
+       application logic, integrations and features remain unchanged.
+       ================================================================ */
+    :root {
+      --de-ink: #211b16;
+      --de-muted: #786b60;
+      --de-cream: #fbf7f1;
+      --de-paper: #fffdfa;
+      --de-orange: #c94f16;
+      --de-orange-dark: #a83d10;
+      --de-gold: #e9ad42;
+      --de-line: #eee4d8;
+      --de-shadow: 0 16px 42px rgba(61, 39, 20, .085);
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      color: var(--de-ink);
+      background:
+        radial-gradient(ellipse at 8% 4%, rgba(237, 181, 92, .10), transparent 27rem),
+        radial-gradient(ellipse at 94% 28%, rgba(201, 79, 22, .055), transparent 30rem),
+        var(--de-cream) !important;
+      letter-spacing: -.012em;
+    }
+    ::selection { background: rgba(233, 173, 66, .35); color: #2a1c12; }
+
+    header {
+      background: rgba(255, 253, 250, .91) !important;
+      border-color: rgba(224, 210, 194, .8) !important;
+      box-shadow: 0 5px 24px rgba(50, 33, 18, .055) !important;
+    }
+    header > div:first-child { min-height: 76px; }
+    header h1 { letter-spacing: -.045em !important; }
+    header .w-10.h-10 {
+      border-radius: 15px !important;
+      box-shadow: 0 7px 18px rgba(184, 72, 17, .24) !important;
+    }
+
+    main { animation: de-enter .48s ease both; }
+    @keyframes de-enter {
+      from { opacity: 0; transform: translateY(7px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Hero */
+    #website-mode-view > section:first-child {
+      min-height: 330px;
+      padding: clamp(2rem, 5vw, 4rem) !important;
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 30px !important;
+      background:
+        radial-gradient(circle at 82% 18%, rgba(236, 168, 67, .25), transparent 18rem),
+        radial-gradient(circle at 95% 100%, rgba(201, 79, 22, .32), transparent 24rem),
+        linear-gradient(118deg, #211b16 0%, #332116 52%, #6f2c12 100%) !important;
+      box-shadow: 0 24px 55px rgba(51, 30, 16, .18) !important;
+      isolation: isolate;
+    }
+    #website-mode-view > section:first-child:after {
+      content: "✦";
+      position: absolute;
+      z-index: -1;
+      right: 8%;
+      top: 5%;
+      color: rgba(255, 224, 169, .12);
+      font-size: clamp(9rem, 25vw, 20rem);
+      line-height: 1;
+      transform: rotate(-12deg);
+      pointer-events: none;
+    }
+    #website-mode-view > section:first-child h2 {
+      max-width: 760px;
+      font-size: clamp(2rem, 4.2vw, 3.65rem) !important;
+      line-height: 1.08 !important;
+      letter-spacing: -.055em !important;
+      text-wrap: balance;
+    }
+    #website-mode-view > section:first-child p {
+      max-width: 590px;
+      font-size: .9rem !important;
+      color: rgba(255,255,255,.76) !important;
+    }
+    #hero-location-input { min-height: 25px; }
+    #hero-location-input:focus { outline: none; }
+
+    /* Search and category controls */
+    #category-pills-container button {
+      border-radius: 999px !important;
+      padding: .65rem 1rem !important;
+      font-weight: 800 !important;
+      border: 1px solid var(--de-line) !important;
+      background: var(--de-paper) !important;
+      color: #625348 !important;
+      transition: .2s ease !important;
+      white-space: nowrap;
+    }
+    #category-pills-container button:hover,
+    #category-pills-container button.active,
+    #category-pills-container button[aria-pressed="true"] {
+      background: #2b211a !important;
+      border-color: #2b211a !important;
+      color: #fff !important;
+      transform: translateY(-1px);
+    }
+
+    input:not([type="radio"]):not([type="checkbox"]),
+    textarea, select {
+      border-color: #e8ddd0 !important;
+      border-radius: 13px !important;
+      transition: border-color .2s ease, box-shadow .2s ease, background .2s ease !important;
+    }
+    input:not([type="radio"]):not([type="checkbox"]):focus,
+    textarea:focus, select:focus {
+      border-color: #d87937 !important;
+      box-shadow: 0 0 0 4px rgba(216, 121, 55, .12) !important;
+      outline: none !important;
+    }
+
+    /* Menu cards */
+    #website-menu-grid > div {
+      position: relative;
+      padding: 12px !important;
+      border: 1px solid rgba(226, 213, 198, .9) !important;
+      border-radius: 23px !important;
+      background: rgba(255, 253, 250, .96) !important;
+      box-shadow: 0 5px 18px rgba(53, 36, 20, .045) !important;
+      transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease !important;
+    }
+    #website-menu-grid > div:hover {
+      transform: translateY(-5px);
+      border-color: rgba(201, 103, 43, .35) !important;
+      box-shadow: 0 18px 35px rgba(53, 36, 20, .12) !important;
+    }
+    #website-menu-grid > div .relative.h-44 {
+      height: 190px !important;
+      border-radius: 17px !important;
+      background: #f1e8dc !important;
+      margin-bottom: 15px !important;
+    }
+    #website-menu-grid img {
+      transition: transform .55s cubic-bezier(.2,.7,.2,1);
+    }
+    #website-menu-grid > div:hover img { transform: scale(1.055); }
+    #website-menu-grid h3 {
+      font-size: .96rem !important;
+      letter-spacing: -.025em;
+    }
+    #website-menu-grid p {
+      min-height: 42px;
+      color: #82766b !important;
+      font-size: .72rem !important;
+      line-height: 1.55 !important;
+    }
+    #website-menu-grid > div > div:last-child button {
+      min-height: 42px;
+      border-radius: 13px !important;
+      background: #fff3e8 !important;
+      border-color: #f2d4bc !important;
+      color: #a94312 !important;
+    }
+    #website-menu-grid > div > div:last-child button:hover {
+      background: #c94f16 !important;
+      border-color: #c94f16 !important;
+      color: white !important;
+    }
+
+    /* Shared surface refinement across admin, rider and checkout */
+    .shadow-card, .shadow-xl, .shadow-2xl {
+      box-shadow: var(--de-shadow) !important;
+    }
+    #kds-mode-view > div,
+    #rider-mode-view > div,
+    #cart-drawer > div,
+    #customizer-modal > div,
+    #upi-qr-modal > div,
+    #order-summary-modal > div,
+    #track-order-modal > div,
+    #kitchen-pin-modal > div,
+    #kds-cancel-modal > div,
+    #kds-refund-modal > div {
+      border-radius: 23px !important;
+    }
+    #kds-mode-view .bg-white,
+    #rider-mode-view .bg-white {
+      border-color: var(--de-line) !important;
+    }
+    #kds-mode-view > div:first-child,
+    #rider-mode-view > div:first-child {
+      box-shadow: 0 20px 45px rgba(25, 27, 30, .16) !important;
+    }
+
+    /* Buttons: consistent tactile finish without changing their actions */
+    button, a[id*="upi"] {
+      -webkit-tap-highlight-color: transparent;
+    }
+    button {
+      transition: transform .18s ease, box-shadow .2s ease, background-color .2s ease, border-color .2s ease !important;
+    }
+    button:hover { filter: saturate(1.06); }
+    button:focus-visible, a:focus-visible {
+      outline: 3px solid rgba(233, 173, 66, .55) !important;
+      outline-offset: 3px;
+    }
+    .tap-scale:active { transform: scale(.975) !important; }
+    footer {
+      background: #241d17 !important;
+      color: rgba(255,255,255,.58) !important;
+      border-color: #3c3026 !important;
+      padding-top: 2rem !important;
+      padding-bottom: 2rem !important;
+    }
+    footer .font-bold { color: #fff2df !important; }
+
+    /* Modal and drawer polish */
+    #customizer-modal > div,
+    #upi-qr-modal > div,
+    #order-summary-modal > div,
+    #track-order-modal > div,
+    #kds-cancel-modal > div,
+    #kds-refund-modal > div {
+      box-shadow: 0 28px 90px rgba(25, 17, 10, .28) !important;
+      border: 1px solid rgba(255,255,255,.65) !important;
+    }
+    #cart-drawer > div {
+      border-radius: 25px 0 0 25px !important;
+      box-shadow: -22px 0 65px rgba(25, 17, 10, .18) !important;
+    }
+
+    /* Gentle polish for dynamically rendered order and stock panels */
+    #kds-orders-container > div,
+    #rider-orders-container > div,
+    #kds-stock-container > div {
+      border-radius: 21px !important;
+      border-color: var(--de-line) !important;
+      box-shadow: 0 7px 22px rgba(53, 36, 20, .055) !important;
+    }
+    #kds-orders-container > div:hover,
+    #rider-orders-container > div:hover,
+    #kds-stock-container > div:hover {
+      box-shadow: 0 13px 30px rgba(53, 36, 20, .09) !important;
+    }
+
+    @media (max-width: 640px) {
+      header > div:first-child { min-height: 66px; }
+      #website-mode-view { padding-top: 1rem !important; }
+      #website-mode-view > section:first-child {
+        min-height: 0;
+        border-radius: 23px !important;
+        padding: 1.5rem !important;
+      }
+      #website-mode-view > section:first-child:after {
+        right: -2rem;
+        top: 1rem;
+        font-size: 9rem;
+      }
+      #website-menu-grid > div .relative.h-44 { height: 205px !important; }
+      #cart-drawer > div { border-radius: 22px 22px 0 0 !important; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        scroll-behavior: auto !important;
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .01ms !important;
+      }
+    }
   </style>
 </head>
 <body class="bg-stone-50 text-stone-900 min-h-screen flex flex-col">
