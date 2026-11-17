@@ -91,6 +91,13 @@
           <i data-lucide="chef-hat" class="w-4 h-4"></i>
           <span class="hidden sm:inline">KDS</span>
         </button>
+
+        <button onclick="switchMode('rider')"
+          class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-xl text-xs font-extrabold inline-flex items-center gap-1.5 shadow transition tap-scale"
+          title="Food Delivery Rider Portal">
+          <i data-lucide="bike" class="w-4 h-4"></i>
+          <span class="hidden sm:inline">Rider Portal</span>
+        </button>
       </div>
     </div>
 
@@ -280,6 +287,46 @@
       </div>
       <div id="kds-stock-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
     </div>
+  </main>
+
+  <!-- ===================================================================== -->
+  <!-- FOOD DELIVERY RIDER SECTION (FEATURE 1, 2, 3)                         -->
+  <!-- ===================================================================== -->
+  <main id="rider-mode-view" class="hidden flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 space-y-6">
+
+    <!-- Rider Top Header -->
+    <div class="bg-blue-900 text-white rounded-3xl p-6 sm:p-8 shadow-xl border border-blue-800 flex flex-col md:flex-row md:items-center justify-between gap-6">
+      <div>
+        <div class="inline-flex items-center gap-2 bg-blue-500/20 text-blue-300 px-3 py-1 rounded-full text-xs font-extrabold mb-2">
+          <span>🛵 Food Delivery Rider Section (GPS Navigation Enabled)</span>
+        </div>
+        <h2 class="text-2xl sm:text-3xl font-black">Rider Dispatch & Delivery Portal</h2>
+        <p class="text-xs text-blue-200 mt-1">Orders marked as ready for dispatch by KDS appear here. Navigate via GPS coordinates and mark orders as delivered.</p>
+      </div>
+
+      <div class="flex flex-wrap items-center gap-3">
+        <button onclick="switchMode('website')"
+          class="bg-blue-800 hover:bg-blue-700 text-white px-4 py-2.5 rounded-xl text-xs font-bold inline-flex items-center gap-2 border border-blue-700 transition tap-scale">
+          <i data-lucide="arrow-left" class="w-4 h-4"></i>
+          <span>Back to Storefront</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Rider Filter Bar -->
+    <div class="flex items-center justify-between flex-wrap gap-3">
+      <div class="flex items-center gap-2">
+        <h3 class="text-sm font-black text-stone-900">Orders Ready for Dispatch / Delivery</h3>
+      </div>
+      <div class="flex flex-wrap items-center gap-1.5">
+        <button onclick="setRiderFilter('ready')" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-blue-50 text-blue-800 border border-blue-200 hover:bg-blue-100">Ready for Dispatch</button>
+        <button onclick="setRiderFilter('all_active')" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-white border border-stone-200 hover:bg-stone-100">All Active Deliveries</button>
+        <button onclick="setRiderFilter('completed')" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-200 hover:bg-emerald-100">Completed Deliveries</button>
+      </div>
+    </div>
+
+    <!-- Rider Orders Container -->
+    <div id="rider-orders-container" class="space-y-4"></div>
   </main>
 
   <!-- ===================================================================== -->
@@ -664,7 +711,7 @@
         phone: '9811055210',
         address: 'Flat 402, Regal Building, Connaught Place',
         gps: { lat: 28.6315, lng: 77.2167 },
-        status: 'preparing',
+        status: 'out_for_delivery',
         paymentMethod: 'UPI / QR',
         createdAt: Date.now() - 5 * 60 * 1000,
         subtotal: 300,
@@ -713,6 +760,7 @@
     let customizingItem = null;
     let kdsSubTab = 'orders';
     let kdsFilter = 'all';
+    let riderFilter = 'ready';
     let lastPlacedOrderId = null;
     let activeSummaryOrderId = null;
     let pendingCancelOrderId = null;
@@ -739,6 +787,8 @@
       const urlParams = new URLSearchParams(window.location.search);
       if (urlParams.get('staff') === '1') {
         promptKitchenAccess();
+      } else if (urlParams.get('rider') === '1') {
+        switchMode('rider');
       }
     });
 
@@ -910,6 +960,7 @@
       renderCartUI();
       renderKdsOrders();
       renderKdsStockManager();
+      renderRiderOrders();
       updateKdsStats();
       applyModeView();
       updateLastOrderNavButton();
@@ -1077,15 +1128,22 @@
     function applyModeView() {
       const websiteView = document.getElementById('website-mode-view');
       const kdsView = document.getElementById('kds-mode-view');
+      const riderView = document.getElementById('rider-mode-view');
 
-      if (!websiteView || !kdsView) return;
+      if (!websiteView || !kdsView || !riderView) return;
 
       if (appMode === 'website') {
         websiteView.classList.remove('hidden');
         kdsView.classList.add('hidden');
+        riderView.classList.add('hidden');
       } else if (appMode === 'kds') {
         websiteView.classList.add('hidden');
         kdsView.classList.remove('hidden');
+        riderView.classList.add('hidden');
+      } else if (appMode === 'rider') {
+        websiteView.classList.add('hidden');
+        kdsView.classList.add('hidden');
+        riderView.classList.remove('hidden');
       }
     }
 
@@ -1925,11 +1983,7 @@
                     Mark Ready & Dispatch 🛵
                   </button>
                 ` : ''}
-                ${order.status === 'out_for_delivery' ? `
-                  <button onclick="updateOrderStatus('${order.id}', 'delivered')" class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-xl text-xs font-bold shadow tap-scale">
-                    Confirm Delivered ✓
-                  </button>
-                ` : ''}
+                <!-- KDS user option removed for delivered status per requirement (Rider exclusive) -->
                 ${order.status === 'delivered' ? `
                   <span class="text-xs font-bold text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-xl">Completed Order</span>
                 ` : ''}
@@ -1957,6 +2011,141 @@
         `;
       }).join('');
       if (window.lucide) lucide.createIcons();
+    }
+
+    // =========================================================================
+    // FOOD DELIVERY RIDER SECTION LOGIC (FEATURES 1, 2, 3)
+    // =========================================================================
+    function setRiderFilter(filter) {
+      riderFilter = filter;
+      renderRiderOrders();
+    }
+
+    function renderRiderOrders() {
+      const container = document.getElementById('rider-orders-container');
+      if (!container) return;
+
+      const filtered = orders.filter(o => {
+        if (o.status === 'cancelled') return false;
+        if (riderFilter === 'ready') return o.status === 'out_for_delivery';
+        if (riderFilter === 'all_active') return o.status === 'out_for_delivery' || o.status === 'preparing';
+        if (riderFilter === 'completed') return o.status === 'delivered';
+        return true;
+      });
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="bg-white rounded-3xl p-12 text-center shadow-card border border-stone-200">
+            <div class="text-4xl mb-2">🛵</div>
+            <h3 class="text-base font-black text-stone-900">No Orders in Rider Queue</h3>
+            <p class="text-xs text-stone-500 mt-1">Orders marked as "Ready for Dispatch" by kitchen users will appear here.</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = filtered.map(order => {
+        const orderDateObj = new Date(order.createdAt);
+        const formattedTime = orderDateObj.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+
+        const statusColors = {
+          preparing: 'bg-dhaba-100 text-dhaba-800 border-dhaba-200',
+          out_for_delivery: 'bg-blue-100 text-blue-800 border-blue-200',
+          delivered: 'bg-emerald-100 text-emerald-800 border-emerald-200'
+        };
+
+        return `
+          <div class="bg-white rounded-3xl p-6 shadow-card border border-stone-200 space-y-4">
+            <div class="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-stone-100">
+              <div class="flex flex-wrap items-center gap-2.5">
+                <span class="text-base font-black text-stone-900">#${order.id}</span>
+                <span class="text-xs font-black px-3 py-1 rounded-full border ${statusColors[order.status] || 'bg-stone-100 text-stone-800'} uppercase tracking-wider">
+                  ${order.status.replace(/_/g, ' ')}
+                </span>
+              </div>
+              <div class="text-xs font-bold text-stone-600 bg-stone-100 px-3 py-1.5 rounded-xl">
+                Ordered at ${formattedTime}
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+              <div class="bg-blue-50/50 p-4 rounded-2xl border border-blue-100 space-y-3">
+                <div>
+                  <div class="text-[10px] font-extrabold text-blue-900 uppercase">Customer Details</div>
+                  <div class="font-black text-stone-900 text-sm mt-0.5">${order.customerName}</div>
+                  <a href="tel:${order.phone}" class="text-blue-600 hover:underline font-bold text-xs inline-flex items-center gap-1 mt-0.5">
+                    <i data-lucide="phone" class="w-3 h-3"></i>
+                    <span>+91 ${order.phone}</span>
+                  </a>
+                </div>
+                <div>
+                  <div class="text-[10px] font-extrabold text-blue-900 uppercase">Delivery Address</div>
+                  <div class="text-stone-700 font-semibold mt-0.5">${order.address}</div>
+                </div>
+
+                <!-- Feature 3: Navigation based on GPS Coordinates captured during order placement -->
+                <div class="pt-2">
+                  ${order.gps ? `
+                    <a href="https://www.google.com/maps/dir/?api=1&destination=${order.gps.lat},${order.gps.lng}" target="_blank" rel="noopener noreferrer"
+                      class="w-full bg-emerald-600 hover:bg-emerald-500 text-white py-2.5 px-4 rounded-xl text-xs font-black inline-flex items-center justify-center gap-2 shadow transition tap-scale">
+                      <i data-lucide="navigation" class="w-4 h-4"></i>
+                      <span>Navigate to Destination (GPS: ${order.gps.lat.toFixed(4)}, ${order.gps.lng.toFixed(4)})</span>
+                    </a>
+                  ` : `
+                    <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(order.address)}" target="_blank" rel="noopener noreferrer"
+                      class="w-full bg-stone-800 hover:bg-stone-700 text-white py-2.5 px-4 rounded-xl text-xs font-bold inline-flex items-center justify-center gap-2 shadow transition tap-scale">
+                      <i data-lucide="map-pin" class="w-4 h-4"></i>
+                      <span>Navigate via Address (No GPS Pin)</span>
+                    </a>
+                  `}
+                </div>
+              </div>
+
+              <div class="bg-stone-50 p-4 rounded-2xl border border-stone-100 space-y-2">
+                <div class="text-[10px] font-extrabold text-stone-500 uppercase">Order Summary</div>
+                ${order.items.map(it => `
+                  <div class="flex justify-between text-stone-700">
+                    <span><strong>${it.qty}×</strong> ${it.name} (${it.spice})</span>
+                    <span class="font-bold">₹${it.unitPrice * it.qty}</span>
+                  </div>
+                `).join('')}
+                <div class="pt-2 border-t border-stone-200 flex justify-between text-stone-900 font-black text-sm">
+                  <span>To Collect:</span>
+                  <span class="text-dhaba-600">₹${order.total} (${order.paymentMethod})</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Feature 2: Only Food Delivery Rider can mark as delivered -->
+            <div class="flex items-center justify-between pt-2">
+              <span class="text-xs text-stone-500 font-semibold">Rider Action:</span>
+              <div>
+                ${order.status === 'out_for_delivery' ? `
+                  <button onclick="riderMarkDelivered('${order.id}')"
+                    class="bg-emerald-600 hover:bg-emerald-500 text-white px-5 py-2.5 rounded-xl text-xs font-black shadow-lg inline-flex items-center gap-2 transition tap-scale">
+                    <i data-lucide="check-circle-2" class="w-4 h-4"></i>
+                    <span>Mark as Delivered ✓</span>
+                  </button>
+                ` : (order.status === 'delivered' ? `
+                  <span class="text-xs font-bold text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-xl border border-emerald-200">
+                    Delivered Successfully ✓
+                  </span>
+                ` : `
+                  <span class="text-xs font-bold text-amber-700 bg-amber-50 px-3 py-1.5 rounded-xl border border-amber-200">
+                    Waiting for Kitchen Dispatch
+                  </span>
+                `)}
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function riderMarkDelivered(orderId) {
+      updateOrderStatusInFirestore(orderId, 'delivered');
+      showToast('Order ' + orderId + ' marked as Delivered!');
     }
 
     function updateOrderStatus(orderId, newStatus) {
